@@ -2085,7 +2085,8 @@ function langSwitch(){
 const TOP_PAGES = ["/fav", "/sell", "/chats", "/me", "/cats"];
 const curPath = () => location.hash.slice(1) || "/";
 const navStack = [];
-let topP = 0, spare = 0;            // место текущей записи в истории и сколько запасных под ней
+const START_SPARE = 8;              // записи, созданные при открытии (Chrome может их пропускать)
+let topP = 0, spare = 0;            // место текущей записи в истории и сколько «надёжных» запасных под ней
 function setUrl(path){ history.replaceState({tm:"top", p:topP}, "", "#"+path); }
 function go(path){
   path = path || "/";
@@ -2122,7 +2123,7 @@ function onPop(e){
   if (!st || st.tm !== "root"){ if (!st) route(); return; }
   if (leaving) return;
   // попали на запасную запись — решаем, что делать с нажатием «Назад»
-  topP = st.p; spare = st.p;                     // ниже неё ещё st.p запасных
+  topP = st.p; spare = Math.max(0, st.p - START_SPARE); // надёжные запасные ниже неё
   const now = Date.now(), quick = now - lastBackAt < 700; lastBackAt = now;
   if (exitOpen){ closeSheet(true); return; }     // «Назад» при открытом вопросе = выйти
   if (sheetEl){ closeSheet(undefined); rearm(); return; }
@@ -2143,8 +2144,10 @@ function askExit(){
     if (yes) leaveApp(topP); else rearm();
   });
 }
-// при каждом касании держим запас из 8 записей
-document.addEventListener("click", () => { if (!leaving && spare < 8 && history.state && history.state.tm === "top") addSpare(); }, true);
+// при касании экрана пополняем запас до 8 записей (записи, добавленные при касании, Chrome не пропускает)
+function refill(){ if (leaving || !history.state || history.state.tm !== "top") return; while (spare < 8) addSpare(); }
+document.addEventListener("click", refill, true);
+document.addEventListener("touchend", refill, true);
 // ссылки внутри приложения (#/...) — через свой переход, без лишних записей в истории
 document.addEventListener("click", e => {
   if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return;
@@ -3968,8 +3971,8 @@ function start(){
   const p0 = curPath();
   navStack.push("/"); if (p0 !== "/") navStack.push(p0);
   history.replaceState({tm:"root", p:0}, "", "#/");
-  for (let i = 1; i < 8; i++) history.pushState({tm:"root", p:i}, "", "#/");
-  topP = 8; spare = 8;
+  for (let i = 1; i < START_SPARE; i++) history.pushState({tm:"root", p:i}, "", "#/");
+  topP = START_SPARE; spare = 0;
   history.pushState({tm:"top", p:topP}, "", "#"+p0);
   window.addEventListener("popstate", onPop);
   // адрес поменяли вручную
