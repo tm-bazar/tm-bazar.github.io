@@ -1888,7 +1888,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "30";   // номер версии — виден внизу профиля
+const APP_VER = "31";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2184,6 +2184,7 @@ const ROUTES = [
   [/^\/admin$/, () => viewAdmin()]
 ];
 function route(){
+  if (updateReady && curPath() === "/") return maybeReload();
   stopTimers();
   closeSheet();
   const path = decodeURI(location.hash.slice(1)) || "/";
@@ -3486,6 +3487,26 @@ async function viewChat(id){
 }
 
 /* ===== ПРОФИЛЬ ===== */
+/* Автообновление: если на сайте вышла новая версия (файл version.json), приложение перезагружается само.
+   Перезагрузка — сразу, если вы на главном меню, иначе — при следующем возврате на главное меню. */
+let updateReady = false;
+async function checkUpdate(){
+  try{
+    const r = await fetch("version.json?t=" + Date.now(), {cache:"no-store"});
+    if (!r.ok) return;
+    const v = String((await r.json()).v || "");
+    if (+v > +APP_VER){ updateReady = true; maybeReload(); }
+  }catch(e){}
+}
+function maybeReload(){
+  if (!updateReady || sheetEl) return;
+  let last = 0; try{ last = +sessionStorage.getItem("tmUpdAt") || 0; }catch(e){}
+  if (Date.now() - last < 120000) return;          // не чаще раза в 2 минуты
+  if ((navStack[navStack.length-1] || "/") === "/" || document.hidden){
+    updateReady = false; try{ sessionStorage.setItem("tmUpdAt", String(Date.now())); }catch(e){}
+    location.reload();
+  }
+}
 function verLine(){ return h("div",{style:{textAlign:"center",color:"var(--mut2)",fontSize:"12px",padding:"14px 0 90px"},text:APP_NAME+" · "+t("version")+" "+APP_VER}); }
 async function viewMe(){
   setTab("me");
@@ -3982,7 +4003,8 @@ function start(){
   window.addEventListener("popstate", onPop);
   // адрес поменяли вручную
   window.addEventListener("hashchange", () => { if (!history.state){ const p = curPath(); navStack.push(p); setUrl(p); route(); } });
-  document.addEventListener("visibilitychange", () => { if (!document.hidden && S.token) startPoll(); });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && S.token) startPoll(); if (!document.hidden) checkUpdate(); });
+  checkUpdate(); setInterval(checkUpdate, 3 * 60 * 1000);
   route();
   loadCatalog(true);
   startPoll();
