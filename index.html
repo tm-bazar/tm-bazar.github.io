@@ -586,6 +586,10 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .mk-pick span b{font-size:16px}
 .mk-pick > span:nth-child(2){flex:1}
 .mk-pick .ar{color:#b0b4bb;font-size:22px}
+.md-pick{padding:12px 16px}
+.md-pick > span:first-child{flex:1}
+.md-row{padding:15px 6px;min-height:56px}
+.md-any .mk-name{font-weight:700}
 .wiz .mk{padding:0}
 
 /* эмблемы и знаки марок — на белом фоне */
@@ -1277,7 +1281,9 @@ const ATTRT = {
   sub:["Раздел","Bölüm","Section"], pickBrand:["Выберите марку","Markany saýlaň","Choose a make"], pickOpt:["Выберите","Saýlaň","Choose"],
   pickMake:["Выберите марку","Markany saýlaň","Choose a make"], searchMake:["Поиск марки","Markany gözle","Search make"],
   popularMakes:["Популярные марки","Meşhur markalar","Popular makes"], allMakes:["Все марки А–Я","Ähli markalar A–Ý","All makes A–Z"],
-  anyMake:["Все марки","Ähli markalar","All makes"], makeBtn:["Марка","Marka","Make"],
+  anyMake:["Все марки","Ähli markalar","All makes"],
+  searchModel:["Поиск модели","Model gözle","Search model"], anyModel:["Все модели","Ähli modeller","All models"],
+  popularModels:["Популярные модели","Meşhur modeller","Popular models"], allModels:["Все модели А–Я","Ähli modeller A–Ý","All models A–Z"], makeBtn:["Марка","Marka","Make"],
   modelPh:["Начните писать или выберите","Ýazyp başlaň ýa-da saýlaň","Start typing or pick"],
   allSubs:["Все","Ählisi","All"], specs:["Характеристики","Häsiýetnamasy","Specifications"], details:["Подробности","Jikme-jiklikler","Details"],
   e_noSub:["Выберите раздел: {s}","Bölümi saýlaň: {s}","Choose a section: {s}"], e_req:["Заполните: {f}","Dolduryň: {f}","Please fill in: {f}"],
@@ -2049,6 +2055,7 @@ const ROUTES = [
   [/^\/q\/(.*)$/, m => viewHome(decodeURIComponent(m[1]))],
   [/^\/c\/(\w+)$/, m => viewBrowse(m[1])],
   [/^\/brands\/(\w+)\/(\w+)$/, m => viewMakes(m[1], m[2])],
+  [/^\/models\/(\w+)\/(\w+)\/(.+)$/, m => viewModels(m[1], m[2], decodeURIComponent(m[3]))],
   [/^\/cats$/, () => viewBrowse("")],
   [/^\/p\/(\w+)$/, m => viewProduct(m[1])],
   [/^\/u\/(\w+)$/, m => viewShop(m[1])],
@@ -2226,6 +2233,24 @@ function makeLogo(b){
   const ini = b.replace(/[^A-Za-zА-Яа-яЁё0-9 ]/g," ").trim().split(/\s+/).map(w => w[0]).join("").slice(0,2).toUpperCase() || b.slice(0,2);
   return h("span",{class:"mk-logo mono"}, h("b",{text:ini}));
 }
+/* ===== МОДЕЛИ МАРОК (файл models.json: cars / trucks / buses / special) ===== */
+let MODELS = null, modelsP = null, POP_MODELS = null;
+function loadModels(){
+  return modelsP || (modelsP = fetch("models.json").then(r => r.json()).then(d => {
+    MODELS = d;
+    if (!POP_MODELS) POP_MODELS = Object.assign({}, CAR_MODELS);
+    // полные списки — и в подсказки при подаче объявления
+    for (const b in d.cars) CAR_MODELS[b] = [...new Set([...(CAR_MODELS[b] || []), ...d.cars[b]])];
+    return d;
+  }).catch(() => { modelsP = null; return null; }));
+}
+function modelsOf(sub, b){
+  const g = MODELS && MODELS[sub === "imported" ? "cars" : sub];
+  return (g && g[b]) || [];
+}
+const modelSort = (x, y) => x.localeCompare(y, "en", {sensitivity:"base"});
+function modelsHref(cat, sub, b){ return "/models/" + cat + "/" + sub + "/" + encodeURIComponent(b); }
+
 // значок «Все марки»: мозаика из 4 эмблем
 function anyLogo(opts){
   const pri = ["Toyota","Hyundai","Mercedes-Benz","BMW"];
@@ -2268,11 +2293,61 @@ function viewMakes(cat, sub){
   const counts = {};
   S.catalog.filter(p => p.cat === cat && p.sub === sub).forEach(p => { const b = (p.attrs||{}).brand; if (b) counts[b] = (counts[b]||0) + 1; });
   const st = S.browse && S.browse.cat === cat ? S.browse : null;
-  const pick = b => { S.browse = {cat, sub, f: b ? {brand: b} : {}, r: st ? st.r || {} : {}}; go("/c/"+cat); };
+  const pick = async b => {
+    if (b && b !== "other" && VEHICLE_SUBS[sub]){
+      await loadModels();
+      if (modelsOf(sub, b).length) return go(modelsHref(cat, sub, b));
+    }
+    S.browse = {cat, sub, f: b ? {brand: b} : {}, r: st ? st.r || {} : {}}; go("/c/"+cat);
+  };
   page(h("div",{class:"silver-head"},
       h("button",{class:"sh-back","aria-label":t("back"),html:IC.back,onclick:()=>back("/c/"+cat)}),
       h("div",null, h("small",{text:catName(cat)}), h("h1",{text:subName(sub)}))),
     h("div",{class:"wrap"}, makeList(opts, counts, pick, st && st.sub === sub ? (st.f||{}).brand : "", true)));
+}
+
+/* ===== СПИСОК МОДЕЛЕЙ (после выбора марки, без эмблем) ===== */
+async function viewModels(cat, sub, b){
+  setTab("home", false);
+  const here = location.hash;
+  const wrap = h("div",{class:"wrap"});
+  page(h("div",{class:"silver-head"},
+      h("button",{class:"sh-back","aria-label":t("back"),html:IC.back,onclick:()=>back("/brands/"+cat+"/"+sub)}),
+      h("div",null, h("small",{text:subName(sub)}), h("h1",{text:brandName(b)}))), wrap);
+  await loadModels();
+  if (location.hash !== here) return;
+  const counts = {};
+  S.catalog.filter(p => p.cat === cat && p.sub === sub && (p.attrs||{}).brand === b)
+    .forEach(p => { const m = (p.attrs||{}).model; if (m) counts[m] = (counts[m]||0) + 1; });
+  const pop = (sub === "cars" || sub === "imported") ? ((POP_MODELS || CAR_MODELS)[b] || []) : [];
+  const all = [...new Set([...modelsOf(sub, b), ...pop, ...Object.keys(counts)])].sort(modelSort);
+  const st = S.browse && S.browse.cat === cat ? S.browse : null;
+  const selected = st && st.sub === sub && (st.f||{}).brand === b ? (st.f.model || "") : null;
+  const pick = m => { S.browse = {cat, sub, f: m ? {brand: b, model: m} : {brand: b}, r: st ? st.r || {} : {}}; go("/c/"+cat); };
+  const q = h("input",{class:"inp mk-q",type:"search",placeholder:"🔍  "+t("searchModel")});
+  const list = h("div");
+  const row = m => h("button",{type:"button",class:"mk-row md-row"+(selected===m?" on":""),onclick:()=>pick(m)},
+    h("span",{class:"mk-name",text:m}),
+    counts[m] ? h("span",{class:"mk-n",text:String(counts[m])}) : null, h("span",{class:"ar",text:selected===m ? "✓" : "›"}));
+  const draw = () => {
+    const v = q.value.trim().toLowerCase();
+    const parts = [];
+    if (v) parts.push(...all.filter(m => m.toLowerCase().includes(v)).map(row));
+    else {
+      const total = Object.values(counts).reduce((a, x) => a + x, 0);
+      parts.push(h("button",{type:"button",class:"mk-row md-row md-any"+(selected===""?" on":""),onclick:()=>pick("")},
+        h("span",{class:"mk-name",text:t("anyModel")}), total ? h("span",{class:"mk-n",text:String(total)}) : null,
+        h("span",{class:"ar",text:selected==="" ? "✓" : "›"})));
+      const popIn = pop.filter(m => all.includes(m));
+      if (popIn.length && all.length > popIn.length){
+        parts.push(h("div",{class:"mk-h",text:t("popularModels")}), ...popIn.map(row), h("div",{class:"mk-h",text:t("allModels")}));
+      }
+      parts.push(...all.map(row));
+    }
+    list.replaceChildren(...parts);
+  };
+  q.oninput = draw; draw();
+  wrap.append(h("div",{class:"mk"}, q, list));
 }
 
 /* ===== IMO ===== */
@@ -2614,6 +2689,13 @@ function viewBrowse(catId){
           b ? makeLogo(b) : anyLogo(st.sub === "trucks" ? TRUCK_BRANDS : st.sub === "buses" ? BUS_BRANDS : st.sub === "special" ? SPECIAL_BRANDS : CAR_BRANDS),
           h("span",null, h("small",{text:t("makeBtn")}), h("b",{text: b ? brandName(b) : t("anyMake")})), h("span",{class:"ar",text:"›"})),
           b ? h("button",{class:"chip",text:"✕",onclick:()=>{ st.f = {}; draw(); }}) : null));
+        if (b && b !== "other"){
+          if (!MODELS) loadModels().then(d => { if (d && S.browse === st) draw(); });
+          else if (modelsOf(st.sub, b).length || st.f.model)
+            rows.push(h("div",{class:"mk-pick-wrap"}, h("button",{class:"mk-pick md-pick",onclick:()=>go(modelsHref("auto", st.sub, b))},
+              h("span",null, h("small",{text:t("f_model")}), h("b",{text: st.f.model || t("anyModel")})), h("span",{class:"ar",text:"›"})),
+              st.f.model ? h("button",{class:"chip",text:"✕",onclick:()=>{ delete st.f.model; draw(); }}) : null));
+        }
         return;
       }
       if (f.k === "brand" && (catId === "auto" || catId === "autoparts")){
@@ -2662,7 +2744,7 @@ function viewBrowse(catId){
     topFilt.textContent = t("filters") + (n ? " (" + n + ")" : "");
     topFilt.classList.toggle("on", !!n);
     const mode = lsGet("view", "list");
-    const title = st.f.brand ? brandName(st.f.brand) : st.sub ? subName(st.sub) : catId ? catName(catId) : t("allGoods");
+    const title = st.f.brand ? brandName(st.f.brand) + (st.f.model ? " " + st.f.model : "") : st.sub ? subName(st.sub) : catId ? catName(catId) : t("allGoods");
     const viewBtn = h("button",{class:"view-btn","aria-label":"view",html: mode === "list" ? IC.grid : IC.rows,onclick:()=>{ lsSet("view", mode === "list" ? "grid" : "list"); drawList(); }});
     body.replaceChildren(
       h("div",{class:"sec-h list-h"}, h("h2",null, title, h("small",{text:"  "+list.length})), h("div",{class:"sp"}), viewBtn),
@@ -3291,6 +3373,7 @@ function viewRules(){
 /* ===== ДОБАВИТЬ / ИЗМЕНИТЬ ТОВАР ===== */
 async function viewSell(editId){
   setTab("me", false);
+  loadModels();
   if (!S.token){
     page(topBar(t("sell")), h("div",{class:"wrap"}, emptyBox("🏪", t("sellBanner"), t("sellLogin"),
       h("button",{class:"btn",text:t("register"),onclick:async()=>{ if (await authSheet("sellAuth","reg","private")) viewSell(editId); }}))));
