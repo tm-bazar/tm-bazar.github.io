@@ -2219,6 +2219,8 @@ function photoTile(key, label, on, onclick, count, iconId){
 
 /* ===== СПИСОК МАРОК (сверху вниз, крупные эмблемы, серебристая шапка) ===== */
 function makeLogo(b){
+  if (b === "other") return h("span",{class:"mk-logo",style:{background:"#f1f2f4",color:"#59636e"},
+    html:'<svg viewBox="0 0 48 48" width="30" height="30" fill="currentColor"><circle cx="12" cy="24" r="4.5"/><circle cx="24" cy="24" r="4.5"/><circle cx="36" cy="24" r="4.5"/></svg>'});
   const src = (S.tiles && S.tiles["brand:"+b]) || (BRAND_LOGO[b] ? "brands/" + BRAND_LOGO[b] + ".webp" : "");
   if (src) return h("span",{class:"mk-logo"}, h("img",{src,alt:b,loading:"lazy"}));
   const ini = b.replace(/[^A-Za-zА-Яа-яЁё0-9 ]/g," ").trim().split(/\s+/).map(w => w[0]).join("").slice(0,2).toUpperCase() || b.slice(0,2);
