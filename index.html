@@ -626,6 +626,14 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .mk-logo,.mk-logo.mono{background:#fff;border:1px solid #e6e7ea}
 .mk-logo.mono b{color:#2b2f36}
 
+/* недвижимость: продажа / аренда — фото-карточки */
+.dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;padding:14px 14px 6px}
+.dl-card{border:0;background:none;padding:0;text-align:left;color:var(--fg);display:flex;flex-direction:column;gap:3px}
+.dl-card img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block;background:#f2f3f5;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.dl-card b{font-size:14px;line-height:1.25;margin-top:5px}
+.dl-card small{color:var(--mut2);font-size:12px}
+.dl-card.on img{outline:2.5px solid var(--fg);outline-offset:2px}
+
 </style>
 </head>
 <body>
@@ -1295,6 +1303,7 @@ const ATTRT = {
   o_drive_fwd:["Передний","Öň","FWD"], o_drive_rwd:["Задний","Yz","RWD"], o_drive_awd:["Полный","Doly","AWD/4WD"],
   o_exchange_yes:["Возможен","Bolýar","Possible"], o_f_exchange:["Обмен","Çalyşyk","Trade-in"], o_exchange_no:["Нет","Ýok","No"],
   dl_all:["Все объявления","Ähli bildirişler","All listings"],
+  dl_ads:["объявл.","bildiriş","listings"], dl_none:["пока нет объявлений","häzirlikçe bildiriş ýok","no listings yet"],
   dl_flat_sale:["Продажа квартир","Kwartira satlyk","Flats for sale"], dl_flat_rent:["Аренда квартир","Kwartira kärendesi","Flats for rent"], dl_flat_roomrent:["Аренда комнат","Otag kärendesi","Rooms for rent"],
   dl_house_sale:["Продажа домов","Jaý satlyk","Houses for sale"], dl_house_rent:["Аренда домов","Jaý kärendesi","Houses for rent"], dl_house_roomrent:["Аренда комнат","Otag kärendesi","Rooms for rent"],
   dl_land_sale:["Продажа участков","Ýer bölegi satlyk","Land for sale"], dl_land_rent:["Аренда участков","Ýer bölegi kärendesi","Land for rent"],
@@ -1894,7 +1903,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "34";   // номер версии — виден внизу профиля
+const APP_VER = "35";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2445,7 +2454,11 @@ function viewDeals(cat, sub){
   page(h("div",{class:"silver-head"},
       h("button",{class:"sh-back","aria-label":t("back"),html:IC.back,onclick:()=>back("/c/"+cat)}),
       h("div",null, h("small",{text:catName(cat)}), h("h1",{text:subName(sub)}))),
-    h("div",{class:"wrap"}, ...opts.map(d => row(d, dealName(sub, d), counts[d])), row("", t("dl_all"), list.length)));
+    h("div",{class:"wrap"},
+      h("div",{class:"dl-grid"}, ...opts.map(d => h("button",{type:"button",class:"dl-card"+(cur===d?" on":""),onclick:()=>pick(d)},
+        h("img",{src:"deals/"+sub+"-"+d+".jpg",alt:"",loading:"lazy",onerror:e=>{ e.target.style.visibility="hidden"; }}),
+        h("b",{text:dealName(sub, d)}), h("small",{text:counts[d] ? counts[d]+" "+t("dl_ads") : t("dl_none")})))),
+      row("", t("dl_all"), list.length)));
 }
 
 /* ===== СПИСОК МОДЕЛЕЙ (после выбора марки, без эмблем) ===== */
