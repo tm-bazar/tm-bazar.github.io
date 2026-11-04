@@ -2077,12 +2077,15 @@ function langSwitch(){
 
 /* ===== РОУТЕР ===== */
 /* Кнопка «Назад» на телефоне.
-   В истории браузера держим всего две записи: «корень» и «текущий экран», а путь по экранам — в navStack.
-   «Назад» = шаг назад по navStack; на главной или при двойном быстром нажатии — вопрос «Выйти из приложения?». */
+   Путь по экранам хранится в navStack. В истории браузера под текущим экраном лежит несколько «запасных» записей:
+   каждое «Назад» попадает на запасную запись, а приложение само показывает предыдущий экран.
+   Chrome пропускает записи, добавленные без касания экрана, поэтому запас пополняется при каждом касании.
+   На главной или при двух быстрых «Назад» — вопрос «Выйти из приложения?». */
 const TOP_PAGES = ["/fav", "/sell", "/chats", "/me", "/cats"];
 const curPath = () => location.hash.slice(1) || "/";
 const navStack = [];
-function setUrl(path){ history.replaceState({tm:"top"}, "", "#"+path); }
+let topP = 0, spare = 0;            // место текущей записи в истории и сколько запасных под ней
+function setUrl(path){ history.replaceState({tm:"top", p:topP}, "", "#"+path); }
 function go(path){
   path = path || "/";
   if (path === curPath()){ if (!navStack.length) navStack.push(path); route(); return; }
@@ -2096,13 +2099,31 @@ function back(fallback){
   if (navStack.length > 1){ navStack.pop(); setUrl(navStack[navStack.length-1]); route(); }
   else { navStack.length = 0; go(fallback || "/"); }
 }
-let lastBackAt = 0, exitOpen = false;
-function rearm(){ history.pushState({tm:"top"}, "", "#"+(navStack[navStack.length-1] || "/")); }
+// добавить запасную запись (вызывается при касании — тогда Chrome её не пропустит)
+function addSpare(){
+  const path = navStack[navStack.length-1] || "/";
+  history.replaceState({tm:"root", p:topP}, "", "#"+path);
+  topP++; spare++;
+  history.pushState({tm:"top", p:topP}, "", "#"+path);
+}
+function rearm(){
+  topP++;
+  history.pushState({tm:"top", p:topP}, "", "#"+(navStack[navStack.length-1] || "/"));
+}
+let lastBackAt = 0, exitOpen = false, leaving = false;
+function leaveApp(p){
+  leaving = true;
+  history.go(-(p + 1));                          // уйти со всех записей приложения
+  setTimeout(() => { if (!document.hidden){ history.go(-p); try{ window.close(); }catch(e){} } }, 350);
+}
 function onPop(e){
-  if (!e.state || e.state.tm !== "root"){ if (!e.state) route(); return; }
-  // мы на «корне» — решаем, что делать с нажатием «Назад»
+  const st = e.state;
+  if (!st || st.tm !== "root"){ if (!st) route(); return; }
+  if (leaving) return;
+  // попали на запасную запись — решаем, что делать с нажатием «Назад»
+  topP = st.p; spare = st.p;                     // ниже неё ещё st.p запасных
   const now = Date.now(), quick = now - lastBackAt < 700; lastBackAt = now;
-  if (exitOpen) return;
+  if (exitOpen){ closeSheet(true); return; }     // «Назад» при открытом вопросе = выйти
   if (sheetEl){ closeSheet(undefined); rearm(); return; }
   const atHome = navStack.length <= 1 && (navStack[0] || "/") === "/";
   if (atHome || quick){ askExit(); return; }
@@ -2117,10 +2138,11 @@ function askExit(){
       h("button",{class:"btn ghost",text:t("exitNo"),onclick:()=>close(false)}),
       h("button",{class:"btn",text:t("exitYes"),onclick:()=>close(true)})))).then(yes => {
     exitOpen = false;
-    if (yes){ history.back(); setTimeout(() => { try{ window.close(); }catch(e){} }, 300); }
-    else rearm();
+    if (yes) leaveApp(topP); else rearm();
   });
 }
+// при каждом касании держим запас из 8 записей
+document.addEventListener("click", () => { if (!leaving && spare < 8 && history.state && history.state.tm === "top") addSpare(); }, true);
 // ссылки внутри приложения (#/...) — через свой переход, без лишних записей в истории
 document.addEventListener("click", e => {
   if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return;
@@ -3943,8 +3965,10 @@ function start(){
   renderTabbar();
   const p0 = curPath();
   navStack.push("/"); if (p0 !== "/") navStack.push(p0);
-  history.replaceState({tm:"root"}, "", "#/");
-  history.pushState({tm:"top"}, "", "#"+p0);
+  history.replaceState({tm:"root", p:0}, "", "#/");
+  for (let i = 1; i < 8; i++) history.pushState({tm:"root", p:i}, "", "#/");
+  topP = 8; spare = 8;
+  history.pushState({tm:"top", p:topP}, "", "#"+p0);
   window.addEventListener("popstate", onPop);
   // адрес поменяли вручную
   window.addEventListener("hashchange", () => { if (!history.state){ const p = curPath(); navStack.push(p); setUrl(p); route(); } });
