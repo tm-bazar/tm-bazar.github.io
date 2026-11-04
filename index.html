@@ -571,6 +571,8 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .mk-row.on .ar{color:var(--fg);font-weight:800}
 .mk-logo{width:68px;height:68px;border-radius:18px;background:#fff;border:1px solid #ececef;display:grid;place-items:center;flex:none;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.04)}
 .mk-logo img{width:100%;height:100%;object-fit:contain}
+.mk-logo.mos{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;padding:4px;gap:1px}
+.mk-logo.mos img{min-width:0;min-height:0}
 .mk-logo.mono{background:linear-gradient(145deg,#fbfbfc,#e3e6eb);border-color:#d6dae0}
 .mk-logo.mono b{font-size:20px;font-weight:800;color:#4b5260;letter-spacing:.5px}
 .mk-name{flex:1;font-size:18px;font-weight:500;color:#1d1d1f}
@@ -2222,6 +2224,14 @@ function makeLogo(b){
   const ini = b.replace(/[^A-Za-zА-Яа-яЁё0-9 ]/g," ").trim().split(/\s+/).map(w => w[0]).join("").slice(0,2).toUpperCase() || b.slice(0,2);
   return h("span",{class:"mk-logo mono"}, h("b",{text:ini}));
 }
+// значок «Все марки»: мозаика из 4 эмблем
+function anyLogo(opts){
+  const pri = ["Toyota","Hyundai","Mercedes-Benz","BMW"];
+  const has = b => BRAND_LOGO[b];
+  const pick = [...pri.filter(b => opts.includes(b) && has(b)), ...opts.filter(b => !pri.includes(b) && has(b))].slice(0,4);
+  if (pick.length < 4) return h("span",{class:"mk-logo mono"}, h("b",{text:"∗"}));
+  return h("span",{class:"mk-logo mos"}, ...pick.map(b => h("img",{src:"brands/"+BRAND_LOGO[b]+".webp",alt:"",loading:"lazy"})));
+}
 // opts — список марок, counts — сколько объявлений, onPick(b|"") — выбор
 function makeList(opts, counts, onPick, selected, withAny){
   const box = h("div",{class:"mk"});
@@ -2235,7 +2245,7 @@ function makeList(opts, counts, onPick, selected, withAny){
     const pop = opts.filter(b => POPULAR_CARS.includes(b)), others = opts.filter(b => !POPULAR_CARS.includes(b));
     const parts = [];
     if (withAny && !v) parts.push(h("button",{type:"button",class:"mk-row"+(!selected?" on":""),onclick:()=>onPick("")},
-      h("span",{class:"mk-logo mono"}, h("b",{text:"∗"})), h("span",{class:"mk-name",text:t("anyMake")}), h("span",{class:"ar",text:"›"})));
+      anyLogo(opts), h("span",{class:"mk-name",text:t("anyMake")}), h("span",{class:"ar",text:"›"})));
     if (v){ parts.push(...opts.filter(b => brandName(b).toLowerCase().includes(v)).map(row)); }
     else {
       if (pop.length && others.length) parts.push(h("div",{class:"mk-h",text:t("popularMakes")}));
@@ -2599,7 +2609,7 @@ function viewBrowse(catId){
       if (f.k === "brand" && catId === "auto" && VEHICLE_SUBS[st.sub]){
         const b = st.f.brand;
         rows.push(h("div",{class:"mk-pick-wrap"}, h("button",{class:"mk-pick",onclick:()=>go("/brands/auto/"+st.sub)},
-          b ? makeLogo(b) : h("span",{class:"mk-logo mono"}, h("b",{text:"∗"})),
+          b ? makeLogo(b) : anyLogo(st.sub === "trucks" ? TRUCK_BRANDS : st.sub === "buses" ? BUS_BRANDS : st.sub === "special" ? SPECIAL_BRANDS : CAR_BRANDS),
           h("span",null, h("small",{text:t("makeBtn")}), h("b",{text: b ? brandName(b) : t("anyMake")})), h("span",{class:"ar",text:"›"})),
           b ? h("button",{class:"chip",text:"✕",onclick:()=>{ st.f = {}; draw(); }}) : null));
         return;
