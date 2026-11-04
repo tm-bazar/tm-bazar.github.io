@@ -1,7 +1,7 @@
 // TM Bazar — работа как приложение на телефоне.
-// Страница открывается из сети, а без интернета — из сохранённой копии.
+// Страница всегда берётся свежей из сети (с проверкой обновления), а без интернета — из сохранённой копии.
 // Запросы к серверу (товары, чат, вход) не кешируются.
-const CACHE = "tm-bazar-v26";
+const CACHE = "tm-bazar-v27";
 const SHELL = ["./", "index.html", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/favicon.png"];
 
@@ -16,8 +16,10 @@ self.addEventListener("activate", e => {
 self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
+  // страница и списки (index.html, models.json) — всегда сверяем с сервером, чтобы обновления приходили сразу
+  const fresh = req.mode === "navigate" || /\/(index\.html|models\.json)?$/.test(new URL(req.url).pathname) || /\.json$/.test(new URL(req.url).pathname);
   e.respondWith(
-    fetch(req)
+    fetch(req, fresh ? {cache: "no-cache"} : undefined)
       .then(res => {
         if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
         return res;

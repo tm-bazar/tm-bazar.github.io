@@ -1323,6 +1323,7 @@ const ATTRT = {
   filters:["Фильтры","Süzgüçler","Filters"], reset:["Сбросить","Arassala","Reset"], showN:["Показать {n}","{n} görkez","Show {n}"],
   exitQ:["Выйти из приложения?","Programmadan çykmalymy?","Exit the app?"], exitSub:["Чтобы выйти, можно ещё раз нажать «Назад».","Çykmak üçin ýene bir gezek «Yza» basyň.","You can also press Back once more to exit."],
   exitHint:["Чтобы выйти, нажмите «Назад» два раза быстро","Çykmak üçin «Yza» düwmesine iki gezek çalt basyň","To exit, press Back twice quickly"],
+  version:["версия","wersiýa","version"],
   exitYes:["Выйти","Çyk","Exit"], exitNo:["Остаться","Galmak","Stay"], qPrice:["Цена","Baha","Price"], qYear:["Год","Ýyl","Year"], show:["Показать","Görkez","Show"],
   vView:["Вид","Görnüşi","View"], vGrid:["Плитка","Tor","Grid"], vBig:["Крупно","Uly","Large"], vList:["Список","Sanaw","List"],
   fPrice:["Цена, TMT","Bahasy, TMT","Price, TMT"], fYear:["Год выпуска","Çykan ýyly","Year"], fRegion:["Велаят","Welaýat","Region"],
@@ -1886,6 +1887,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
+const APP_VER = "27";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3476,6 +3478,7 @@ async function viewChat(id){
 }
 
 /* ===== ПРОФИЛЬ ===== */
+function verLine(){ return h("div",{style:{textAlign:"center",color:"var(--mut2)",fontSize:"12px",padding:"14px 0 90px"},text:APP_NAME+" · "+t("version")+" "+APP_VER}); }
 async function viewMe(){
   setTab("me");
   if (!S.token){
@@ -3490,6 +3493,7 @@ async function viewMe(){
           h("a",{href:"#/sell"}, "🏪 ", t("sellBanner"), h("span",{class:"ar",text:"›"})),
           h("a",{href:"#/rules"}, "📄 ", t("rulesTitle"), h("span",{class:"ar",text:"›"})),
           h("button",{onclick:()=>adminContactSheet()}, "☎️ ", t("contactAdmin"), h("span",{class:"ar",text:"›"})))));
+    $("app").append(verLine());
     return;
   }
   const u = S.user || {};
@@ -3513,6 +3517,7 @@ async function viewMe(){
         h("a",{href:"#/rules"}, "📄 ", t("rulesTitle"), h("span",{class:"ar",text:"›"})),
         h("button",{onclick:()=>adminContactSheet()}, "☎️ ", t("contactAdmin"), h("span",{class:"ar",text:"›"})),
         h("button",{onclick:()=>logout()}, "🚪 ", t("logout")))));
+  $("app").append(verLine());
   const r = await call("me");
   if (!r.ok){ list.replaceChildren(h("div",{class:"err",text:errText(r)})); return; }
   S.user = r.user; lsSet("user", r.user);
