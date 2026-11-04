@@ -1888,7 +1888,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "28";   // номер версии — виден внизу профиля
+const APP_VER = "29";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2086,7 +2086,7 @@ function langSwitch(){
    Важно: Chrome разрешает добавить только ОДНУ запись на одно касание экрана. Если сайт добавит запись
    без касания (или вторую за то же касание) — Chrome перестаёт доверять ВСЕМ записям сайта и «Назад» выходит.
    Поэтому: одно касание = одна запись, а после «Назад» ничего не добавляется.
-   С перерывом — шаг назад до главной (на главной остаёмся); два быстрых «Назад» — вопрос «Выйти?». */
+   На любом экране «Назад» — шаг назад до главного меню; на главном меню — вопрос «Выйти из приложения?». */
 const TOP_PAGES = ["/fav", "/sell", "/chats", "/me", "/cats"];
 const SPARE = 60;                                // предел записей (обычно касаний больше, чем экранов)
 const curPath = () => location.hash.slice(1) || "/";
@@ -2132,16 +2132,15 @@ function onPop(e){
   if (!st || st.tm !== "g"){ if (!st) route(); return; }
   if (leaving) return;
   topP = st.p;
-  const now = Date.now(), quick = now - lastBackAt < 700; lastBackAt = now;
+  const now = Date.now(), dup = now - lastBackAt < 350; lastBackAt = now;
+  if (dup){ setUrl(curScreen()); return; }       // одно нажатие пришло дважды — второе не считаем
   if (exitOpen){ closeSheet(true); return; }     // «Назад» при открытом вопросе = выйти
   if (sheetEl){ closeSheet(undefined); setUrl(curScreen()); return; }
-  if (quick){ setUrl(curScreen()); askExit(); return; }   // два быстрых «Назад»
   const atHome = navStack.length <= 1 && curScreen() === "/";
-  if (atHome){ navStack.length = 0; navStack.push("/"); setUrl("/"); route(); toast(t(topP ? "exitHint" : "exitNext")); return; }
+  if (atHome){ navStack.length = 0; navStack.push("/"); setUrl("/"); askExit(); return; }   // вопрос — только на главном меню
   const was = navStack.pop();
   if (/\/list$/.test(was) && S.browse) S.browse.f = {};   // из списка объявлений — к категориям, без выбранной марки
   setUrl(curScreen()); route();
-  if (!topP && curScreen() === "/") toast(t("exitNext"));
 }
 function askExit(){
   exitOpen = true;
