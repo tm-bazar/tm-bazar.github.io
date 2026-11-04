@@ -1099,7 +1099,7 @@ const FIELDS = {
     {k:"exchange", type:"sel", filter:"more", opts:["yes","no"], when:(s) => !!VEHICLE_SUBS[s] || s === "moto"}
   ],
   realty: [
-    {k:"deal", type:"sel", req:true, filter:"main", opts:(s) => s === "flat" ? ["sale","rent","roomrent"] : ["sale","rent"]},
+    {k:"deal", type:"sel", req:true, filter:"main", opts:(s) => s === "flat" || s === "house" || s === "cottage" ? ["sale","rent","roomrent"] : ["sale","rent"]},
     {k:"flattype", type:"sel", filter:"more", opts:["newbuild","elite","secondary"], when:(s) => s === "flat"},
     {k:"comtype", type:"sel", filter:"more", opts:["office","shop","warehouse","cafe","production","other"], when:(s) => s === "commercial"},
     {k:"rooms", type:"sel", raw:true, filter:"main", opts:["1","2","3","4","5+"], when:(s) => s === "flat" || s === "house" || s === "cottage"},
@@ -1294,6 +1294,12 @@ const ATTRT = {
   o_fuel_petrol:["Бензин","Benzin","Petrol"], o_fuel_gas:["Газ","Gaz","Gas"], o_fuel_diesel:["Дизель","Dizel","Diesel"], o_fuel_hybrid:["Гибрид","Gibrid","Hybrid"], o_fuel_electric:["Электро","Elektrik","Electric"],
   o_drive_fwd:["Передний","Öň","FWD"], o_drive_rwd:["Задний","Yz","RWD"], o_drive_awd:["Полный","Doly","AWD/4WD"],
   o_exchange_yes:["Возможен","Bolýar","Possible"], o_f_exchange:["Обмен","Çalyşyk","Trade-in"], o_exchange_no:["Нет","Ýok","No"],
+  dl_all:["Все объявления","Ähli bildirişler","All listings"],
+  dl_flat_sale:["Продажа квартир","Kwartira satlyk","Flats for sale"], dl_flat_rent:["Аренда квартир","Kwartira kärendesi","Flats for rent"], dl_flat_roomrent:["Аренда комнат","Otag kärendesi","Rooms for rent"],
+  dl_house_sale:["Продажа домов","Jaý satlyk","Houses for sale"], dl_house_rent:["Аренда домов","Jaý kärendesi","Houses for rent"], dl_house_roomrent:["Аренда комнат","Otag kärendesi","Rooms for rent"],
+  dl_land_sale:["Продажа участков","Ýer bölegi satlyk","Land for sale"], dl_land_rent:["Аренда участков","Ýer bölegi kärendesi","Land for rent"],
+  dl_commercial_sale:["Продажа коммерческой недвижимости","Täjirçilik emlägi satlyk","Commercial property for sale"], dl_commercial_rent:["Аренда коммерческой недвижимости","Täjirçilik emlägi kärendesi","Commercial property for rent"],
+  dl_garage_sale:["Продажа гаражей и подвалов","Garaž we ýerzemin satlyk","Garages & basements for sale"], dl_garage_rent:["Аренда гаражей и подвалов","Garaž we ýerzemin kärendesi","Garages & basements for rent"],
   o_deal_sale:["Продажа","Satlyk","For sale"], o_deal_rent:["Аренда","Kärendesine","For rent"], o_deal_roomrent:["Аренда комнаты","Otag kärendesi","Room for rent"],
   o_flattype_newbuild:["Новостройка","Täze jaý","New building"], o_flattype_elite:["Элитка","Elitka","Premium building"], o_flattype_secondary:["Вторичное жильё","Köne jaý","Resale"],
   o_comtype_office:["Офис","Ofis","Office"], o_comtype_shop:["Магазин","Dükan","Shop"], o_comtype_warehouse:["Склад","Ammar","Warehouse"],
@@ -1888,7 +1894,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "33";   // номер версии — виден внизу профиля
+const APP_VER = "34";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2169,6 +2175,7 @@ const ROUTES = [
   [/^\/c\/(\w+)\/list$/, m => viewBrowse(m[1], true)],
   [/^\/c\/(\w+)$/, m => viewBrowse(m[1])],
   [/^\/brands\/(\w+)\/(\w+)$/, m => viewMakes(m[1], m[2])],
+  [/^\/deal\/(\w+)\/(\w+)$/, m => viewDeals(m[1], m[2])],
   [/^\/models\/(\w+)\/(\w+)\/(.+)$/, m => viewModels(m[1], m[2], decodeURIComponent(m[3]))],
   [/^\/cats$/, () => viewBrowse("")],
   [/^\/p\/(\w+)$/, m => viewProduct(m[1])],
@@ -2419,6 +2426,26 @@ function viewMakes(cat, sub){
       h("button",{class:"sh-back","aria-label":t("back"),html:IC.back,onclick:()=>back("/c/"+cat)}),
       h("div",null, h("small",{text:catName(cat)}), h("h1",{text:subName(sub)}))),
     h("div",{class:"wrap"}, makeList(opts, counts, pick, st && st.sub === sub ? (st.f||{}).brand : "", true)));
+}
+
+/* ===== НЕДВИЖИМОСТЬ: после раздела — продажа / аренда / аренда комнат ===== */
+function dealName(sub, d){ return t("dl_"+sub+"_"+d) || t("o_deal_"+d); }
+function viewDeals(cat, sub){
+  setTab("home", false);
+  const f = fieldsFor(cat, sub, {}).find(x => x.k === "deal");
+  const opts = f ? optsOf(f, sub, {}) : ["sale","rent"];
+  const list = S.catalog.filter(p => p.cat === cat && p.sub === sub);
+  const counts = {}; list.forEach(p => { const d = (p.attrs||{}).deal; if (d) counts[d] = (counts[d]||0) + 1; });
+  const st = S.browse && S.browse.cat === cat ? S.browse : null;
+  const cur = st && st.sub === sub ? (st.f||{}).deal || "" : null;
+  const pick = d => { S.browse = {cat, sub, f: d ? {deal: d} : {}, r: st ? st.r || {} : {}}; go("/c/"+cat+"/list"); };
+  const row = (d, name, n) => h("button",{type:"button",class:"mk-row md-row"+(d===""?" md-any":"")+(cur===d?" on":""),onclick:()=>pick(d)},
+    h("span",{class:"mk-name",text:name}), n ? h("span",{class:"mk-n",text:String(n)}) : null,
+    h("span",{class:"ar",text:cur===d ? "✓" : "›"}));
+  page(h("div",{class:"silver-head"},
+      h("button",{class:"sh-back","aria-label":t("back"),html:IC.back,onclick:()=>back("/c/"+cat)}),
+      h("div",null, h("small",{text:catName(cat)}), h("h1",{text:subName(sub)}))),
+    h("div",{class:"wrap"}, ...opts.map(d => row(d, dealName(sub, d), counts[d])), row("", t("dl_all"), list.length)));
 }
 
 /* ===== СПИСОК МОДЕЛЕЙ (после выбора марки, без эмблем) ===== */
@@ -2860,6 +2887,7 @@ function viewBrowse(catId, listMode){
         ...SUBS[catId].map(k => { const n = list.filter(p => p.sub === k).length;
           return photoTile("sub:"+catId+":"+k, subName(k), st.sub===k, ()=>{
             if (catId === "auto" && VEHICLE_SUBS[k]){ st.sub = k; st.f = {}; go("/brands/auto/"+k); return; }
+            if (catId === "realty"){ st.sub = k; st.f = {}; go("/deal/realty/"+k); return; }
             st.sub = k; st.f = {}; go("/c/"+catId+"/list"); }, n, catId); })));
     }
     filterFields("main").forEach(f => {
