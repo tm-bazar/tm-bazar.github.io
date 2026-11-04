@@ -435,6 +435,25 @@ b.ci.txt{font-weight:800;font-size:13px;letter-spacing:-.2px;padding:4px;text-al
 .list-h h2 small{font-size:13px;color:var(--mut2);font-weight:500}
 .view-btn{width:40px;height:40px;border-radius:12px;background:var(--redBg);color:var(--red);display:grid;place-items:center}
 .lgrid{display:grid;grid-template-columns:1fr;gap:8px}
+.bgrid{display:grid;grid-template-columns:1fr;gap:14px}
+.bcard{background:#fff;border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.bc-gal{position:relative}
+.bc-track{display:flex;gap:6px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:pointer}
+.bc-track::-webkit-scrollbar{display:none}
+.bc-track img,.bc-empty{flex:0 0 100%;aspect-ratio:4/3;object-fit:cover;scroll-snap-align:start;background:var(--soft);min-width:0}
+.bc-track.multi img{flex-basis:82%}
+.bc-gal .cnt{right:8px;bottom:8px;font-size:12px}
+.bc-gal .lbs{position:absolute;left:8px;bottom:8px;display:flex;gap:4px}
+.bc-bd{display:flex;flex-direction:column;gap:4px;padding:10px 12px 12px;color:inherit;text-decoration:none}
+.bc-bd .price{font-size:21px}
+.bc-tt{font-size:16px;line-height:1.3}
+.vsw{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.vsw-b{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border:1.5px solid var(--line);border-radius:14px;background:#fff;color:var(--fg)}
+.vsw-b small{font-size:12.5px;font-weight:600}
+.vsw-b.on{border-color:var(--fg);background:var(--soft)}
+.f-lbl{font-size:13px;font-weight:700;color:var(--mut);margin:4px 2px 6px}
+.f-model{width:100%;margin-bottom:14px}
+.yr{display:flex;flex-direction:column;gap:3px}.yr small{font-size:11.5px;color:var(--mut);padding-left:2px}
 @media (min-width:760px){.lgrid{grid-template-columns:1fr 1fr}}
 .lcard{display:flex;gap:10px;background:#fff;border-radius:var(--r);padding:8px;box-shadow:var(--sh);position:relative}
 .lph{width:118px;height:118px;flex:none;border-radius:10px;overflow:hidden;position:relative;background:#eee}
@@ -1091,7 +1110,7 @@ const FIELDS = {
 };
 function fieldsFor(cat, sub, a){ return (FIELDS[cat] || []).filter(f => !f.when || f.when(sub || "", a || {})); }
 function optsOf(f, sub, a){ return typeof f.opts === "function" ? f.opts(sub || "", a || {}) : (f.opts || []); }
-function optLabel(f, v){ return v === "other" ? t("o_other") : f.raw ? v : t("o_"+f.k+"_"+v); }
+function optLabel(f, v){ return v === "other" ? t("o_other") : f.raw || f.type === "text" ? v : (t("o_"+f.k+"_"+v) || v); }
 function fieldLabel(f){ return t(f.labelKey || ("f_"+f.k)); }
 function attrText(f, v){
   if (v == null || v === "" || (Array.isArray(v) && !v.length)) return "";
@@ -1291,6 +1310,9 @@ const ATTRT = {
   e_brand:["Выберите марку машины.","Maşynyň markasyny saýlaň.","Choose the car make."], e_deal:["Выберите тип объявления.","Bildirişiň görnüşini saýlaň.","Choose the listing type."],
   catFirst:["Что вы продаёте?","Näme satýarsyňyz?","What are you selling?"], swipeCats:["листайте вправо →","saga sürüň →","swipe →"],
   filters:["Фильтры","Süzgüçler","Filters"], reset:["Сбросить","Arassala","Reset"], showN:["Показать {n}","{n} görkez","Show {n}"],
+  vView:["Вид","Görnüşi","View"], vGrid:["Плитка","Tor","Grid"], vBig:["Крупно","Uly","Large"], vList:["Список","Sanaw","List"],
+  fPrice:["Цена, TMT","Bahasy, TMT","Price, TMT"], fYear:["Год выпуска","Çykan ýyly","Year"], fRegion:["Велаят","Welaýat","Region"],
+  any:["Любой","Islendik","Any"], from:["от","-dan","from"],
   priceFrom:["Цена от","Baha -dan","Price from"], to:["до","-a çenli","to"], yearFrom:["Год от","Ýyl -dan","Year from"], areaFrom:["Площадь от, м²","Meýdany -dan, m²","Area from, m²"],
   perMonth:["/ мес","/ aý","/ month"], perDay:["/ сутки","/ gün","/ day"], roomsShort:["{n}-комн.","{n} otagly","{n}-room"], floorShort:["эт.","gat","fl."],
   placeRealty:["Микрорайон / адрес","Mikroraýon / salgy","Microdistrict / address"], placeRealtyPh:["Например: Parahat-7, 30-njy mkr","Mysal: Parahat-7, 30-njy mkr","e.g. Parahat-7"]
@@ -1913,6 +1935,7 @@ function dayName(iso){ const d=new Date(iso); return isNaN(d)?"":d.toLocaleDateS
 function locale(){ return S.lang === "en" ? "en-GB" : S.lang === "tm" ? "tk-TM" : "ru-RU"; }
 
 const IC = {
+  big:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>',
   search:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
   cam:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>',
   home:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"/></svg>',
@@ -2522,15 +2545,71 @@ function listCard(p){
       h("div",{class:"lmt"}, p.rating ? h("span",{class:"rt",text:"★ "+p.rating.toFixed(1)}) : null,
         h("span",{class:"mt-loc",text:"📍"+placeText(p)}), h("span",{text:ago(p.at)}))));
 }
+// все фото объявления (для крупного вида) — один запрос на объявление, с запоминанием
+const photoCache = {};
+function productPhotos(id){
+  return photoCache[id] || (photoCache[id] = call("product", {id}).then(r => r.ok && r.product ? (r.product.photos || []) : []));
+}
+let bigIO = null;
+function bigObserver(){
+  if (bigIO || !("IntersectionObserver" in window)) return bigIO;
+  bigIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ bigIO.unobserve(e.target); e.target._more && e.target._more(); } }), {rootMargin:"300px"});
+  return bigIO;
+}
+// крупная карточка: фото листаются вбок, следующее фото видно сбоку
+function bigCard(p){
+  const a = p.attrs || {};
+  const open = () => go("/p/"+p.id);
+  const first = p.thumb ? h("img",{src:p.thumb,alt:p.title,loading:"lazy",decoding:"async"}) : h("div",{class:"bc-empty"});
+  const track = h("div",{class:"bc-track"+(p.photoCount > 1 ? " multi" : "")}, first);
+  const cnt = p.photoCount > 1 ? h("span",{class:"cnt",text:"1/"+p.photoCount}) : null;
+  let moved = false;
+  track.addEventListener("pointerdown", () => { moved = false; });
+  track.addEventListener("scroll", () => {
+    moved = true;
+    const w = track.firstElementChild ? track.firstElementChild.offsetWidth + 6 : 1;
+    if (cnt) cnt.textContent = Math.min(p.photoCount, Math.round(track.scrollLeft / w) + 1) + "/" + p.photoCount;
+  }, {passive:true});
+  track.addEventListener("click", () => { if (!moved) open(); });
+  const badges = [];
+  if (a.exchange === "yes") badges.push(h("span",{class:"lb red",text:t("o_f_exchange")}));
+  if (p.hasVideo) badges.push(h("span",{class:"lb dark",text:"▶ "+t("video")}));
+  if (p.cond === "used" && !NO_COND[p.cat]) badges.push(h("span",{class:"lb amber",text:t("used")}));
+  const el = h("div",{class:"bcard"},
+    h("div",{class:"bc-gal"}, track, heartBtn(p.id), cnt, badges.length ? h("div",{class:"lbs"}, ...badges) : null),
+    h("a",{class:"bc-bd",href:"#/p/"+p.id},
+      priceEl(p.price, null, priceSuffix(p), p.cat),
+      h("div",{class:"bc-tt",text:p.title}),
+      cardLine(p) ? h("div",{class:"car-line",text:cardLine(p)}) : null,
+      h("div",{class:"lmt"}, h("span",{class:"mt-loc",text:"📍"+placeText(p)}), h("span",{text:ago(p.at)}))));
+  if (p.photoCount > 1){
+    el._more = () => productPhotos(p.id).then(ph => {
+      ph.slice(0, 10).forEach((x, i) => {
+        const src = x.url || x.thumb; if (!src) return;
+        if (i === 0){ if (first.tagName === "IMG" && x.url) first.src = x.url; return; }
+        track.append(h("img",{src,alt:p.title+" "+(i+1),loading:"lazy",decoding:"async"}));
+      });
+    });
+    const io = bigObserver(); if (io) io.observe(el); else el._more();
+  }
+  return el;
+}
+function viewMode(){ const m = lsGet("view", "list"); return m === "grid" || m === "big" ? m : "list"; }
+// выбор вида: три кнопки (плитка / крупно / список)
+function viewSwitch(onPick){
+  const cur = viewMode();
+  return h("div",{class:"vsw"}, ...[["grid",IC.grid,t("vGrid")],["big",IC.big,t("vBig")],["list",IC.rows,t("vList")]].map(([k, ic, l]) =>
+    h("button",{type:"button",class:"vsw-b"+(cur===k?" on":""),"aria-label":l,title:l,onclick:()=>{ lsSet("view", k); onPick(k); }}, h("span",{html:ic}), h("small",{text:l}))));
+}
 // лента с подгрузкой при прокрутке
 function feed(list, emptyEl, extraFn, mode){
-  const grid = h("div",{class: mode === "list" ? "lgrid" : "grid"});
+  const grid = h("div",{class: mode === "list" ? "lgrid" : mode === "big" ? "bgrid" : "grid"});
   const wrap = h("div",null, grid);
   if (!list.length){ wrap.replaceChildren(emptyEl || emptyBox("🔎", t("nothing"), t("nothingSub"))); return wrap; }
   let shown = 0, io = null;
   const more = h("button",{class:"more",text:t("showMore")});
   const add = () => {
-    list.slice(shown, shown + PAGE).forEach(p => grid.append(mode === "list" ? listCard(p) : card(p, extraFn ? extraFn(p) : null)));
+    list.slice(shown, shown + PAGE).forEach(p => grid.append(mode === "list" ? listCard(p) : mode === "big" ? bigCard(p) : card(p, extraFn ? extraFn(p) : null)));
     shown += PAGE;
     if (shown >= list.length){ more.remove(); io && io.disconnect(); }
   };
@@ -2661,7 +2740,7 @@ function viewBrowse(catId){
     if (r.amin && !(+a.area >= +r.amin)) return false; if (r.amax && !(+a.area <= +r.amax)) return false;
     return true;
   });
-  const nActive = () => Object.values(st.f).filter(Boolean).length + Object.values(st.r).filter(Boolean).length;
+  const nActive = () => Object.values(st.f).filter(Boolean).length + Object.values(st.r).filter(Boolean).length + (S.city ? 1 : 0);
   const filterFields = kind => catId ? fieldsFor(catId, st.sub, ctxA()).filter(f => f.filter === kind) : [];
   // кнопки значений, которые есть в товарах (с количеством)
   const valueChips = (f, list, onPick) => {
@@ -2722,11 +2801,29 @@ function viewBrowse(catId){
       return h("div",{class:"two",style:{marginBottom:"14px"}}, a, b);
     };
     const drawBody = () => {
-      const parts = [rangeRow(t("priceFrom"), "pmin", "pmax")];
       const flds = catId ? fieldsFor(catId, st.sub, ctxA()) : [];
-      if (flds.some(f => f.k === "year" && f.filter === "range")) parts.push(rangeRow(t("yearFrom"), "ymin", "ymax"));
+      const lbl = txt => h("div",{class:"f-lbl",text:txt});
+      const parts = [lbl(t("vView")), viewSwitch(() => drawBody())];
+      // велаят
+      const city = h("select",{class:"inp"}, h("option",{value:"",text:t("allCities")}), ...CITIES.map(c => h("option",{value:c,text:c,selected:S.city===c})));
+      city.onchange = () => { S.city = city.value; upd(); };
+      parts.push(lbl(t("fRegion")), h("div",{style:{marginBottom:"14px"}}, city));
+      // модель (если выбрана марка и есть список моделей)
+      if (catId === "auto" && st.f.brand && st.f.brand !== "other" && VEHICLE_SUBS[st.sub] && modelsOf(st.sub, st.f.brand).length){
+        parts.push(lbl(t("f_model")), h("button",{type:"button",class:"mk-pick md-pick f-model",onclick:()=>{ close(); go(modelsHref("auto", st.sub, st.f.brand)); }},
+          h("span",null, h("b",{text: st.f.model || t("anyModel")})), h("span",{class:"ar",text:"›"})));
+      }
+      // год — выбор колесом (от / до)
+      if (flds.some(f => f.k === "year" && f.filter === "range")){
+        const now = new Date().getFullYear(), years = []; for (let y = now; y >= 1960; y--) years.push(String(y));
+        const ysel = k => { const el = h("select",{class:"inp"}, h("option",{value:"",text:t("any")}), ...years.map(y => h("option",{value:y,text:y,selected:String(st.r[k]||"")===y})));
+          el.onchange = () => { st.r[k] = el.value; upd(); }; return el; };
+        parts.push(lbl(t("fYear")), h("div",{class:"two",style:{marginBottom:"14px"}}, h("label",{class:"yr"}, h("small",{text:t("from")}), ysel("ymin")), h("label",{class:"yr"}, h("small",{text:t("to")}), ysel("ymax"))));
+      }
+      parts.push(lbl(t("fPrice")), rangeRow(t("priceFrom"), "pmin", "pmax"));
       if (flds.some(f => f.k === "area" && f.filter === "range")) parts.push(rangeRow(t("areaFrom"), "amin", "amax"));
-      flds.filter(f => f.filter === "more" || f.filter === "main").forEach(f => {
+      const modelBtn = catId === "auto" && st.f.brand && VEHICLE_SUBS[st.sub] && modelsOf(st.sub, st.f.brand).length;
+      flds.filter(f => (f.filter === "more" || f.filter === "main") && !(modelBtn && f.k === "model")).forEach(f => {
         const chips = valueChips(f, applyF(base(), f.k), v => { st.f[f.k] = v; drawBody(); });
         if (chips.length) parts.push(h("div",{class:"field"}, h("span",{text:fieldLabel(f)}), h("div",{class:"chips wrap-chips"}, ...chips)));
       });
@@ -2736,16 +2833,17 @@ function viewBrowse(catId){
     showBtn.onclick = () => close(true);
     box.append(h("h2",{text:t("filters")+(catId ? " · "+catName(catId) : "")}), body2,
       h("div",{style:{display:"grid",gridTemplateColumns:"1fr 2fr",gap:"10px",marginTop:"6px"}},
-        h("button",{class:"btn ghost",text:t("reset"),onclick:()=>{ st.f = {}; st.r = {}; drawBody(); }}), showBtn));
+        h("button",{class:"btn ghost",text:t("reset"),onclick:()=>{ st.f = {}; st.r = {}; S.city = ""; drawBody(); }}), showBtn));
   }).then(() => draw());
   const drawList = () => {
     const list = applyF(base());
     const n = nActive();
     topFilt.textContent = t("filters") + (n ? " (" + n + ")" : "");
     topFilt.classList.toggle("on", !!n);
-    const mode = lsGet("view", "list");
+    const mode = viewMode();
     const title = st.f.brand ? brandName(st.f.brand) + (st.f.model ? " " + st.f.model : "") : st.sub ? subName(st.sub) : catId ? catName(catId) : t("allGoods");
-    const viewBtn = h("button",{class:"view-btn","aria-label":"view",html: mode === "list" ? IC.grid : IC.rows,onclick:()=>{ lsSet("view", mode === "list" ? "grid" : "list"); drawList(); }});
+    const viewBtn = h("button",{class:"view-btn","aria-label":t("vView"),html: mode === "list" ? IC.rows : mode === "big" ? IC.big : IC.grid,
+      onclick:()=>sheet((box, close) => box.append(h("h2",{text:t("vView")}), viewSwitch(() => close(true)))).then(() => drawList())});
     body.replaceChildren(
       h("div",{class:"sec-h list-h"}, h("h2",null, title, h("small",{text:"  "+list.length})), h("div",{class:"sp"}), viewBtn),
       filterBar(drawList),
