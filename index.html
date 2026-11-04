@@ -1324,6 +1324,7 @@ const ATTRT = {
   exitQ:["Выйти из приложения?","Programmadan çykmalymy?","Exit the app?"], exitSub:["Чтобы выйти, можно ещё раз нажать «Назад».","Çykmak üçin ýene bir gezek «Yza» basyň.","You can also press Back once more to exit."],
   exitHint:["Чтобы выйти, нажмите «Назад» два раза быстро","Çykmak üçin «Yza» düwmesine iki gezek çalt basyň","To exit, press Back twice quickly"],
   version:["версия","wersiýa","version"],
+  exitNext:["Главное меню. Ещё раз «Назад» — выход","Baş sahypa. Ýene «Yza» — çykyş","Home. Press Back again to exit"],
   exitYes:["Выйти","Çyk","Exit"], exitNo:["Остаться","Galmak","Stay"], qPrice:["Цена","Baha","Price"], qYear:["Год","Ýyl","Year"], show:["Показать","Görkez","Show"],
   vView:["Вид","Görnüşi","View"], vGrid:["Плитка","Tor","Grid"], vBig:["Крупно","Uly","Large"], vList:["Список","Sanaw","List"],
   fPrice:["Цена, TMT","Bahasy, TMT","Price, TMT"], fYear:["Год выпуска","Çykan ýyly","Year"], fRegion:["Велаят","Welaýat","Region"],
@@ -1887,7 +1888,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "27";   // номер версии — виден внизу профиля
+const APP_VER = "28";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2082,11 +2083,12 @@ function langSwitch(){
 /* Кнопка «Назад» на телефоне.
    Путь по экранам хранится в navStack. В истории браузера под текущей записью лежит запас записей:
    каждое «Назад» уходит на запись ниже, а приложение само показывает предыдущий экран.
-   Важно: Chrome перестаёт доверять ВСЕМ записям сайта, если сайт добавил запись без касания экрана,
-   поэтому записи добавляются ТОЛЬКО при касании, а после «Назад» ничего не добавляется.
+   Важно: Chrome разрешает добавить только ОДНУ запись на одно касание экрана. Если сайт добавит запись
+   без касания (или вторую за то же касание) — Chrome перестаёт доверять ВСЕМ записям сайта и «Назад» выходит.
+   Поэтому: одно касание = одна запись, а после «Назад» ничего не добавляется.
    С перерывом — шаг назад до главной (на главной остаёмся); два быстрых «Назад» — вопрос «Выйти?». */
 const TOP_PAGES = ["/fav", "/sell", "/chats", "/me", "/cats"];
-const SPARE = 10;
+const SPARE = 60;                                // предел записей (обычно касаний больше, чем экранов)
 const curPath = () => location.hash.slice(1) || "/";
 const navStack = [];
 let topP = 0;                                    // номер текущей записи; ниже неё topP записей запаса
@@ -2097,6 +2099,8 @@ function go(path){
   if (path === "/") navStack.length = 0;
   else if (TOP_PAGES.includes(path)){ navStack.length = 0; navStack.push("/"); }
   else { const i = navStack.lastIndexOf(path); if (i >= 0) navStack.length = i; }
+  // выбор марки/модели — промежуточные экраны: после выбора «Назад» ведёт сразу к категориям
+  if (/^\/c\/\w+\/list$/.test(path)) for (let i = navStack.length - 1; i >= 0; i--) if (/^\/(brands|models)\//.test(navStack[i])) navStack.splice(i, 1);
   navStack.push(path);
   setUrl(path); route();
 }
@@ -2105,14 +2109,17 @@ function back(fallback){
   else { navStack.length = 0; go(fallback || "/"); }
 }
 const curScreen = () => navStack[navStack.length-1] || "/";
-// пополнить запас — только при касании экрана
+// пополнить запас — одна запись на одно касание экрана
+let lastRefillAt = 0;
 function refill(){
-  if (leaving || !history.state || history.state.tm !== "g") return;
-  const path = curScreen();
-  while (topP < SPARE){ topP++; history.pushState({tm:"g", p:topP}, "", "#"+path); }
+  if (leaving || !history.state || history.state.tm !== "g" || topP >= SPARE) return;
+  const now = Date.now(); if (now - lastRefillAt < 400) return;   // touchend и click от одного касания — одна запись
+  lastRefillAt = now;
+  topP++; history.pushState({tm:"g", p:topP}, "", "#"+curScreen());
 }
-document.addEventListener("click", refill, true);
 document.addEventListener("touchend", refill, true);
+document.addEventListener("click", refill, true);
+document.addEventListener("keydown", e => { if (e.key !== "Escape") refill(); }, true);
 let lastBackAt = 0, exitOpen = false, leaving = false;
 function leaveApp(){
   leaving = true;
@@ -2130,9 +2137,11 @@ function onPop(e){
   if (sheetEl){ closeSheet(undefined); setUrl(curScreen()); return; }
   if (quick){ setUrl(curScreen()); askExit(); return; }   // два быстрых «Назад»
   const atHome = navStack.length <= 1 && curScreen() === "/";
-  if (atHome){ navStack.length = 0; navStack.push("/"); setUrl("/"); route(); toast(t("exitHint")); return; }
-  navStack.pop();
+  if (atHome){ navStack.length = 0; navStack.push("/"); setUrl("/"); route(); toast(t(topP ? "exitHint" : "exitNext")); return; }
+  const was = navStack.pop();
+  if (/\/list$/.test(was) && S.browse) S.browse.f = {};   // из списка объявлений — к категориям, без выбранной марки
   setUrl(curScreen()); route();
+  if (!topP && curScreen() === "/") toast(t("exitNext"));
 }
 function askExit(){
   exitOpen = true;
