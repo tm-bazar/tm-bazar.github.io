@@ -381,6 +381,7 @@ img.ava{object-fit:cover;background:#fff;border:1px solid var(--line)}
 .opt-list{display:flex;flex-direction:column;max-height:60vh;overflow:auto}
 .opt{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;padding:14px 6px;border:0;border-bottom:1px solid #f0f0f2;background:none;font-size:17px;color:var(--fg)}
 .opt.on{font-weight:700}
+.opt-n{color:var(--mut);font-size:14px}
 .bh-title{font-weight:800;font-size:18px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:4px}
 .browse-head .langs{background:var(--bg)}
 .browse-head .langs button{color:var(--mut)}
@@ -2378,7 +2379,7 @@ function viewMakes(cat, sub){
       await loadModels();
       if (modelsOf(sub, b).length) return go(modelsHref(cat, sub, b));
     }
-    S.browse = {cat, sub, f: b ? {brand: b} : {}, r: st ? st.r || {} : {}}; go("/c/"+cat+(b ? "/list" : ""));
+    S.browse = {cat, sub, f: b ? {brand: b} : {}, r: st ? st.r || {} : {}}; go("/c/"+cat+"/list");
   };
   page(h("div",{class:"silver-head"},
       h("button",{class:"sh-back","aria-label":t("back"),html:IC.back,onclick:()=>back("/c/"+cat)}),
@@ -2825,7 +2826,7 @@ function viewBrowse(catId, listMode){
         ...SUBS[catId].map(k => { const n = list.filter(p => p.sub === k).length;
           return photoTile("sub:"+catId+":"+k, subName(k), st.sub===k, ()=>{
             if (catId === "auto" && VEHICLE_SUBS[k] && st.sub !== k){ st.sub = k; st.f = {}; go("/brands/auto/"+k); return; }
-            st.sub = st.sub === k ? "" : k; st.f = {}; draw(); }, n, catId); })));
+            st.sub = k; st.f = {}; go("/c/"+catId+"/list"); }, n, catId); })));
     }
     filterFields("main").forEach(f => {
       if (f.k === "brand" && catId === "auto" && VEHICLE_SUBS[st.sub]){
@@ -2934,8 +2935,23 @@ function viewBrowse(catId, listMode){
     if (!compact) return;
     cTitle.textContent = st.f.brand ? brandName(st.f.brand) + (st.f.model ? " " + st.f.model : "") : subName(st.sub);
     const chips = [];
+    const vehicle = catId === "auto" && VEHICLE_SUBS[st.sub];
+    if (vehicle) chips.push(qchip(t("makeBtn"), st.f.brand ? brandName(st.f.brand) : "", () => go("/brands/auto/"+st.sub)));
     if (catId === "auto" && st.f.brand && st.f.brand !== "other" && modelsOf(st.sub, st.f.brand).length)
       chips.push(qchip(t("f_model"), st.f.model, () => go(modelsHref("auto", st.sub, st.f.brand))));
+    // основные фильтры раздела (размер, комнаты, тип сделки, марка телефона и т.п.)
+    fieldsFor(catId, st.sub, Object.assign({}, st.f)).filter(f => f.filter === "main" && f.k !== "model" && !(vehicle && f.k === "brand")).forEach(f => {
+      const cur = st.f[f.k];
+      chips.push(qchip(fieldLabel(f), cur ? optLabel(f, cur) + (f.unit && f.type === "sel" ? " " + f.unit : "") : "", () => sheet((box, close) => {
+        const counts = {};
+        applyF(base(), f.k).forEach(p => { const v = (p.attrs || {})[f.k]; (Array.isArray(v) ? v : v ? [v] : []).forEach(x => counts[x] = (counts[x] || 0) + 1); });
+        const vals = [...new Set([...optsOf(f, st.sub, Object.assign({}, st.f)), ...Object.keys(counts)])];
+        box.append(h("h2",{text:fieldLabel(f)}), h("div",{class:"opt-list"},
+          ...["", ...vals].map(v => h("button",{type:"button",class:"opt"+((cur||"")===v?" on":""),onclick:()=>{ st.f[f.k] = v; if (f.k === "brand") delete st.f.model; close(true); }},
+            h("span",{text: v ? optLabel(f, v) + (f.unit && f.type === "sel" ? " " + f.unit : "") : t("any")}),
+            (cur||"")===v ? h("b",{text:"✓"}) : counts[v] ? h("small",{class:"opt-n",text:String(counts[v])}) : null))));
+      }).then(() => draw())));
+    });
     chips.push(qchip(t("fRegion"), S.city, () => sheet((box, close) => box.append(h("h2",{text:t("fRegion")}),
       h("div",{class:"opt-list"}, ...["", ...CITIES].map(c => h("button",{type:"button",class:"opt"+(S.city===c?" on":""),onclick:()=>{ S.city = c; close(true); }},
         h("span",{text:c || t("allCities")}), S.city===c ? h("b",{text:"✓"}) : null))))).then(() => draw())));
