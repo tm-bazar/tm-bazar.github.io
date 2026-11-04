@@ -1322,6 +1322,7 @@ const ATTRT = {
   catFirst:["Что вы продаёте?","Näme satýarsyňyz?","What are you selling?"], swipeCats:["листайте вправо →","saga sürüň →","swipe →"],
   filters:["Фильтры","Süzgüçler","Filters"], reset:["Сбросить","Arassala","Reset"], showN:["Показать {n}","{n} görkez","Show {n}"],
   exitQ:["Выйти из приложения?","Programmadan çykmalymy?","Exit the app?"], exitSub:["Чтобы выйти, можно ещё раз нажать «Назад».","Çykmak üçin ýene bir gezek «Yza» basyň.","You can also press Back once more to exit."],
+  exitHint:["Чтобы выйти, нажмите «Назад» два раза быстро","Çykmak üçin «Yza» düwmesine iki gezek çalt basyň","To exit, press Back twice quickly"],
   exitYes:["Выйти","Çyk","Exit"], exitNo:["Остаться","Galmak","Stay"], qPrice:["Цена","Baha","Price"], qYear:["Год","Ýyl","Year"], show:["Показать","Görkez","Show"],
   vView:["Вид","Görnüşi","View"], vGrid:["Плитка","Tor","Grid"], vBig:["Крупно","Uly","Large"], vList:["Список","Sanaw","List"],
   fPrice:["Цена, TMT","Bahasy, TMT","Price, TMT"], fYear:["Год выпуска","Çykan ýyly","Year"], fRegion:["Велаят","Welaýat","Region"],
@@ -2126,7 +2127,8 @@ function onPop(e){
   if (exitOpen){ closeSheet(true); return; }     // «Назад» при открытом вопросе = выйти
   if (sheetEl){ closeSheet(undefined); rearm(); return; }
   const atHome = navStack.length <= 1 && (navStack[0] || "/") === "/";
-  if (atHome || quick){ askExit(); return; }
+  if (quick){ askExit(); return; }               // два быстрых «Назад» — спросить про выход
+  if (atHome){ rearm(); if (curPath() !== "/") route(); toast(t("exitHint")); return; }  // на главной остаёмся
   if (navStack.length > 1) navStack.pop(); else { navStack.length = 0; navStack.push("/"); }
   rearm(); route();
 }

@@ -1,7 +1,7 @@
 // TM Bazar — работа как приложение на телефоне.
 // Страница открывается из сети, а без интернета — из сохранённой копии.
 // Запросы к серверу (товары, чат, вход) не кешируются.
-const CACHE = "tm-bazar-v23";
+const CACHE = "tm-bazar-v24";
 const SHELL = ["./", "index.html", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/favicon.png"];
 
