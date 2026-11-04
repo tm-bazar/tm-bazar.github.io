@@ -2078,16 +2078,17 @@ function langSwitch(){
 
 /* ===== РОУТЕР ===== */
 /* Кнопка «Назад» на телефоне.
-   Путь по экранам хранится в navStack. В истории браузера под текущим экраном лежит несколько «запасных» записей:
-   каждое «Назад» попадает на запасную запись, а приложение само показывает предыдущий экран.
-   Chrome пропускает записи, добавленные без касания экрана, поэтому запас пополняется при каждом касании.
-   На главной или при двух быстрых «Назад» — вопрос «Выйти из приложения?». */
+   Путь по экранам хранится в navStack. В истории браузера под текущей записью лежит запас записей:
+   каждое «Назад» уходит на запись ниже, а приложение само показывает предыдущий экран.
+   Важно: Chrome перестаёт доверять ВСЕМ записям сайта, если сайт добавил запись без касания экрана,
+   поэтому записи добавляются ТОЛЬКО при касании, а после «Назад» ничего не добавляется.
+   С перерывом — шаг назад до главной (на главной остаёмся); два быстрых «Назад» — вопрос «Выйти?». */
 const TOP_PAGES = ["/fav", "/sell", "/chats", "/me", "/cats"];
+const SPARE = 10;
 const curPath = () => location.hash.slice(1) || "/";
 const navStack = [];
-const START_SPARE = 8;              // записи, созданные при открытии (Chrome может их пропускать)
-let topP = 0, spare = 0;            // место текущей записи в истории и сколько «надёжных» запасных под ней
-function setUrl(path){ history.replaceState({tm:"top", p:topP}, "", "#"+path); }
+let topP = 0;                                    // номер текущей записи; ниже неё topP записей запаса
+function setUrl(path){ history.replaceState({tm:"g", p:topP}, "", "#"+path); }
 function go(path){
   path = path || "/";
   if (path === curPath()){ if (!navStack.length) navStack.push(path); route(); return; }
@@ -2101,37 +2102,35 @@ function back(fallback){
   if (navStack.length > 1){ navStack.pop(); setUrl(navStack[navStack.length-1]); route(); }
   else { navStack.length = 0; go(fallback || "/"); }
 }
-// добавить запасную запись (вызывается при касании — тогда Chrome её не пропустит)
-function addSpare(){
-  const path = navStack[navStack.length-1] || "/";
-  history.replaceState({tm:"root", p:topP}, "", "#"+path);
-  topP++; spare++;
-  history.pushState({tm:"top", p:topP}, "", "#"+path);
+const curScreen = () => navStack[navStack.length-1] || "/";
+// пополнить запас — только при касании экрана
+function refill(){
+  if (leaving || !history.state || history.state.tm !== "g") return;
+  const path = curScreen();
+  while (topP < SPARE){ topP++; history.pushState({tm:"g", p:topP}, "", "#"+path); }
 }
-function rearm(){
-  topP++;
-  history.pushState({tm:"top", p:topP}, "", "#"+(navStack[navStack.length-1] || "/"));
-}
+document.addEventListener("click", refill, true);
+document.addEventListener("touchend", refill, true);
 let lastBackAt = 0, exitOpen = false, leaving = false;
-function leaveApp(p){
+function leaveApp(){
   leaving = true;
+  const p = topP;
   history.go(-(p + 1));                          // уйти со всех записей приложения
-  setTimeout(() => { if (!document.hidden){ history.go(-p); try{ window.close(); }catch(e){} } }, 350);
+  setTimeout(() => { if (!document.hidden){ if (p) history.go(-p); try{ window.close(); }catch(e){} } }, 350);
 }
 function onPop(e){
   const st = e.state;
-  if (!st || st.tm !== "root"){ if (!st) route(); return; }
+  if (!st || st.tm !== "g"){ if (!st) route(); return; }
   if (leaving) return;
-  // попали на запасную запись — решаем, что делать с нажатием «Назад»
-  topP = st.p; spare = Math.max(0, st.p - START_SPARE); // надёжные запасные ниже неё
+  topP = st.p;
   const now = Date.now(), quick = now - lastBackAt < 700; lastBackAt = now;
   if (exitOpen){ closeSheet(true); return; }     // «Назад» при открытом вопросе = выйти
-  if (sheetEl){ closeSheet(undefined); rearm(); return; }
-  const atHome = navStack.length <= 1 && (navStack[0] || "/") === "/";
-  if (quick){ askExit(); return; }               // два быстрых «Назад» — спросить про выход
-  if (atHome){ rearm(); if (curPath() !== "/") route(); toast(t("exitHint")); return; }  // на главной остаёмся
-  if (navStack.length > 1) navStack.pop(); else { navStack.length = 0; navStack.push("/"); }
-  rearm(); route();
+  if (sheetEl){ closeSheet(undefined); setUrl(curScreen()); return; }
+  if (quick){ setUrl(curScreen()); askExit(); return; }   // два быстрых «Назад»
+  const atHome = navStack.length <= 1 && curScreen() === "/";
+  if (atHome){ navStack.length = 0; navStack.push("/"); setUrl("/"); route(); toast(t("exitHint")); return; }
+  navStack.pop();
+  setUrl(curScreen()); route();
 }
 function askExit(){
   exitOpen = true;
@@ -2141,13 +2140,9 @@ function askExit(){
       h("button",{class:"btn ghost",text:t("exitNo"),onclick:()=>close(false)}),
       h("button",{class:"btn",text:t("exitYes"),onclick:()=>close(true)})))).then(yes => {
     exitOpen = false;
-    if (yes) leaveApp(topP); else rearm();
+    if (yes) leaveApp();
   });
 }
-// при касании экрана пополняем запас до 8 записей (записи, добавленные при касании, Chrome не пропускает)
-function refill(){ if (leaving || !history.state || history.state.tm !== "top") return; while (spare < 8) addSpare(); }
-document.addEventListener("click", refill, true);
-document.addEventListener("touchend", refill, true);
 // ссылки внутри приложения (#/...) — через свой переход, без лишних записей в истории
 document.addEventListener("click", e => {
   if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return;
@@ -3970,10 +3965,7 @@ function start(){
   renderTabbar();
   const p0 = curPath();
   navStack.push("/"); if (p0 !== "/") navStack.push(p0);
-  history.replaceState({tm:"root", p:0}, "", "#/");
-  for (let i = 1; i < START_SPARE; i++) history.pushState({tm:"root", p:i}, "", "#/");
-  topP = START_SPARE; spare = 0;
-  history.pushState({tm:"top", p:topP}, "", "#"+p0);
+  topP = 0; history.replaceState({tm:"g", p:0}, "", "#"+p0);
   window.addEventListener("popstate", onPop);
   // адрес поменяли вручную
   window.addEventListener("hashchange", () => { if (!history.state){ const p = curPath(); navStack.push(p); setUrl(p); route(); } });
