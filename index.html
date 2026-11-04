@@ -943,7 +943,7 @@ const SUBS = {
   electronics: ["mobiles","laptops","computers","tablets","tv","players","consoles","smartwatches","headphones","speakers",
                 "office","printers","cameras","phoneacc","cases","security","ups","surge","network","powerbanks","landline",
                 "batteries","smartrings","chargers","phoneparts","components"],
-  realty:      ["flat","house","cottage","land","commercial","garage"],
+  realty:      ["flat","house","land","commercial","garage"],
   home:        ["furniture","kitchenware","textile","carpets","decor","lighting","cleaning","garden","food","other"],
   auto:        ["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"],
   shoes:       ["womenshoes","menshoes","kidsshoes","sportshoes"],
@@ -1216,9 +1216,9 @@ const SUBT = {
   carelec:["Автоэлектроника","Awtoelektronika","Car electronics"], caracc:["Автотовары","Awtoharytlar","Car accessories"],
   motorcycles:["Мотоциклы","Motosikller","Motorcycles"], scooters:["Скутеры и мопеды","Skuter we moped","Scooters & mopeds"],
   bicycles:["Велосипеды","Welosipedler","Bicycles"], quads:["Квадроциклы","Kwadrosikller","Quad bikes"],
-  flat:["Квартиры","Kwartiralar","Flats"], house:["Дома","Jaýlar","Houses"], cottage:["Коттеджи","Kottejler","Cottages"],
-  land:["Земельные участки","Ýer bölekleri","Land plots"], commercial:["Коммерческая недвижимость","Täjirçilik emlägi","Commercial property"],
-  garage:["Гаражи","Garažlar","Garages"],
+  flat:["Квартира","Kwartira","Flat"], house:["Дом и коттедж","Jaý we kottej","House & cottage"], cottage:["Коттеджи","Kottejler","Cottages"],
+  land:["Земельный участок","Ýer bölegi","Land plot"], commercial:["Коммерческая недвижимость","Täjirçilik emlägi","Commercial property"],
+  garage:["Гараж и подвал","Garaž we ýerzemin","Garage & basement"],
   kitchenware:["Посуда","Gap-gaç","Kitchenware"], decor:["Декор","Bezeg","Decor"], cleaning:["Хозтовары","Hojalyk harytlary","Household goods"],
   lighting:["Освещение","Yşyklandyryş","Lighting"],
   livingroom:["Гостиная","Myhman otagy","Living room"], bedroom:["Спальня","Ýatak otagy","Bedroom"], kitchenfurn:["Кухня","Aşhana","Kitchen"],
@@ -1888,7 +1888,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "31";   // номер версии — виден внизу профиля
+const APP_VER = "32";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2049,6 +2049,7 @@ function migrateProduct(p){
   if (OLD_CAT[p.cat]){ const [c, sb] = OLD_CAT[p.cat](p.sub); p.cat = c; p.sub = sb; }
   if ((p.cat === "personal" && (p.sub === "womenshoes" || p.sub === "menshoes")) || (p.cat === "kids" && p.sub === "kidsshoes")) p.cat = "shoes";
   else if (p.cat === "electronics" && OLD_SUB[p.sub]) p.sub = OLD_SUB[p.sub];
+  else if (p.cat === "realty" && p.sub === "cottage") p.sub = "house";
   if (SUBS[p.cat] && p.sub && !SUBS[p.cat].includes(p.sub)) p.sub = "";
   return p;
 }
