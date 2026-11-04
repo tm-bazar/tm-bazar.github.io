@@ -371,6 +371,16 @@ img.ava{object-fit:cover;background:#fff;border:1px solid var(--line)}
 /* категории: плавающая лента сверху */
 .browse-head{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.04)}
 .bh-row{padding:8px 10px 0;min-height:44px}
+.browse-head.cmp .bh-row{padding-bottom:4px}
+.qchips{display:flex;gap:8px;overflow-x:auto;padding:6px 10px 10px;scrollbar-width:none}
+.qchips::-webkit-scrollbar{display:none}
+.qchip{flex:none;display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:14px;background:var(--soft);border:1px solid var(--line);font-size:15px;font-weight:500;color:var(--fg);max-width:220px}
+.qchip span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qchip i{display:grid;place-items:center;opacity:.7}
+.qchip.on{background:var(--fg);border-color:var(--fg);color:#fff}
+.opt-list{display:flex;flex-direction:column;max-height:60vh;overflow:auto}
+.opt{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;padding:14px 6px;border:0;border-bottom:1px solid #f0f0f2;background:none;font-size:17px;color:var(--fg)}
+.opt.on{font-weight:700}
 .bh-title{font-weight:800;font-size:18px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:4px}
 .browse-head .langs{background:var(--bg)}
 .browse-head .langs button{color:var(--mut)}
@@ -1310,6 +1320,8 @@ const ATTRT = {
   e_brand:["Выберите марку машины.","Maşynyň markasyny saýlaň.","Choose the car make."], e_deal:["Выберите тип объявления.","Bildirişiň görnüşini saýlaň.","Choose the listing type."],
   catFirst:["Что вы продаёте?","Näme satýarsyňyz?","What are you selling?"], swipeCats:["листайте вправо →","saga sürüň →","swipe →"],
   filters:["Фильтры","Süzgüçler","Filters"], reset:["Сбросить","Arassala","Reset"], showN:["Показать {n}","{n} görkez","Show {n}"],
+  exitQ:["Выйти из приложения?","Programmadan çykmalymy?","Exit the app?"], exitSub:["Чтобы выйти, можно ещё раз нажать «Назад».","Çykmak üçin ýene bir gezek «Yza» basyň.","You can also press Back once more to exit."],
+  exitYes:["Выйти","Çyk","Exit"], exitNo:["Остаться","Galmak","Stay"], qPrice:["Цена","Baha","Price"], qYear:["Год","Ýyl","Year"], show:["Показать","Görkez","Show"],
   vView:["Вид","Görnüşi","View"], vGrid:["Плитка","Tor","Grid"], vBig:["Крупно","Uly","Large"], vList:["Список","Sanaw","List"],
   fPrice:["Цена, TMT","Bahasy, TMT","Price, TMT"], fYear:["Год выпуска","Çykan ýyly","Year"], fRegion:["Велаят","Welaýat","Region"],
   any:["Любой","Islendik","Any"], from:["от","-dan","from"],
@@ -2063,19 +2075,64 @@ function langSwitch(){
 }
 
 /* ===== РОУТЕР ===== */
-function go(path){ if (location.hash === "#"+path) route(); else location.hash = "#"+path; }
-const navStack = [location.hash];
-function onNav(){
-  const hsh = location.hash;
-  if (navStack.length > 1 && navStack[navStack.length-2] === hsh) navStack.pop(); else navStack.push(hsh);
-  route();
+/* Кнопка «Назад» на телефоне.
+   В истории браузера держим всего две записи: «корень» и «текущий экран», а путь по экранам — в navStack.
+   «Назад» = шаг назад по navStack; на главной или при двойном быстром нажатии — вопрос «Выйти из приложения?». */
+const TOP_PAGES = ["/fav", "/sell", "/chats", "/me", "/cats"];
+const curPath = () => location.hash.slice(1) || "/";
+const navStack = [];
+function setUrl(path){ history.replaceState({tm:"top"}, "", "#"+path); }
+function go(path){
+  path = path || "/";
+  if (path === curPath()){ if (!navStack.length) navStack.push(path); route(); return; }
+  if (path === "/") navStack.length = 0;
+  else if (TOP_PAGES.includes(path)){ navStack.length = 0; navStack.push("/"); }
+  else { const i = navStack.lastIndexOf(path); if (i >= 0) navStack.length = i; }
+  navStack.push(path);
+  setUrl(path); route();
 }
-function back(fallback){ if (navStack.length > 1) history.back(); else go(fallback || "/"); }
+function back(fallback){
+  if (navStack.length > 1){ navStack.pop(); setUrl(navStack[navStack.length-1]); route(); }
+  else { navStack.length = 0; go(fallback || "/"); }
+}
+let lastBackAt = 0, exitOpen = false;
+function rearm(){ history.pushState({tm:"top"}, "", "#"+(navStack[navStack.length-1] || "/")); }
+function onPop(e){
+  if (!e.state || e.state.tm !== "root"){ if (!e.state) route(); return; }
+  // мы на «корне» — решаем, что делать с нажатием «Назад»
+  const now = Date.now(), quick = now - lastBackAt < 700; lastBackAt = now;
+  if (exitOpen) return;
+  if (sheetEl){ closeSheet(undefined); rearm(); return; }
+  const atHome = navStack.length <= 1 && (navStack[0] || "/") === "/";
+  if (atHome || quick){ askExit(); return; }
+  if (navStack.length > 1) navStack.pop(); else { navStack.length = 0; navStack.push("/"); }
+  rearm(); route();
+}
+function askExit(){
+  exitOpen = true;
+  sheet((box, close) => box.append(
+    h("h2",{text:t("exitQ")}), h("p",{style:{color:"var(--mut)",fontSize:"14px",margin:"4px 0 0"},text:t("exitSub")}),
+    h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginTop:"14px"}},
+      h("button",{class:"btn ghost",text:t("exitNo"),onclick:()=>close(false)}),
+      h("button",{class:"btn",text:t("exitYes"),onclick:()=>close(true)})))).then(yes => {
+    exitOpen = false;
+    if (yes){ history.back(); setTimeout(() => { try{ window.close(); }catch(e){} }, 300); }
+    else rearm();
+  });
+}
+// ссылки внутри приложения (#/...) — через свой переход, без лишних записей в истории
+document.addEventListener("click", e => {
+  if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return;
+  const a = e.target.closest && e.target.closest('a[href^="#"]');
+  if (!a || a.target) return;
+  e.preventDefault(); go(a.getAttribute("href").slice(1));
+});
 function stopTimers(){ S.timers.forEach(clearInterval); S.timers = []; }
 
 const ROUTES = [
   [/^\/?$/, () => viewHome()],
   [/^\/q\/(.*)$/, m => viewHome(decodeURIComponent(m[1]))],
+  [/^\/c\/(\w+)\/list$/, m => viewBrowse(m[1], true)],
   [/^\/c\/(\w+)$/, m => viewBrowse(m[1])],
   [/^\/brands\/(\w+)\/(\w+)$/, m => viewMakes(m[1], m[2])],
   [/^\/models\/(\w+)\/(\w+)\/(.+)$/, m => viewModels(m[1], m[2], decodeURIComponent(m[3]))],
@@ -2321,7 +2378,7 @@ function viewMakes(cat, sub){
       await loadModels();
       if (modelsOf(sub, b).length) return go(modelsHref(cat, sub, b));
     }
-    S.browse = {cat, sub, f: b ? {brand: b} : {}, r: st ? st.r || {} : {}}; go("/c/"+cat);
+    S.browse = {cat, sub, f: b ? {brand: b} : {}, r: st ? st.r || {} : {}}; go("/c/"+cat+(b ? "/list" : ""));
   };
   page(h("div",{class:"silver-head"},
       h("button",{class:"sh-back","aria-label":t("back"),html:IC.back,onclick:()=>back("/c/"+cat)}),
@@ -2346,7 +2403,7 @@ async function viewModels(cat, sub, b){
   const all = [...new Set([...modelsOf(sub, b), ...pop, ...Object.keys(counts)])].sort(modelSort);
   const st = S.browse && S.browse.cat === cat ? S.browse : null;
   const selected = st && st.sub === sub && (st.f||{}).brand === b ? (st.f.model || "") : null;
-  const pick = m => { S.browse = {cat, sub, f: m ? {brand: b, model: m} : {brand: b}, r: st ? st.r || {} : {}}; go("/c/"+cat); };
+  const pick = m => { S.browse = {cat, sub, f: m ? {brand: b, model: m} : {brand: b}, r: st ? st.r || {} : {}}; go("/c/"+cat+"/list"); };
   const q = h("input",{class:"inp mk-q",type:"search",placeholder:"🔍  "+t("searchModel")});
   const list = h("div");
   const row = m => h("button",{type:"button",class:"mk-row md-row"+(selected===m?" on":""),onclick:()=>pick(m)},
@@ -2645,12 +2702,12 @@ function recommend(list){
   };
   return list.map(p => [score(p), p]).sort((a,b) => b[0] - a[0]).map(x => x[1]);
 }
-function filterBar(onChange){
+function filterBar(onChange, noCity){
   const opts = [["rec",t("sRec")],["new",t("sNew")],["cheap",t("sCheap")],["exp",t("sExp")]];
   const city = h("select",{class:"chip"+(S.city?" on":""),"aria-label":t("city")},
     h("option",{value:"",text:t("allCities")}), ...CITIES.map(c => h("option",{value:c,text:c,selected:S.city===c})));
   city.onchange = () => { S.city = city.value; onChange(); };
-  return h("div",{class:"chips"}, ...opts.map(([k,l]) => h("button",{class:"chip"+(S.sort===k?" on":""),text:l,onclick:()=>{ S.sort=k; onChange(); }})), city);
+  return h("div",{class:"chips"}, ...opts.map(([k,l]) => h("button",{class:"chip"+(S.sort===k?" on":""),text:l,onclick:()=>{ S.sort=k; onChange(); }})), noCity ? null : city);
 }
 function textMatch(p, words){
   const at = p.attrs || {};
@@ -2710,9 +2767,11 @@ function catsRow(active){
   return h("div",{class:"cats"}, ...CATS.map(c =>
     h("a",{class:"cat"+(active===c.id?" on":""),href:"#/c/"+c.id}, h("b",{style:{background:c.c},text:c.e}), h("span",{text:catName(c.id)}))));
 }
-function viewBrowse(catId){
+function viewBrowse(catId, listMode){
   setTab("home");
   const st = S.browse = (S.browse && S.browse.cat === catId) ? S.browse : {cat: catId, sub: "", f: {}, r: {}};
+  // компактный вид: категории скрыты, сверху — быстрые фильтры (после выбора марки/модели)
+  const compact = !!(listMode && catId && st.sub);
   const subRow = h("div");
   const body = h("div",{class:"sec"});
   const topFilt = h("button",{class:"btn sm soft top-filt",onclick:()=>filtersSheet()});
@@ -2720,7 +2779,13 @@ function viewBrowse(catId){
     h("a",{class:"cs"+(!catId?" on":""),href:"#/cats"}, catTile("all"), h("span",{text:t("allGoods")})),
     ...CATS.map(c => h("a",{class:"cs"+(catId===c.id?" on":""),href:"#/c/"+c.id,"data-c":c.id},
       catTile(c.id), h("span",{text:catName(c.id)}))));
-  const head = h("div",{class:"browse-head"},
+  const qBox = h("div",{class:"qchips"});
+  const cTitle = h("div",{class:"bh-title"});
+  const head = compact ? h("div",{class:"browse-head cmp"}, h("div",{class:"wrap"},
+      h("div",{class:"top-row bh-row"},
+        h("button",{class:"icon-btn","aria-label":t("back"),html:IC.back,onclick:()=>{ st.f = {}; go("/c/"+catId); }}), cTitle, topFilt),
+      qBox)) :
+    h("div",{class:"browse-head"},
     h("div",{class:"wrap"},
       h("div",{class:"top-row bh-row"}, catId ? h("button",{class:"icon-btn","aria-label":t("back"),html:IC.back,onclick:()=>go("/cats")}) : null,
         h("div",{class:"bh-title",text:catId ? catName(catId) : t("tCats")}), topFilt),
@@ -2732,6 +2797,7 @@ function viewBrowse(catId){
   const ctxA = () => Object.assign({}, st.f);
   const applyF = (list, skip) => list.filter(p => {
     if (st.sub && p.sub !== st.sub) return false;
+    if (S.city && p.city !== S.city) return false;
     for (const k in st.f) if (k !== skip && st.f[k] && !hasVal(p, k, st.f[k])) return false;
     const r = st.r;
     if (r.pmin && p.price < +r.pmin) return false; if (r.pmax && p.price > +r.pmax) return false;
@@ -2846,14 +2912,50 @@ function viewBrowse(catId){
       onclick:()=>sheet((box, close) => box.append(h("h2",{text:t("vView")}), viewSwitch(() => close(true)))).then(() => drawList())});
     body.replaceChildren(
       h("div",{class:"sec-h list-h"}, h("h2",null, title, h("small",{text:"  "+list.length})), h("div",{class:"sp"}), viewBtn),
-      filterBar(drawList),
+      filterBar(drawList, compact),
       feed(sortList(list), !S.catalog.length && S.catalogLoading ? h("div",{class:"empty"}, h("div",{class:"spin"})) : null, null, mode));
   };
   // плавающая кнопка «Добавить объявление» — сразу в этот раздел
   const addFab = h("a",{class:"fab",href:"#/sell",onclick:()=>{ S.sellPreset = {cat: catId, sub: st.sub, brand: st.f.brand || ""}; }}, h("span",{html:IC.plus}), t("addListing"));
   page(head, h("div",{class:"wrap"}, body), addFab);
   document.body.classList.add("has-fab");
-  const draw = () => { drawSubs(); drawList(); };
+  const fmtN = v => (+v).toLocaleString("ru-RU");
+  const rangeTxt = (a, b, f) => a && b ? f(a)+" – "+f(b) : a ? t("from")+" "+f(a) : b ? t("to")+" "+f(b) : "";
+  const qchip = (label, val, onclick) => h("button",{type:"button",class:"qchip"+(val?" on":""),onclick},
+    h("span",{text: val || label}), h("i",{html:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'}));
+  const pairSheet = (title, mk) => sheet((box, close) => {
+    const [a, b, read] = mk();
+    box.append(h("h2",{text:title}), h("div",{class:"two",style:{marginBottom:"14px"}}, a, b),
+      h("div",{style:{display:"grid",gridTemplateColumns:"1fr 2fr",gap:"10px"}},
+        h("button",{class:"btn ghost",text:t("reset"),onclick:()=>{ read(true); close(true); }}),
+        h("button",{class:"btn",text:t("show"),onclick:()=>{ read(false); close(true); }})));
+  }).then(() => draw());
+  const drawQuick = () => {
+    if (!compact) return;
+    cTitle.textContent = st.f.brand ? brandName(st.f.brand) + (st.f.model ? " " + st.f.model : "") : subName(st.sub);
+    const chips = [];
+    if (catId === "auto" && st.f.brand && st.f.brand !== "other" && modelsOf(st.sub, st.f.brand).length)
+      chips.push(qchip(t("f_model"), st.f.model, () => go(modelsHref("auto", st.sub, st.f.brand))));
+    chips.push(qchip(t("fRegion"), S.city, () => sheet((box, close) => box.append(h("h2",{text:t("fRegion")}),
+      h("div",{class:"opt-list"}, ...["", ...CITIES].map(c => h("button",{type:"button",class:"opt"+(S.city===c?" on":""),onclick:()=>{ S.city = c; close(true); }},
+        h("span",{text:c || t("allCities")}), S.city===c ? h("b",{text:"✓"}) : null))))).then(() => draw())));
+    chips.push(qchip(t("qPrice"), rangeTxt(st.r.pmin, st.r.pmax, fmtN), () => pairSheet(t("fPrice"), () => {
+      const a = h("input",{class:"inp",type:"number",inputmode:"numeric",placeholder:t("from"),value:st.r.pmin||""});
+      const b = h("input",{class:"inp",type:"number",inputmode:"numeric",placeholder:t("to"),value:st.r.pmax||""});
+      return [a, b, reset => { st.r.pmin = reset ? "" : a.value; st.r.pmax = reset ? "" : b.value; }];
+    })));
+    if (fieldsFor(catId, st.sub, Object.assign({}, st.f)).some(f => f.k === "year" && f.filter === "range"))
+      chips.push(qchip(t("qYear"), rangeTxt(st.r.ymin, st.r.ymax, String), () => pairSheet(t("fYear"), () => {
+        const now = new Date().getFullYear(), years = []; for (let y = now; y >= 1960; y--) years.push(String(y));
+        const sel = (k, ph) => h("label",{class:"yr"}, h("small",{text:ph}), h("select",{class:"inp"}, h("option",{value:"",text:t("any")}),
+          ...years.map(y => h("option",{value:y,text:y,selected:String(st.r[k]||"")===y}))));
+        const a = sel("ymin", t("from")), b = sel("ymax", t("to"));
+        return [a, b, reset => { st.r.ymin = reset ? "" : a.querySelector("select").value; st.r.ymax = reset ? "" : b.querySelector("select").value; }];
+      })));
+    qBox.replaceChildren(...chips);
+  };
+  if (compact && !MODELS) loadModels().then(() => drawQuick());
+  const draw = () => { if (compact) drawQuick(); else drawSubs(); drawList(); };
   draw(); loadCatalog().then(draw);
   // показать выбранную категорию в ленте
   const on = catScroll.querySelector(".cs.on");
@@ -3823,7 +3925,13 @@ async function compress(file, max){
 function start(){
   document.documentElement.lang = S.lang === "tm" ? "tk" : S.lang;
   renderTabbar();
-  window.addEventListener("hashchange", onNav);
+  const p0 = curPath();
+  navStack.push("/"); if (p0 !== "/") navStack.push(p0);
+  history.replaceState({tm:"root"}, "", "#/");
+  history.pushState({tm:"top"}, "", "#"+p0);
+  window.addEventListener("popstate", onPop);
+  // адрес поменяли вручную
+  window.addEventListener("hashchange", () => { if (!history.state){ const p = curPath(); navStack.push(p); setUrl(p); route(); } });
   document.addEventListener("visibilitychange", () => { if (!document.hidden && S.token) startPoll(); });
   route();
   loadCatalog(true);
