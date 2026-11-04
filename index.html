@@ -1888,7 +1888,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "32";   // номер версии — виден внизу профиля
+const APP_VER = "33";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2314,7 +2314,7 @@ function placeText(p){ return p.place ? p.city + " · " + p.place : p.city; }
 // готовые фото верхних категорий (папка cats/ на сайте)
 const CAT_PHOTO = {shoes:1, electronics:1, realty:1, home:1, auto:1, personal:1, appliances:1, jobs:1, rent:1, kids:1, build:1, sport:1, business:1, services:1, buy:1, med:1, animals:1, free:1};
 // готовые фото разделов (папка subs/ на сайте)
-const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"].map(k => ["auto:"+k, 1]));
+const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"].map(k => ["auto:"+k, 1]).concat(["flat","house","land","commercial","garage"].map(k => ["realty:"+k, 1])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
   if (key.startsWith("cat:") && CAT_PHOTO[key.slice(4)]) return "cats/" + key.slice(4) + ".jpg";
