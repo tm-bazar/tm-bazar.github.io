@@ -835,6 +835,9 @@ ru: {
   vipItemHint:"Нажмите «⭐ VIP» на товаре, чтобы сделать VIP только его — {p} за 7 дней. Весь магазин VIP — в Профиле.", vipShopAllOn:"весь магазин уже VIP",
   vipItemAbout:"Объявление станет жёлтым и будет выше остальных {d} дней.",
   myShopSub:"Все ваши товары: изменить, снять, удалить, VIP, срок", asBuyer:"Как видят",
+  mallPick:"Торговый центр или рынок", mallPickSub:"Если вы продаёте в ТЦ или на рынке — выберите его. Если нет — выберите район ниже.",
+  mallSearch:"Найти ТЦ или рынок", mallOther:"Моего ТЦ / рынка нет в списке", mallOtherPh:"Название ТЦ или рынка", mallNone:"Убрать ТЦ / рынок",
+  distSub:"Или укажите район, если вы не в ТЦ и не на рынке.", mallF:"Торговый центр / рынок", mallAny:"Любой",
   allShops:"Все магазины", vipShops:"VIP-магазины", shopsEmpty:"Пока нет магазинов", nShopGoods:"{n} тов.",
   vipHowT:"Как попасть в VIP?", vipHowS:"Ваши объявления выше всех", vipNone:"Здесь будут VIP-магазины",
   vipTitle:"VIP-объявление", vipUntil:"VIP до {d}", makeVip:"Сделать VIP",
@@ -967,6 +970,9 @@ tm: {
   vipItemHint:"Diňe bir harydy VIP etmek üçin onuň «⭐ VIP» düwmesine basyň — 7 gün üçin {p}. Bütin dükany VIP etmek — Profilde.", vipShopAllOn:"bütin dükan eýýäm VIP",
   vipItemAbout:"Bildiriş {d} gün sary bolar we beýlekilerden ýokarda durar.",
   myShopSub:"Ähli harytlaryňyz: üýtgetmek, aýyrmak, pozmak, VIP, möhlet", asBuyer:"Görnüşi",
+  mallPick:"Söwda merkezi ýa-da bazar", mallPickSub:"Söwda merkezinde ýa-da bazarda satýan bolsaňyz — saýlaň. Ýogsa aşakda etraby saýlaň.",
+  mallSearch:"Söwda merkezini ýa-da bazary tap", mallOther:"Meniň söwda merkezim sanawda ýok", mallOtherPh:"Söwda merkeziniň ýa-da bazaryň ady", mallNone:"Söwda merkezini aýyrmak",
+  distSub:"Ýa-da söwda merkezinde däl bolsaňyz, etraby görkeziň.", mallF:"Söwda merkezi / bazar", mallAny:"Islendik",
   allShops:"Ähli dükanlar", vipShops:"VIP dükanlar", shopsEmpty:"Häzirlikçe dükan ýok", nShopGoods:"{n} haryt",
   vipHowT:"Nädip VIP bolmaly?", vipHowS:"Bildirişleriňiz hemmeden ýokarda", vipNone:"Bu ýerde VIP dükanlar bolar",
   vipTitle:"VIP bildiriş", vipUntil:"VIP {d} çenli", makeVip:"VIP etmek",
@@ -1099,6 +1105,9 @@ en: {
   vipItemHint:"Tap “⭐ VIP” on an item to make only it VIP — {p} for 7 days. VIP for the whole shop is in Profile.", vipShopAllOn:"the whole shop is already VIP",
   vipItemAbout:"The listing turns yellow and stays above others for {d} days.",
   myShopSub:"All your items: edit, remove, delete, VIP, expiry", asBuyer:"Preview",
+  mallPick:"Mall or market", mallPickSub:"If you sell in a mall or market, choose it. If not, choose a district below.",
+  mallSearch:"Find a mall or market", mallOther:"My mall / market is not listed", mallOtherPh:"Mall or market name", mallNone:"Remove mall / market",
+  distSub:"Or choose a district if you are not in a mall or market.", mallF:"Mall / market", mallAny:"Any",
   allShops:"All shops", vipShops:"VIP shops", shopsEmpty:"No shops yet", nShopGoods:"{n} items",
   vipHowT:"How to get VIP?", vipHowS:"Your listings on top", vipNone:"VIP shops will appear here",
   vipTitle:"VIP listing", vipUntil:"VIP until {d}", makeVip:"Make VIP",
@@ -2189,6 +2198,7 @@ const Mock = (() => {
       if (!text) return {ok:false,error:"fields"};
       db.sup.push({id:"M"+Date.now(), at:now(), user:u.id, name:u.name, phone:u.phone, from:"admin", text, photo:"", amount:a, readA:"1", readU:""});
       return {ok:true, balance:db.bal[u.id]}; },
+    adminMalls(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.malls = d.malls; return {ok:true, malls:d.malls}; },
     adminVipShop(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.vipShop = db.vipShop || {};
       if (+d.days > 0) db.vipShop[d.user] = new Date(Date.now() + d.days * 864e5).toISOString(); else delete db.vipShop[d.user]; return {ok:true}; },
     adminBalance(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.bal = db.bal || {};
@@ -2204,7 +2214,7 @@ const Mock = (() => {
     const deco = x => { const p = db.products.find(y => y.id === x.id); if (p){ x.exp = mExp(p); const a = db.vip[x.id] || "", b = (db.vipShop || {})[p.user] || ""; x.vip = a > b ? a : b; x.shopVip = b; } return x; };
     if (d.action === "catalog"){
       r.products = r.products.filter(x => new Date(deco(x).exp) > Date.now());
-      r.expDays = 30;
+      r.expDays = 30; if (db.malls) r.malls = db.malls;
     }
     if (d.action === "me" || d.action === "adminData"){ r.products.forEach(deco); r.expDays = 30; r.vipPrices = mPrices(); }
     if (!db.bal){ db.bal = {}; db.users.forEach(u => { if (u.seller === "active") db.bal[u.id] = 50; }); }
@@ -2233,7 +2243,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "48";   // номер версии — виден внизу профиля
+const APP_VER = "49";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2331,7 +2341,8 @@ const S = {
   sort: "rec", city: "",
   homeCat: "",
   balance: 0, vipPrices: {}, shopVip: "",        // баланс продавца (TMT) и цены VIP: {7: 20, 15: 35, 30: 60}                      // категория, выбранная на главной («» — все)
-  expDays: lsGet("expDays", 0),     // срок жизни объявления (дней); 0 — сервер ещё без этой функции
+  expDays: lsGet("expDays", 0),
+  malls: lsGet("malls", null),       // торговые центры и рынки по велаятам (с сервера)     // срок жизни объявления (дней); 0 — сервер ещё без этой функции
   photoSearch: null,
   pendingFiles: null,
   timers: []
@@ -2361,7 +2372,7 @@ async function loadCatalog(force){
   if (S.catalogLoading) return S.catalogLoading;
   S.catalogLoading = call("catalog").then(r => {
     S.catalogLoading = null;
-    if (r.ok){ r.products.forEach(migrateProduct); S.catalog = r.products; S.catalogAt = Date.now(); lsSet("catalog", r.products.slice(0, 300)); S.tiles = r.tiles || {}; lsSet("tiles", S.tiles); setExpDays(r.expDays); updateBadge(); }
+    if (r.ok){ r.products.forEach(migrateProduct); S.catalog = r.products; S.catalogAt = Date.now(); lsSet("catalog", r.products.slice(0, 300)); S.tiles = r.tiles || {}; lsSet("tiles", S.tiles); setExpDays(r.expDays); if (r.malls){ S.malls = r.malls; lsSet("malls", r.malls); } updateBadge(); }
     // сервер не ответил — показываем сохранённые товары и говорим об этом (раз за сеанс)
     else if (!S.catalogWarned){ S.catalogWarned = true; toast(t("catalogOld") + (r.error && r.error !== "net" ? " (" + r.error + ")" : "")); }
     return S.catalog;
@@ -2746,7 +2757,13 @@ function videoUrl(x){
   return /^https?:\/\/([a-z0-9-]+\.)*(tiktok\.com|instagram\.com|instagr\.am|youtube\.com|youtu\.be)(\/|$)/i.test(s) && s.length <= 300 ? s : "";
 }
 function videoKind(u){ return /tiktok/i.test(u) ? "TikTok" : /instagr/i.test(u) ? "Instagram" : "YouTube"; }
-function placeText(p){ return p.place ? p.city + " · " + p.place : p.city; }
+function placeText(p){ const m = (p.attrs || {}).mall; return [p.city, m ? "🏬 " + m : "", p.place].filter(Boolean).join(" · "); }
+/* ===== ТОРГОВЫЕ ЦЕНТРЫ И РЫНКИ (список ведёт администратор в админке; это — начальный) ===== */
+const MALLS_DEFAULT = {
+  "Aşgabat": ["Berkarar SDM","Aşgabat SDM (Ashgabat Mall)","Paýtagt SDM","Altyn Asyr bazary","Gündogar bazary","Teke bazary","Gülistan bazary (Rus bazary)","Daýhan bazary","Mir bazary"],
+  "Ahal": [], "Mary": [], "Daşoguz": [], "Türkmenabat": [], "Türkmenbaşy": []
+};
+function mallsOf(city){ const m = S.malls || MALLS_DEFAULT; return (m[city] || []).filter(Boolean); }
 
 /* ===== ФОТО-ПЛИТКИ: категории, разделы, марки =====
    1) фото, которое поставил администратор (админка → «Картинки»);
@@ -3609,6 +3626,13 @@ function viewBrowse(catId, listMode){
       const city = h("select",{class:"inp"}, h("option",{value:"",text:t("allCities")}), ...CITIES.map(c => h("option",{value:c,text:c,selected:S.city===c})));
       city.onchange = () => { S.city = city.value; upd(); };
       parts.push(lbl(t("fRegion")), h("div",{style:{marginBottom:"14px"}}, city));
+      // торговый центр / рынок (те, где есть объявления)
+      const mallsHere = [...new Set(base().map(p => (p.attrs || {}).mall).filter(Boolean))].sort();
+      if (mallsHere.length){
+        const ms = h("select",{class:"inp"}, h("option",{value:"",text:t("mallAny")}), ...mallsHere.map(m => h("option",{value:m,text:"🏬 "+m,selected:st.f.mall===m})));
+        ms.onchange = () => { if (ms.value) st.f.mall = ms.value; else delete st.f.mall; upd(); };
+        parts.push(lbl(t("mallF")), h("div",{style:{marginBottom:"14px"}}, ms));
+      }
       // модель (если выбрана марка и есть список моделей)
       if (catId === "auto" && st.f.brand && st.f.brand !== "other" && VEHICLE_SUBS[st.sub] && modelsOf(st.sub, st.f.brand).length){
         parts.push(lbl(t("f_model")), h("button",{type:"button",class:"mk-pick md-pick f-model",onclick:()=>{ close(); go(modelsHref("auto", st.sub, st.f.brand)); }},
@@ -4555,7 +4579,7 @@ async function viewSell(editId){
   const origMain = shots[0] && shots[0].id;
   let mainVec = null, aiGuess = null;
   const STEPS = 5;
-  let step = 1, maxStep = editId ? STEPS : 1, distOther = false;
+  let step = 1, maxStep = editId ? STEPS : 1, distOther = false, mallOther = false;
 
   // --- общие элементы ---
   const picker = h("input",{type:"file",accept:"image/*",multiple:true,hidden:true});
@@ -4747,10 +4771,29 @@ async function viewSell(editId){
     const list = DISTRICTS[prod.city] || [];
     const other = h("input",{class:"inp",maxlength:"40",placeholder:prod.cat === "realty" ? t("placeRealtyPh") : t("placePh"),value:list.includes(prod.place) ? "" : prod.place||""});
     other.oninput = () => prod.place = other.value;
+    // сначала — торговый центр / рынок (если продавец там)
+    const malls = mallsOf(prod.city), cur = prod.attrs.mall || "";
+    const mq = h("input",{class:"inp",type:"search",placeholder:"🔍  "+t("mallSearch")});
+    const mOther = h("input",{class:"inp",maxlength:"40",placeholder:t("mallOtherPh"),value:cur && !malls.includes(cur) ? cur : ""});
+    mOther.onchange = () => { prod.attrs.mall = mOther.value.trim(); };
+    const mList = h("div");
+    const drawM = () => {
+      const v = mq.value.trim().toLowerCase();
+      mList.replaceChildren(...malls.filter(m => !v || looseHas(m.toLowerCase(), v)).map(m =>
+        rowItem(h("b",{class:"ci txt",text:"🏬"}), m, "", ()=>{ prod.attrs.mall = m; prod.place = ""; goStep(4); }, cur === m)));
+    };
+    mq.oninput = drawM; drawM();
     return [h("div",{class:"box"},
-      h("div",{class:"crumbs"}, h("button",{class:"crumb",onclick:()=>{ prod.city = ""; prod.place = ""; render(); }}, "📍 "+prod.city), h("small",{class:"swipe",text:t("w_change")})),
-      h("h3",{text:t("w_pickDist")}),
-      ...list.map(d => rowItem(h("b",{class:"ci txt",text:"🏘"}), d, "", ()=>{ prod.place = d; goStep(4); }, prod.place === d)),
+      h("div",{class:"crumbs"}, h("button",{class:"crumb",onclick:()=>{ prod.city = ""; prod.place = ""; delete prod.attrs.mall; render(); }}, "📍 "+prod.city), h("small",{class:"swipe",text:t("w_change")})),
+      h("h3",{text:"🏬 "+t("mallPick")}), h("p",{class:"hint",style:{marginTop:"-4px"},text:t("mallPickSub")}),
+      malls.length > 6 ? mq : null, mList,
+      rowItem(h("b",{class:"ci txt",text:"✏️"}), t("mallOther"), "", ()=>{ mallOther = true; render(); setTimeout(() => mOther.focus(), 50); }, mallOther || (cur && !malls.includes(cur))),
+      mallOther || (cur && !malls.includes(cur)) ? h("div",{style:{margin:"8px 0"}}, mOther,
+        h("button",{class:"btn block",style:{marginTop:"8px"},text:t("w_continue"),onclick:()=>{ prod.attrs.mall = mOther.value.trim(); if (prod.attrs.mall) goStep(4); }})) : null,
+      cur ? rowItem(h("b",{class:"ci txt",text:"✕"}), t("mallNone"), "", ()=>{ delete prod.attrs.mall; mallOther = false; render(); }) : null),
+      h("div",{class:"box"},
+      h("h3",{text:t("w_pickDist")}), h("p",{class:"hint",style:{marginTop:"-4px"},text:t("distSub")}),
+      ...list.map(d => rowItem(h("b",{class:"ci txt",text:"🏘"}), d, "", ()=>{ prod.place = d; delete prod.attrs.mall; goStep(4); }, prod.place === d)),
       rowItem(h("b",{class:"ci txt",text:"✏️"}), t("w_otherDist"), "", ()=>{ distOther = true; render(); setTimeout(() => other.focus(), 50); }, distOther),
       distOther || (prod.place && !list.includes(prod.place)) ? h("div",{style:{marginTop:"10px"}}, other) : null)];
   }
@@ -4777,7 +4820,7 @@ async function viewSell(editId){
       h("div",{class:"box wiz-sum"},
         shots[0] ? h("img",{src:shots[0].thumb || shots[0].dataUrl,alt:""}) : null,
         h("div",null, h("b",{text:prod.title}), h("small",{text:[catName(prod.cat), prod.sub ? subName(prod.sub) : "", prod.attrs.brand ? brandName(prod.attrs.brand) : ""].filter(Boolean).join(" › ")}),
-          h("small",{text:"📍 "+[prod.city, prod.place].filter(Boolean).join(" · ")}))),
+          h("small",{text:"📍 "+[prod.city, prod.attrs.mall ? "🏬 "+prod.attrs.mall : "", prod.place].filter(Boolean).join(" · ")}))),
       free ? h("div",{class:"box"}, h("div",{class:"price nego",text:"🎁 "+t("freePrice")})) :
         h("div",{class:"box"}, h("label",{class:"field",style:{marginBottom:0}}, h("span",null, optional ? t("priceOpt") : t("price"), optional ? null : reqStar()),
           h("div",{class:"price-in"}, priceIn, h("b",{text:"TMT"})))),
@@ -4809,7 +4852,8 @@ async function viewSell(editId){
       const data = {title: prod.title.trim(), price, cat: prod.cat, cond: NO_COND[prod.cat] ? "new" : prod.cond, desc: descIn.value, city: prod.city, status: editId ? prod.status : "active",
         place: (prod.place||"").trim(), video: videoUrl(videoIn.value), sub: SUBS[prod.cat] ? prod.sub : "",
         attrs: Object.fromEntries(flds.map(f => [f.k, prod.attrs[f.k]]).filter(([k, v]) => v != null && v !== "" && !(Array.isArray(v) && !v.length))
-          .map(([k, v]) => [k, typeof v === "string" ? v.trim() : v])),
+          .map(([k, v]) => [k, typeof v === "string" ? v.trim() : v])
+          .concat(prod.attrs.mall ? [["mall", String(prod.attrs.mall).trim().slice(0, 60)]] : [])),
         photoOrder: editId ? shots.filter(x => x.existing).map(x => x.id) : [],
         photoLabels: Object.fromEntries(shots.filter(x => x.existing).map(x => [x.id, (x.label||"").trim()]))};
       if (editId) data.id = editId;
@@ -4984,7 +5028,7 @@ async function viewAdmin(){
   const pending = users.filter(u => u.seller === "pending");
   const newRep = reports.filter(x => x.status !== "done");
   const tabs = [["pending","Ждут одобрения ("+pending.length+")"],["users","Пользователи ("+users.length+")"],
-    ["prods","Товары ("+prods.length+")"],["vip","⭐ VIP ("+prods.filter(isVip).length+")"],["topup","🪙 Пополнения"+(threads ? " ("+threads.filter(x => x.unread).length+")" : "")],["reports","Жалобы ("+newRep.length+")"],["reviews","Отзывы ("+reviews.length+")"],["tiles","Картинки"]];
+    ["prods","Товары ("+prods.length+")"],["vip","⭐ VIP ("+prods.filter(isVip).length+")"],["topup","🪙 Пополнения"+(threads ? " ("+threads.filter(x => x.unread).length+")" : "")],["reports","Жалобы ("+newRep.length+")"],["reviews","Отзывы ("+reviews.length+")"],["malls","🏬 ТЦ и рынки"],["tiles","Картинки"]];
   let tab = S.admTab || (threads && threads.some(x => x.unread) ? "topup" : pending.length ? "pending" : newRep.length ? "reports" : "prods");
   let q = "";
   const body = h("div");
@@ -5178,6 +5222,19 @@ async function viewAdmin(){
     if (tab === "reports") rows = reports.filter(x => match(x.text+x.product+x.reason)).map(repRow);
     if (tab === "reviews") rows = reviews.filter(x => match(x.text+x.product+x.name)).map(revRow);
     if (tab === "tiles") rows = tileRows();
+    if (tab === "malls"){
+      const areas = CITIES.map(c => ({c, ta: h("textarea",{class:"inp",rows:"6",value:mallsOf(c).join("\n"),placeholder:"Каждое название с новой строки"})}));
+      rows = [h("div",{class:"box"},
+        h("h3",{text:"🏬 Торговые центры и рынки"}),
+        h("p",{class:"hint",style:{margin:"0 0 10px"},text:"Продавец выбирает свой ТЦ или рынок при подаче объявления, покупатель может искать по нему. Пишите каждое название с новой строки."}),
+        ...areas.map(a => h("label",{class:"field",style:{display:"block",marginBottom:"12px"}}, h("span",{style:{fontWeight:"700"},text:"📍 "+a.c}), a.ta)),
+        h("button",{class:"btn block",text:"Сохранить список",onclick:async()=>{
+          const malls = Object.fromEntries(areas.map(a => [a.c, a.ta.value.split("\n").map(s => s.trim()).filter(Boolean)]));
+          const x2 = await call("adminMalls", {malls});
+          if (!x2.ok) return toast(x2.error === "server" ? "Обновите Vip.gs на сервере (версия 49)." : errText(x2));
+          S.malls = x2.malls; lsSet("malls", x2.malls); toast("Список сохранён");
+        }}))];
+    }
     if (tab === "topup") rows = !threads ? [h("div",{class:"err",text:"Обновите Vip.gs на сервере (версия 45), чтобы видеть заявки."})] :
       threads.filter(x => match(x.name+x.phone+x.user)).map(x => h("button",{type:"button",class:"row sup-row"+(x.unread?" new":""),onclick:()=>adminThreadSheet(x.user, () => viewAdmin())},
         h("div",{class:"coin sm",text:"🪙"}),
