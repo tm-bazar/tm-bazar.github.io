@@ -2282,7 +2282,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "53";   // номер версии — виден внизу профиля
+const APP_VER = "54";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3534,7 +3534,7 @@ function homeCatStrip(redraw){
 // ⭐ VIP-магазины → все VIP (с поиском), 🏪 Все магазины → все магазины (с поиском), дальше — сами магазины (VIP первыми)
 function shopCircle(x){
   const pic = x.logo || x.thumb;
-  return h("a",{class:"sc"+(x.vip?" vip":""),href:"#/u/"+x.id},
+  return h("a",{class:"sc"+(x.vip?" vip":""),href:"#/u/"+x.id,onclick:()=>{ S.shopPre = {cat: S.homeCat || ""}; }},
     h("span",{class:"sc-ring"}, pic ? h("img",{src:pic,alt:"",loading:"lazy",decoding:"async"}) : h("i",{text:initials(x.name)}),
       x.vip ? h("em",{text:"VIP"}) : null),
     h("span",{class:"sc-t",text:x.name}));
@@ -3814,6 +3814,8 @@ function viewShop(uid){
   const drawHead = () => {
     const list = all(), f = list[0];
     if (!f){ head.replaceChildren(); return; }
+    // выбранной категории у магазина нет — показываем всё
+    if (cat && !list.some(p => p.cat === cat)) cat = "";
     $("shop-title") && ($("shop-title").textContent = f.sellerName);
     let sum = 0, n = 0; list.forEach(p => { if (p.rating){ sum += p.rating * p.reviews; n += p.reviews; } });
     const cats = [...new Set(list.map(p => p.cat))];
