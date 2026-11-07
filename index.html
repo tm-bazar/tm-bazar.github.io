@@ -689,6 +689,18 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .bal-line{background:var(--vipBg);border:1px solid var(--vipLine);border-radius:12px;padding:10px 12px;font-weight:700;margin:0 0 12px;color:var(--vipFg)}
 .btn.vip-buy{justify-content:space-between}
 .btn.vip-buy:not(.ghost){background:var(--vip);color:#3a2a00}
+.sug{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.sug:empty{display:none}
+.shop-t.all-vip{background:linear-gradient(160deg,#ffd84a,#ffb800);border-color:#f2b600}
+.shop-t.all-vip .shop-ph{background:transparent}
+.shop-t.all-vip .av-ic{font-size:38px}
+.shop-t.all-vip .av-n{position:absolute;right:8px;top:8px;background:#3a2a00;color:#fff;font-size:11px;font-weight:800;border-radius:9px;padding:1px 7px}
+.shop-t.all-vip b{color:#3a2a00}
+.shop-t.all-vip small{color:#5a4300;font-weight:600}
+.shops-q{padding:12px 12px 0}
+.shops-q .search{border:1px solid var(--line);background:#fff}
+.home-strip .cs{width:74px;padding:2px 2px}
+.home-strip .cs span{font-size:10px;line-height:1.15;overflow-wrap:anywhere;hyphens:auto;max-width:100%}
 
 </style>
 </head>
@@ -705,6 +717,7 @@ ru: {
   vipBuy:"VIP на {d} дней", vipBuyQ:"Списать {p} TMT с баланса и сделать объявление VIP на {d} дней?", payBal:"Оплатить с баланса",
   vipBought:"Готово! VIP до {d}", yourBal:"Ваш баланс: {b} TMT", needTopUp:"Не хватает денег — пополнить баланс", vipMore:"Продлить VIP",
   e_no_money:"Недостаточно денег на балансе. Пополните баланс у администратора.", e_no_price:"Цена VIP ещё не назначена. Свяжитесь с администратором.",
+  allVipSub:"Все VIP-магазины ›", searchShopName:"Название магазина",
   allShops:"Все магазины", vipShops:"VIP-магазины", shopsEmpty:"Пока нет магазинов", nShopGoods:"{n} тов.",
   vipHowT:"Как попасть в VIP?", vipHowS:"Ваши объявления выше всех", vipNone:"Здесь будут VIP-магазины",
   vipTitle:"VIP-объявление", vipUntil:"VIP до {d}", makeVip:"Сделать VIP",
@@ -822,6 +835,7 @@ tm: {
   vipBuy:"{d} günlük VIP", vipBuyQ:"Balansdan {p} TMT aýryp, bildirişi {d} günlük VIP etmelimi?", payBal:"Balansdan tölemek",
   vipBought:"Taýýar! VIP {d} çenli", yourBal:"Balansyňyz: {b} TMT", needTopUp:"Pul ýetmeýär — balansy doldurmak", vipMore:"VIP-i uzaltmak",
   e_no_money:"Balansda pul ýeterlik däl. Balansy administratordan dolduryň.", e_no_price:"VIP bahasy entek bellenmedi. Administrator bilen habarlaşyň.",
+  allVipSub:"Ähli VIP dükanlar ›", searchShopName:"Dükanyň ady",
   allShops:"Ähli dükanlar", vipShops:"VIP dükanlar", shopsEmpty:"Häzirlikçe dükan ýok", nShopGoods:"{n} haryt",
   vipHowT:"Nädip VIP bolmaly?", vipHowS:"Bildirişleriňiz hemmeden ýokarda", vipNone:"Bu ýerde VIP dükanlar bolar",
   vipTitle:"VIP bildiriş", vipUntil:"VIP {d} çenli", makeVip:"VIP etmek",
@@ -939,6 +953,7 @@ en: {
   vipBuy:"VIP for {d} days", vipBuyQ:"Pay {p} TMT from your balance and make the listing VIP for {d} days?", payBal:"Pay from balance",
   vipBought:"Done! VIP until {d}", yourBal:"Your balance: {b} TMT", needTopUp:"Not enough money — top up balance", vipMore:"Extend VIP",
   e_no_money:"Not enough money on your balance. Ask the administrator to top it up.", e_no_price:"VIP price is not set yet. Contact the administrator.",
+  allVipSub:"All VIP shops ›", searchShopName:"Shop name",
   allShops:"All shops", vipShops:"VIP shops", shopsEmpty:"No shops yet", nShopGoods:"{n} items",
   vipHowT:"How to get VIP?", vipHowS:"Your listings on top", vipNone:"VIP shops will appear here",
   vipTitle:"VIP listing", vipUntil:"VIP until {d}", makeVip:"Make VIP",
@@ -1205,7 +1220,7 @@ const FIELDS = {
     {k:"model", type:"text", max:40, filter:"more", list:(s, a) => CAR_MODELS[a.brand] || [], when:(s) => !!VEHICLE_SUBS[s] || s === "parts"},
     {k:"year", type:"year", filter:"range", when:(s) => !!VEHICLE_SUBS[s] || s === "moto" || s === "water"},
     {k:"km", type:"num", unit:"km", when:(s) => !!VEHICLE_SUBS[s] || s === "moto"},
-    {k:"body", type:"sel", filter:"more", opts:["sedan","hatchback","suv","crossover","wagon","minivan","pickup","coupe","convertible"], when:(s) => s === "cars"},
+    {k:"body", type:"sel", filter:"main", opts:["suv","sedan","crossover","hatchback","wagon","minivan","pickup","coupe","convertible"], when:(s) => s === "cars" || s === "imported"},
     {k:"engine", type:"num", unit:"l", step:"0.1", when:(s) => !!VEHICLE_SUBS[s] && s !== "special"},
     {k:"gear", type:"sel", filter:"more", opts:["auto","manual"], when:(s) => !!VEHICLE_SUBS[s]},
     {k:"fuel", type:"sel", filter:"more", opts:["petrol","gas","diesel","hybrid","electric"], when:(s) => !!VEHICLE_SUBS[s] || s === "moto"},
@@ -2051,7 +2066,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "39";   // номер версии — виден внизу профиля
+const APP_VER = "40";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2220,6 +2235,43 @@ function migrateProduct(p){
   return p;
 }
 function byId(id){ return S.catalog.find(p => p.id === id); }
+
+/* ===== ПОИСК НАЗВАНИЙ: «Камри» = «Camry», «Хайландер» = «Highlander», регистр не важен ===== */
+const TRL = {а:"a",б:"b",в:"v",г:"g",д:"d",е:"e",ё:"e",ж:"j",з:"z",и:"i",й:"y",к:"k",л:"l",м:"m",н:"n",о:"o",п:"p",р:"r",с:"s",т:"t",у:"u",ф:"f",х:"h",ц:"ts",ч:"ch",ш:"sh",щ:"sh",ъ:"",ы:"y",ь:"",э:"e",ю:"yu",я:"ya",
+  ç:"ch",ş:"sh",ž:"j",ň:"n",ý:"y",ü:"u",ö:"o",ä:"a"};
+const skelCache = new Map();
+// «скелет» слова: латиница, похожие звуки слиты, без гласных
+function skel(x){
+  const k = String(x || ""); if (skelCache.has(k)) return skelCache.get(k);
+  let s = k.toLowerCase().replace(/[а-яёçşžňýüöä]/g, c => TRL[c] != null ? TRL[c] : c);
+  s = s.replace(/igh/g,"i").replace(/gh/g,"g").replace(/ph/g,"f").replace(/ck/g,"k").replace(/tch|ch|sh/g,"s")
+    .replace(/c(?=[eiy])/g,"s").replace(/[cq]/g,"k").replace(/x/g,"ks").replace(/w/g,"v").replace(/z/g,"s").replace(/dj/g,"j")
+    .replace(/[^a-z0-9]/g,"").replace(/[aeiouy]/g,"").replace(/(.)\1+/g,"$1");
+  if (skelCache.size > 5000) skelCache.clear();
+  skelCache.set(k, s); return s;
+}
+// одно слово поиска найдено в тексте?
+function looseHas(hay, w){
+  if (hay.includes(w)) return true;
+  const sk = skel(w); if (!sk) return false;
+  if (sk.length >= 3) return skel(hay).includes(sk);
+  return hay.split(/[\s,·()/-]+/).some(x => { const k = x && skel(x); return !!k && (sk.length > 1 ? k.startsWith(sk) : k === sk); });
+}
+// одно и то же название? («camry », «Камри» и «Camry» — да)
+function sameName(a, b){
+  if (a === b) return true;
+  const x = String(a || "").trim().toLowerCase(), y = String(b || "").trim().toLowerCase();
+  if (!x || !y) return false;
+  if (x === y) return true;
+  const sx = skel(x), sy = skel(y);
+  return sx.length >= 2 && sx === sy;
+}
+// привести введённую модель к названию из списка («toyota camry» → «Camry»)
+function canonName(list, v, brand){
+  let s = String(v || "").trim(); if (!s || !list || !list.length) return s;
+  if (brand){ const b = String(brand).toLowerCase(); if (s.toLowerCase().startsWith(b + " ")) s = s.slice(b.length + 1).trim(); }
+  return list.find(m => m.toLowerCase() === s.toLowerCase()) || list.find(m => sameName(m, s)) || s;
+}
 
 /* ===== VIP и срок объявления ===== */
 function setExpDays(n){ n = +n || 0; if (n !== S.expDays){ S.expDays = n; lsSet("expDays", n); } }
@@ -2585,7 +2637,7 @@ function makeList(opts, counts, onPick, selected, withAny){
     const parts = [];
     if (withAny && !v) parts.push(h("button",{type:"button",class:"mk-row"+(!selected?" on":""),onclick:()=>onPick("")},
       anyLogo(opts), h("span",{class:"mk-name",text:t("anyMake")}), h("span",{class:"ar",text:"›"})));
-    if (v){ parts.push(...opts.filter(b => brandName(b).toLowerCase().includes(v)).map(row)); }
+    if (v){ parts.push(...opts.filter(b => looseHas((brandName(b)+" "+b).toLowerCase(), v)).map(row)); }
     else {
       if (pop.length && others.length) parts.push(h("div",{class:"mk-h",text:t("popularMakes")}));
       parts.push(...pop.map(row));
@@ -2653,10 +2705,11 @@ async function viewModels(cat, sub, b){
   await loadModels();
   if (location.hash !== here) return;
   const counts = {};
-  S.catalog.filter(p => p.cat === cat && p.sub === sub && (p.attrs||{}).brand === b)
-    .forEach(p => { const m = (p.attrs||{}).model; if (m) counts[m] = (counts[m]||0) + 1; });
   const pop = (sub === "cars" || sub === "imported") ? ((POP_MODELS || CAR_MODELS)[b] || []) : [];
-  const all = [...new Set([...modelsOf(sub, b), ...pop, ...Object.keys(counts)])].sort(modelSort);
+  const known = [...new Set([...modelsOf(sub, b), ...pop])];
+  S.catalog.filter(p => p.cat === cat && p.sub === sub && (p.attrs||{}).brand === b)
+    .forEach(p => { const m = canonName(known, (p.attrs||{}).model, b); if (m) counts[m] = (counts[m]||0) + 1; });
+  const all = [...new Set([...known, ...Object.keys(counts)])].sort(modelSort);
   const st = S.browse && S.browse.cat === cat ? S.browse : null;
   const selected = st && st.sub === sub && (st.f||{}).brand === b ? (st.f.model || "") : null;
   const pick = m => { S.browse = {cat, sub, f: m ? {brand: b, model: m} : {brand: b}, r: st ? st.r || {} : {}}; go("/c/"+cat+"/list"); };
@@ -2668,7 +2721,7 @@ async function viewModels(cat, sub, b){
   const draw = () => {
     const v = q.value.trim().toLowerCase();
     const parts = [];
-    if (v) parts.push(...all.filter(m => m.toLowerCase().includes(v)).map(row));
+    if (v) parts.push(...all.filter(m => looseHas(m.toLowerCase(), v)).map(row));
     else {
       const total = Object.values(counts).reduce((a, x) => a + x, 0);
       parts.push(h("button",{type:"button",class:"mk-row md-row md-any"+(selected===""?" on":""),onclick:()=>pick("")},
@@ -3022,7 +3075,7 @@ function textMatch(p, words){
   const sub = p.sub ? T.ru["sub_"+p.sub]+" "+T.tm["sub_"+p.sub]+" "+T.en["sub_"+p.sub] : "";
   const atxt = Object.values(at).map(v => Array.isArray(v) ? v.join(" ") : v).join(" ");
   const hay = (atxt+" "+p.title+" "+catName(p.cat)+" "+T.ru["cat_"+p.cat]+" "+T.tm["cat_"+p.cat]+" "+T.en["cat_"+p.cat]+" "+sub+" "+(at.brand||"")+" "+(at.model||"")+" "+(at.year||"")+" "+p.city+" "+(p.place||"")+" "+p.sellerName).toLowerCase();
-  return words.every(w => hay.includes(w));
+  return words.every(w => looseHas(hay, w));
 }
 
 /* ===== ГЛАВНАЯ ===== */
@@ -3131,21 +3184,32 @@ function homeShops(cat){
   return h("div",{class:"home-cats home-shops"},
     h("div",{class:"sec-h vip-h",style:{padding:"0 12px"}}, h("h2",{text:"⭐ "+t("vipShops")}), h("div",{class:"sp"}),
       vip.length ? h("a",{class:"lnk-red",href:"#/shops/vip",text:t("allCats")}) : null),
-    h("div",{class:"shop-row"}, ...vip.map(shopTile),
+    h("div",{class:"shop-row"},
+      // первая плитка — вход во все VIP-магазины (там поиск по названию)
+      h("a",{class:"shop-t vip all-vip",href:"#/shops/vip"},
+        h("div",{class:"shop-ph"}, h("span",{class:"av-ic",text:"⭐"}), vip.length ? h("span",{class:"av-n",text:String(vip.length)}) : null),
+        h("b",{text:t("vipShops")}), h("small",{text:t("allVipSub")})),
+      ...vip.map(shopTile),
       h("button",{type:"button",class:"shop-t vip how"+(vip.length ? " mini" : ""),onclick:()=>vipInfoSheet()},
         h("div",{class:"shop-ph"}, h("span",{text:"⭐"})),
         h("b",{text:vip.length ? t("vipHowT") : t("vipNone")}), h("small",{text:t("vipHowS")}))));
 }
 function viewShops(vipOnly){
   setTab("home");
+  let q = "";
   const box = h("div",{class:"shops-grid"});
+  const qIn = h("input",{type:"search",enterkeyhint:"search",placeholder:t("searchShopName"),"aria-label":t("searchShopName")});
+  qIn.oninput = () => { q = qIn.value.trim().toLowerCase(); draw(); };
   const draw = () => {
-    const list = shopsList().filter(x => !vipOnly || x.vip);
-    box.replaceChildren(...(list.length ? list.map(shopTile) : [emptyBox("🏪", vipOnly ? t("vipNone") : t("shopsEmpty"))]));
+    const list = shopsList().filter(x => (!vipOnly || x.vip) && (!q || looseHas(String(x.name).toLowerCase(), q)));
+    box.replaceChildren(...(list.length ? list.map(shopTile) :
+      [emptyBox(q ? "🔎" : "🏪", q ? t("nothingQ",{q:qIn.value.trim()}) : vipOnly ? t("vipNone") : t("shopsEmpty"))]));
   };
   page(topBar((vipOnly ? "⭐ " : "") + t(vipOnly ? "vipShops" : "allShops"),
       {right: vipOnly ? h("button",{class:"btn sm ghost",text:"?",onclick:()=>vipInfoSheet()}) : null}),
-    h("div",{class:"wrap"}, box));
+    h("div",{class:"wrap"},
+      h("div",{class:"shops-q"}, h("div",{class:"search"}, h("span",{html:IC.search}), qIn)),
+      box));
   draw(); loadCatalog().then(draw);
 }
 // (старое) категории крупными фото-карточками в 2 ряда
@@ -3187,7 +3251,7 @@ function viewBrowse(catId, listMode){
   const base = () => catId ? S.catalog.filter(p => p.cat === catId) : S.catalog;
   st.f = st.f || {}; st.r = st.r || {};
   const fval = (p, k) => (p.attrs || {})[k];
-  const hasVal = (p, k, v) => { const x = fval(p, k); return Array.isArray(x) ? x.includes(v) : x === v; };
+  const hasVal = (p, k, v) => { const x = fval(p, k); return Array.isArray(x) ? x.includes(v) : k === "model" ? sameName(canonName(modelsOf(p.sub, (p.attrs||{}).brand), x, (p.attrs||{}).brand), v) : x === v; };
   const ctxA = () => Object.assign({}, st.f);
   const applyF = (list, skip) => list.filter(p => {
     if (st.sub && p.sub !== st.sub) return false;
@@ -4165,9 +4229,18 @@ async function viewSell(editId){
     }
     const list = f.list ? f.list(sub, a) : [];
     const id = "dl_" + f.k;
-    const inp = h("input",{class:"inp",maxlength:String(f.max||40),placeholder:list.length ? t("modelPh") : "",value:a[f.k]||"",list:list.length ? id : null});
-    inp.oninput = () => a[f.k] = inp.value;
-    return list.length ? h("div",null, inp, h("datalist",{id}, ...list.map(x => h("option",{value:x})))) : inp;
+    const inp = h("input",{class:"inp",maxlength:String(f.max||40),placeholder:list.length ? t("modelPh") : "",value:a[f.k]||"",autocomplete:"off"});
+    if (!list.length){ inp.oninput = () => a[f.k] = inp.value; return inp; }
+    // подсказки: можно писать по-русски («камри», «хайландер») — выберется правильное название
+    const sug = h("div",{class:"sug"});
+    const showSug = () => {
+      const v = inp.value.trim().toLowerCase();
+      const hits = v ? list.filter(m => looseHas(m.toLowerCase(), v)).slice(0, 8) : [];
+      sug.replaceChildren(...(hits.length === 1 && hits[0] === inp.value ? [] : hits.map(m => h("button",{type:"button",class:"chip",text:m,onclick:()=>{ inp.value = m; a[f.k] = m; sug.replaceChildren(); }}))));
+    };
+    inp.oninput = () => { a[f.k] = inp.value; showSug(); };
+    inp.onchange = () => { const c = canonName(list, inp.value, a.brand); if (c !== inp.value){ inp.value = c; a[f.k] = c; } };
+    return h("div",null, inp, sug);
   };
 
   // строка списка (как в Aýterek): фото/значок + название + ›
@@ -4311,6 +4384,7 @@ async function viewSell(editId){
       let vec = null;
       if (!main.existing){ vec = mainVec || await Vision.describe(main.img || await loadImg(main.dataUrl), 8000); }
       else if (main.id !== origMain){ try{ vec = await Vision.describe(await loadImg(main.url || main.thumb, true), 8000); }catch(e){} }
+      if (prod.attrs.model && prod.attrs.brand) prod.attrs.model = canonName([...new Set([...modelsOf(prod.sub, prod.attrs.brand), ...(CAR_MODELS[prod.attrs.brand] || [])])], prod.attrs.model, prod.attrs.brand);
       const data = {title: prod.title.trim(), price, cat: prod.cat, cond: NO_COND[prod.cat] ? "new" : prod.cond, desc: descIn.value, city: prod.city, status: editId ? prod.status : "active",
         place: (prod.place||"").trim(), video: videoUrl(videoIn.value), sub: SUBS[prod.cat] ? prod.sub : "",
         attrs: Object.fromEntries(flds.map(f => [f.k, prod.attrs[f.k]]).filter(([k, v]) => v != null && v !== "" && !(Array.isArray(v) && !v.length))
