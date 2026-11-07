@@ -744,6 +744,26 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .own-vip{background:var(--vipBg);border:1px solid var(--vipLine);border-radius:14px;margin:12px 12px 0;padding:12px;display:grid;gap:10px}
 .own-vip .ov-bal{display:flex;gap:8px;align-items:center;font-weight:800;color:var(--vipFg)}
 .own-vip .ov-bal .link{margin-left:auto;font-weight:700}
+/* v45: пополнение через приложение */
+.sup-how ol{margin:6px 0 0;padding-left:20px;font-size:14px;line-height:1.5;color:var(--mut)}
+.sup-msgs{min-height:0;padding:4px 2px 10px}
+.sup-msgs .msg.them{background:#fff;border:1px solid var(--line)}
+.sup-msgs .msg.ok{background:var(--greenBg);color:#0e6b33;border-color:transparent}
+.sup-msgs.adm{max-height:45vh;overflow-y:auto;background:var(--soft,#f3f3f5);border-radius:12px;padding:10px 8px;margin:0 0 10px}
+.sup-amt{font-weight:800;font-size:16px}
+.sup-form .lbl{display:block;font-weight:700;font-size:13.5px;margin:10px 0 6px}
+.sup-chips{padding:0 0 8px}
+.sup-chips button{border-color:var(--vipLine);color:var(--vipFg);background:var(--vipBg);font-weight:700}
+.sup-chips button.on{background:var(--vip);color:#3a2a00}
+.sup-prev{position:relative;display:inline-block}
+.sup-prev img{max-height:180px;border-radius:12px;border:1px solid var(--line)}
+.sup-prev .xbtn{position:absolute;top:6px;right:6px}
+.sup-dot{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:9px;background:#fff;color:var(--red);font-size:11px;font-weight:800;padding:0 5px;margin-left:6px}
+.sup-row{width:100%;text-align:left;background:#fff}
+.sup-row.new{background:var(--vipBg)}
+.sup-row .sup-dot{background:var(--red);color:#fff}
+.coin.sm{width:40px;height:40px;border-radius:50%;background:var(--vip);display:grid;place-items:center;font-size:20px;flex:none}
+.adm-bar{margin-bottom:0}
 
 </style>
 </head>
@@ -767,6 +787,11 @@ ru: {
   coinsW:"монет", coinRate:"1 монета = 1 манат", payQ:"С баланса спишется {p}. Продолжить?",
   vipShopT:"VIP-магазин", vipShopAbout:"Все объявления вашего магазина станут жёлтыми и будут выше остальных, а магазин появится в «VIP-магазинах» на главной.",
   vipShopBtn:"Сделать весь магазин VIP", vipItemBuy:"Только это объявление · {d} дней", myShop:"Мой магазин", makeShopVip:"Сделать магазин VIP", vipShopOn:"Магазин VIP до {d} · продлить",
+  topHowT:"Как пополнить", topStep1:"Оплатите нужную сумму (1 монета = 1 манат).", topStep2:"Сделайте скриншот оплаты и прикрепите его ниже.",
+  topStep3:"Нажмите «Отправить» — администратор проверит и начислит монеты.", topNewT:"Новая заявка", topAmount:"Сколько монет", topAmountPh:"Другая сумма",
+  topShot:"Скриншот оплаты", attachShot:"Прикрепить скриншот", topText:"Сообщение (необязательно)", topTextPh:"Например: оплатил через терминал",
+  topSend:"Отправить администратору", topNeed:"Укажите сумму или прикрепите скриншот.", topSent:"Отправлено! Ждите ответа администратора.",
+  topEmpty:"Здесь будет ваша переписка с администратором.", admCredit:"Начислить монеты (админ)",
   allShops:"Все магазины", vipShops:"VIP-магазины", shopsEmpty:"Пока нет магазинов", nShopGoods:"{n} тов.",
   vipHowT:"Как попасть в VIP?", vipHowS:"Ваши объявления выше всех", vipNone:"Здесь будут VIP-магазины",
   vipTitle:"VIP-объявление", vipUntil:"VIP до {d}", makeVip:"Сделать VIP",
@@ -891,6 +916,11 @@ tm: {
   coinsW:"teňňe", coinRate:"1 teňňe = 1 manat", payQ:"Balansdan {p} aýrylar. Dowam etmelimi?",
   vipShopT:"VIP dükan", vipShopAbout:"Dükanyňyzyň ähli bildirişleri sary bolar we beýlekilerden ýokarda durar, dükan baş sahypadaky «VIP dükanlara» düşer.",
   vipShopBtn:"Bütin dükany VIP etmek", vipItemBuy:"Diňe şu bildiriş · {d} gün", myShop:"Meniň dükanym", makeShopVip:"Dükany VIP etmek", vipShopOn:"Dükan {d} çenli VIP · uzaltmak",
+  topHowT:"Nädip doldurmaly", topStep1:"Gerekli möçberi töläň (1 teňňe = 1 manat).", topStep2:"Tölegiň skrinşotyny alyp, aşakda goşuň.",
+  topStep3:"«Ibermek» basyň — administrator barlap, teňňeleri goşar.", topNewT:"Täze haýyş", topAmount:"Näçe teňňe", topAmountPh:"Başga möçber",
+  topShot:"Tölegiň skrinşoty", attachShot:"Skrinşot goşmak", topText:"Hat (hökman däl)", topTextPh:"Mysal: terminal arkaly töledim",
+  topSend:"Administratora ibermek", topNeed:"Möçberi ýazyň ýa-da skrinşot goşuň.", topSent:"Iberildi! Administratoryň jogabyna garaşyň.",
+  topEmpty:"Bu ýerde administrator bilen hat alyşmaňyz bolar.", admCredit:"Teňňe goşmak (admin)",
   allShops:"Ähli dükanlar", vipShops:"VIP dükanlar", shopsEmpty:"Häzirlikçe dükan ýok", nShopGoods:"{n} haryt",
   vipHowT:"Nädip VIP bolmaly?", vipHowS:"Bildirişleriňiz hemmeden ýokarda", vipNone:"Bu ýerde VIP dükanlar bolar",
   vipTitle:"VIP bildiriş", vipUntil:"VIP {d} çenli", makeVip:"VIP etmek",
@@ -1015,6 +1045,11 @@ en: {
   coinsW:"coins", coinRate:"1 coin = 1 manat", payQ:"{p} will be taken from your balance. Continue?",
   vipShopT:"VIP shop", vipShopAbout:"All listings of your shop turn yellow and go above others, and the shop appears in “VIP shops” on the home page.",
   vipShopBtn:"Make the whole shop VIP", vipItemBuy:"Only this listing · {d} days", myShop:"My shop", makeShopVip:"Make shop VIP", vipShopOn:"Shop VIP until {d} · extend",
+  topHowT:"How to top up", topStep1:"Pay the amount you need (1 coin = 1 manat).", topStep2:"Take a screenshot of the payment and attach it below.",
+  topStep3:"Tap “Send” — the administrator checks it and adds the coins.", topNewT:"New request", topAmount:"How many coins", topAmountPh:"Other amount",
+  topShot:"Payment screenshot", attachShot:"Attach screenshot", topText:"Message (optional)", topTextPh:"E.g. paid via terminal",
+  topSend:"Send to administrator", topNeed:"Enter an amount or attach a screenshot.", topSent:"Sent! Wait for the administrator's reply.",
+  topEmpty:"Your conversation with the administrator will appear here.", admCredit:"Add coins (admin)",
   allShops:"All shops", vipShops:"VIP shops", shopsEmpty:"No shops yet", nShopGoods:"{n} items",
   vipHowT:"How to get VIP?", vipHowS:"Your listings on top", vipNone:"VIP shops will appear here",
   vipTitle:"VIP listing", vipUntil:"VIP until {d}", makeVip:"Make VIP",
@@ -2086,6 +2121,25 @@ const Mock = (() => {
       if ((db.bal[u.id]||0) < pr.item) return {ok:false,error:"no_money"}; db.bal[u.id] -= pr.item; db.vip = db.vip || {};
       const from = Math.max(Date.now(), new Date(db.vip[p.id] || 0).getTime() || 0);
       db.vip[p.id] = new Date(from + 7 * 864e5).toISOString(); return {ok:true, vip:db.vip[p.id], balance:db.bal[u.id]}; },
+    supportSend(d){ const u = userByToken(d.token); if (!u) return {ok:false,error:"auth"}; db.sup = db.sup || [];
+      const o = {id:"M"+Date.now(), at:now(), user:u.id, name:u.name, phone:u.phone, from:"user", text:d.text||"", photo:d.photo ? "data:image/jpeg;base64,"+d.photo : "", amount:+d.amount||0, readA:"", readU:"1"};
+      db.sup.push(o); return {ok:true}; },
+    supportList(d){ const u = userByToken(d.token); if (!u) return {ok:false,error:"auth"}; db.sup = db.sup || [];
+      const mine = db.sup.filter(m => m.user === u.id); mine.forEach(m => { if (m.from === "admin") m.readU = "1"; });
+      return {ok:true, messages:mine.map(m => ({id:m.id, at:m.at, from:m.from, text:m.text, photo:m.photo, amount:m.amount})), balance:(db.bal||{})[u.id]||0}; },
+    adminSupport(d){ if (!admOk(d)) return {ok:false,error:"auth"}; const by = {};
+      (db.sup||[]).forEach(m => { const t = by[m.user] || (by[m.user] = {user:m.user, name:m.name, phone:m.phone, unread:0, amount:0});
+        t.last = {at:m.at, from:m.from, text:m.text, photo:m.photo, amount:m.amount}; if (m.from === "user" && !m.readA){ t.unread++; if (m.amount) t.amount = m.amount; } });
+      return {ok:true, threads:Object.values(by).map(t => Object.assign(t, {balance:(db.bal||{})[t.user]||0}))}; },
+    adminSupportThread(d){ if (!admOk(d)) return {ok:false,error:"auth"}; const u = db.users.find(x => x.id === d.user); if (!u) return {ok:false,error:"not_found"};
+      const mine = (db.sup||[]).filter(m => m.user === u.id); mine.forEach(m => { if (m.from === "user") m.readA = "1"; });
+      return {ok:true, user:{id:u.id, name:u.name, phone:u.phone}, messages:mine.map(m => ({id:m.id, at:m.at, from:m.from, text:m.text, photo:m.photo, amount:m.amount})), balance:(db.bal||{})[u.id]||0}; },
+    adminSupportSend(d){ if (!admOk(d)) return {ok:false,error:"auth"}; const u = db.users.find(x => x.id === d.user); if (!u) return {ok:false,error:"not_found"};
+      db.bal = db.bal || {}; db.sup = db.sup || []; let text = d.text || ""; const a = +d.amount || 0;
+      if (a){ if ((db.bal[u.id]||0) + a < 0) return {ok:false,error:"no_money"}; db.bal[u.id] = (db.bal[u.id]||0) + a; text = (a > 0 ? "✅ Начислено "+a+" монет. Баланс: "+db.bal[u.id]+" монет." : "Списано "+(-a)+" монет.") + (text ? "\n"+text : ""); }
+      if (!text) return {ok:false,error:"fields"};
+      db.sup.push({id:"M"+Date.now(), at:now(), user:u.id, name:u.name, phone:u.phone, from:"admin", text, photo:"", amount:a, readA:"1", readU:""});
+      return {ok:true, balance:db.bal[u.id]}; },
     adminVipShop(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.vipShop = db.vipShop || {};
       if (+d.days > 0) db.vipShop[d.user] = new Date(Date.now() + d.days * 864e5).toISOString(); else delete db.vipShop[d.user]; return {ok:true}; },
     adminBalance(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.bal = db.bal || {};
@@ -2130,7 +2184,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "44";   // номер версии — виден внизу профиля
+const APP_VER = "45";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2500,6 +2554,7 @@ const ROUTES = [
   [/^\/edit\/(\w+)$/, m => viewSell(m[1])],
   [/^\/profile$/, () => viewProfile()],
   [/^\/rules$/, () => viewRules()],
+  [/^\/topup$/, () => viewTopUp()],
   [/^\/admin$/, () => viewAdmin()]
 ];
 function route(){
@@ -2544,7 +2599,7 @@ function updateBadge(){
   b.hidden = !S.unread; b.textContent = S.unread > 9 ? "9+" : S.unread;
   // красная точка на «Профиль»: свои объявления скоро удалятся
   const m = $("badge-me");
-  if (m) m.hidden = !(S.user && S.catalog.some(p => p.user === S.user.id && expSoon(p)));
+  if (m) m.hidden = !(S.user && (S.supportUnread || S.catalog.some(p => p.user === S.user.id && expSoon(p))));
 }
 let pollTimer = null;
 function startPoll(){
@@ -3221,13 +3276,8 @@ function adminContactBtns(){
       imoBtn(ADMIN_PHONE, t("writeAdminImo")),
       h("a",{class:"btn block ghost",href:"tel:+993"+ADMIN_PHONE}, icon("phone"), t("call")))];
 }
-// как пополнить баланс — через администратора
-function topUpSheet(){
-  return sheet((box) => box.append(h("h2",{text:"🪙 "+t("topUp")}),
-    h("p",{text:t("topUpHow")}), h("p",{class:"hint",text:t("coinRate")}),
-    S.user ? h("div",{style:{fontSize:"20px",fontWeight:"800",textAlign:"center",margin:"0 0 6px"},text:phoneFmt(S.user.phone)}) : null,
-    ...adminContactBtns()));
-}
+// пополнить баланс — переписка с администратором в приложении (скриншот оплаты)
+function topUpSheet(){ closeSheet(); go("/topup"); }
 // спросить «списать N монет?»
 function payConfirm(title, price, sub){
   return sheet((box, close) => box.append(h("h2",{text:title}),
@@ -3608,7 +3658,10 @@ function viewShop(uid){
       h("button",{class:"btn block vip-shop-btn",onclick:()=>shopVipSheet(() => { drawOwn(); draw(); })},
         "⭐ ", S.shopVip ? t("vipShopOn",{d:dayName(S.shopVip)}) : t("makeShopVip"))));
   };
-  page(bar, h("div",{class:"wrap"}, own, head, body));
+  // администратор (вошёл в админку): начислить монеты этому продавцу
+  const admBar = S.adminToken ? h("div",{class:"own-vip adm-bar"},
+    h("button",{class:"btn block vip-shop-btn",onclick:()=>adminThreadSheet(uid)}, "🪙 ", t("admCredit"))) : null;
+  page(bar, h("div",{class:"wrap"}, admBar, own, head, body));
   if (S.user && S.user.id === uid) call("me").then(r => { if (r.ok && r.balance != null){ S.balance = +r.balance || 0; S.vipPrices = r.vipPrices || {}; S.shopVip = r.shopVip || ""; setExpDays(r.expDays); drawOwn(); } });
   const draw = () => { drawHead(); drawList(); };
   draw(); loadCatalog().then(draw);
@@ -4116,11 +4169,11 @@ async function viewMe(){
   if (!r.ok){ list.replaceChildren(h("div",{class:"err",text:errText(r)})); return; }
   S.user = r.user; lsSet("user", r.user); setExpDays(r.expDays);
   if (r.balance != null){
-    S.balance = +r.balance || 0; S.vipPrices = r.vipPrices || {}; S.shopVip = r.shopVip || "";
+    S.balance = +r.balance || 0; S.vipPrices = r.vipPrices || {}; S.shopVip = r.shopVip || ""; S.supportUnread = +r.supportUnread || 0; updateBadge();
     const drawBal = () => balBox.replaceChildren(h("div",{class:"box bal-box"},
       h("div",{class:"coin",text:"🪙"}),
       h("div",{style:{flex:1,minWidth:0}}, h("small",{text:t("balance")}), h("b",{id:"bal-sum",text:coins(S.balance)}), h("span",{text:t("coinRate")})),
-      h("button",{class:"btn sm",text:t("topUp"),onclick:()=>topUpSheet()})),
+      h("button",{class:"btn sm",onclick:()=>topUpSheet()}, t("topUp"), S.supportUnread ? h("span",{class:"sup-dot",text:String(S.supportUnread)}) : null)),
       r.products.length ? h("div",{class:"box shop-vip-box"+(S.shopVip ? " on" : "")},
         h("a",{class:"my-shop",href:"#/u/"+r.user.id}, "🏪 ", t("myShop"), h("span",{class:"ar",text:"›"})),
         h("button",{class:"btn block vip-shop-btn",onclick:()=>shopVipSheet(() => { drawBal(); })},
@@ -4246,6 +4299,85 @@ function viewProfile(){
     h("div",{class:"hint",style:{marginBottom:"14px"},text:t("phoneFixed",{p:phoneFmt(u.phone)})}),
     err, save)));
 }
+
+/* ===== ПОПОЛНИТЬ БАЛАНС: переписка с администратором прямо в приложении ===== */
+// пузырьки переписки (продавец ↔ администратор); mine — кто «я» на этом экране
+function supBubbles(list, mine){
+  let lastDay = "";
+  const out = [];
+  list.forEach(m => {
+    const day = dayName(m.at);
+    if (day !== lastDay){ out.push(h("div",{class:"day",text:day})); lastDay = day; }
+    out.push(h("div",{class:"msg "+(m.from === mine ? "me" : "them")+(m.from === "admin" && /^✅/.test(m.text||"") ? " ok" : "")},
+      m.photo ? h("a",{href:m.photo,target:"_blank",rel:"noopener"}, h("img",{src:m.photo,alt:""})) : null,
+      m.amount && m.from === "user" ? h("div",{class:"sup-amt",text:"🪙 "+coins(m.amount)}) : null,
+      m.text ? h("div",{text:m.text}) : null,
+      h("div",{class:"tm",text:hm(m.at)})));
+  });
+  return out;
+}
+async function viewTopUp(){
+  setTab("me", false);
+  if (!S.token){ go("/me"); return; }
+  const here = location.hash;
+  const bal = h("b",{text:coins(S.balance)});
+  const msgs = h("div",{class:"msgs sup-msgs"}, h("div",{class:"empty"}, h("div",{class:"spin"})));
+  let amount = 0, file = null;
+  const amtIn = h("input",{class:"inp",inputmode:"numeric",placeholder:t("topAmountPh")});
+  const chips = h("div",{class:"quick sup-chips"});
+  const drawChips = () => chips.replaceChildren(...[10, 30, 55, 100, 200].map(n =>
+    h("button",{type:"button",class:amount === n ? "on" : null,text:n+" 🪙",onclick:()=>{ amount = n; amtIn.value = String(n); drawChips(); }})));
+  amtIn.oninput = () => { amount = Math.max(0, parseInt(amtIn.value, 10) || 0); drawChips(); };
+  drawChips();
+  const shot = h("div",{class:"sup-shot"});
+  const picker = h("input",{type:"file",accept:"image/*",hidden:true});
+  const drawShot = () => shot.replaceChildren(file ? h("div",{class:"sup-prev"}, h("img",{src:file.dataUrl,alt:""}),
+      h("button",{type:"button",class:"xbtn",text:"✕",onclick:()=>{ file = null; drawShot(); }})) :
+    h("button",{type:"button",class:"btn block ghost",onclick:()=>picker.click()}, icon("img"), t("attachShot")));
+  picker.onchange = async () => { const f = picker.files[0]; picker.value = ""; if (!f) return;
+    try{ file = await compress(f, 1400); drawShot(); }catch(e){ toast(t("e_photo")); } };
+  drawShot();
+  const txt = h("textarea",{class:"inp",rows:"2",placeholder:t("topTextPh")});
+  const send = h("button",{class:"btn block",text:t("topSend")});
+  send.onclick = async () => {
+    if (!amount && !file && !txt.value.trim()) return toast(t("topNeed"));
+    send.disabled = true; const b = busy(t("saving"));
+    const r = await call("supportSend", {amount, text: txt.value.trim(), photo: file ? file.b64 : "", mime: "image/jpeg"});
+    b.done(); send.disabled = false;
+    if (!r.ok) return toast(errText(r));
+    amount = 0; amtIn.value = ""; file = null; txt.value = ""; drawChips(); drawShot();
+    toast(t("topSent")); load();
+  };
+  page(topBar("🪙 "+t("topUp")),
+    h("div",{class:"wrap"},
+      h("div",{class:"box bal-box"}, h("div",{class:"coin",text:"🪙"}),
+        h("div",{style:{flex:1,minWidth:0}}, h("small",{text:t("balance")}), bal, h("span",{text:t("coinRate")}))),
+      h("div",{class:"box sup-how"}, h("h3",{text:t("topHowT")}),
+        h("ol",null, h("li",{text:t("topStep1")}), h("li",{text:t("topStep2")}), h("li",{text:t("topStep3")}))),
+      msgs,
+      h("div",{class:"box sup-form"}, h("h3",{text:t("topNewT")}),
+        h("label",{class:"lbl",text:t("topAmount")}), chips, amtIn,
+        h("label",{class:"lbl",text:t("topShot")}), shot, picker,
+        h("label",{class:"lbl",text:t("topText")}), txt,
+        h("div",{style:{height:"10px"}}), send)));
+  let n = -1;
+  async function load(){
+    const r = await call("supportList");
+    if (location.hash !== here) return;
+    if (!r.ok){
+      // сервер ещё без этой функции — старый способ: IMO / звонок
+      if (r.error === "server"){ msgs.replaceChildren(h("div",{class:"box"}, h("p",{text:t("topUpHow")}), ...adminContactBtns())); return; }
+      msgs.replaceChildren(h("div",{class:"err",text:errText(r)})); return;
+    }
+    S.balance = +r.balance || 0; bal.textContent = coins(S.balance); S.supportUnread = 0; updateBadge();
+    if (r.messages.length === n) return;
+    n = r.messages.length;
+    msgs.replaceChildren(...(n ? supBubbles(r.messages, "user") : [h("p",{class:"hint",style:{textAlign:"center"},text:t("topEmpty")})]));
+  }
+  load();
+  S.timers.push(setInterval(() => { if (!document.hidden) load(); }, 20000));
+}
+
 function viewRules(){
   setTab("me");
   page(topBar(t("rulesTitle")), h("div",{class:"wrap"}, h("div",{class:"box"},
@@ -4633,6 +4765,47 @@ function start(){
 }
 
 /* ===== АДМИНКА (адрес: сайт/#/admin) ===== */
+
+// переписка с продавцом о пополнении + начислить монеты в один клик
+async function adminThreadSheet(uid, onChange){
+  let changed = false;
+  await sheet((box, close) => {
+    const body = h("div",null, h("div",{class:"empty"}, h("div",{class:"spin"})));
+    box.append(body);
+    const load = async () => {
+      const r = await call("adminSupportThread", {user: uid});
+      if (!r.ok){ body.replaceChildren(h("div",{class:"err",text:r.error === "server" ? "Обновите Vip.gs на сервере (версия 45)." : errText(r)})); return; }
+      const lastAsk = [...r.messages].reverse().find(m => m.from === "user" && m.amount);
+      const amt = h("input",{class:"inp",inputmode:"numeric",placeholder:"Сколько монет",value:lastAsk ? String(lastAsk.amount) : ""});
+      const txt = h("input",{class:"inp",placeholder:"Ответ (необязательно)",style:{marginTop:"8px"}});
+      const go_ = async sign => {
+        const v = Math.round(parseFloat(String(amt.value).replace(",", ".")) || 0);
+        if (sign && !(v > 0)) return toast("Введите сумму");
+        if (!sign && !txt.value.trim()) return toast("Напишите ответ");
+        const b = busy(); const x = await call("adminSupportSend", {user: uid, amount: sign * v, text: txt.value.trim()}); b.done();
+        if (!x.ok) return toast(errText(x));
+        changed = true; toast(sign > 0 ? "Начислено "+v+" монет" : sign < 0 ? "Списано" : "Отправлено"); load();
+      };
+      const credit = h("button",{class:"btn block green",onclick:()=>go_(1)});
+      const updBtn = () => { const v = parseInt(amt.value, 10) || 0; credit.textContent = v > 0 ? "✅ Начислить " + v + " монет" : "✅ Начислить"; };
+      amt.oninput = updBtn; updBtn();
+      body.replaceChildren(
+        h("h2",{text:"🪙 "+r.user.name}),
+        h("p",{class:"hint",style:{margin:"0 0 8px"}}, h("a",{class:"link",href:"tel:+993"+r.user.phone,text:phoneFmt(r.user.phone)}),
+          " · баланс: ", h("b",{text:coins(r.balance)}), " · 1 монета = 1 манат"),
+        h("div",{class:"msgs sup-msgs adm"}, ...(r.messages.length ? supBubbles(r.messages, "admin") : [h("p",{class:"hint",text:"Сообщений пока нет."})])),
+        h("div",{class:"quick sup-chips"}, ...[10,30,55,100,200].map(n => h("button",{type:"button",text:"+"+n,onclick:()=>{ amt.value = String(n); updBtn(); }}))),
+        amt, txt, h("div",{style:{height:"10px"}}),
+        h("div",{style:{display:"grid",gap:"8px"}}, credit,
+          h("button",{class:"btn block ghost",text:"Только ответить",onclick:()=>go_(0)}),
+          h("button",{class:"btn block ghost",style:{color:"#c62828"},text:"− Списать эту сумму",onclick:()=>go_(-1)}),
+          h("a",{class:"btn block ghost",href:"#/u/"+uid,onclick:()=>close()}, "🏪 Магазин продавца")));
+      const m = body.querySelector(".sup-msgs"); if (m) m.scrollTop = m.scrollHeight;
+    };
+    load();
+  });
+  if (changed && onChange) onChange();
+}
 async function viewAdmin(){
   setTab("", false);
   document.body.classList.remove("no-tab");
@@ -4662,14 +4835,15 @@ async function viewAdmin(){
 
   root.append(h("div",{class:"empty"}, h("div",{class:"spin"})));
   await loadCatalog(true);
-  const r = await call("adminData");
+  const [r, sup] = await Promise.all([call("adminData"), call("adminSupport")]);
+  const threads = sup && sup.ok ? sup.threads : null;
   if (!r.ok){ S.adminToken = null; if (r.error === "auth") return viewAdmin(); root.replaceChildren(h("div",{class:"err",text:errText(r)})); return; }
   const users = r.users, prods = r.products, reports = r.reports, reviews = r.reviews || [];
   const pending = users.filter(u => u.seller === "pending");
   const newRep = reports.filter(x => x.status !== "done");
   const tabs = [["pending","Ждут одобрения ("+pending.length+")"],["users","Пользователи ("+users.length+")"],
-    ["prods","Товары ("+prods.length+")"],["vip","⭐ VIP ("+prods.filter(isVip).length+")"],["reports","Жалобы ("+newRep.length+")"],["reviews","Отзывы ("+reviews.length+")"],["tiles","Картинки"]];
-  let tab = S.admTab || (pending.length ? "pending" : newRep.length ? "reports" : "prods");
+    ["prods","Товары ("+prods.length+")"],["vip","⭐ VIP ("+prods.filter(isVip).length+")"],["topup","🪙 Пополнения"+(threads ? " ("+threads.filter(x => x.unread).length+")" : "")],["reports","Жалобы ("+newRep.length+")"],["reviews","Отзывы ("+reviews.length+")"],["tiles","Картинки"]];
+  let tab = S.admTab || (threads && threads.some(x => x.unread) ? "topup" : pending.length ? "pending" : newRep.length ? "reports" : "prods");
   let q = "";
   const body = h("div");
   const search = h("input",{class:"inp",type:"search",placeholder:"Поиск: имя, телефон, товар, ID",style:{marginBottom:"10px"}});
@@ -4862,6 +5036,13 @@ async function viewAdmin(){
     if (tab === "reports") rows = reports.filter(x => match(x.text+x.product+x.reason)).map(repRow);
     if (tab === "reviews") rows = reviews.filter(x => match(x.text+x.product+x.name)).map(revRow);
     if (tab === "tiles") rows = tileRows();
+    if (tab === "topup") rows = !threads ? [h("div",{class:"err",text:"Обновите Vip.gs на сервере (версия 45), чтобы видеть заявки."})] :
+      threads.filter(x => match(x.name+x.phone+x.user)).map(x => h("button",{type:"button",class:"row sup-row"+(x.unread?" new":""),onclick:()=>adminThreadSheet(x.user, () => viewAdmin())},
+        h("div",{class:"coin sm",text:"🪙"}),
+        h("div",{class:"in"}, h("div",{class:"t"}, x.name, x.unread ? h("span",{class:"sup-dot",text:String(x.unread)}) : null),
+          h("div",{class:"s"}, phoneFmt(x.phone), "· баланс: "+coins(x.balance), x.amount ? h("span",{class:"vip-pill",text:"просит "+coins(x.amount)}) : null),
+          h("div",{class:"kv",text:(x.last.from === "admin" ? "Вы: " : "") + (x.last.photo && !x.last.text ? "📷 Скриншот" : (x.last.photo ? "📷 " : "") + (x.last.text || (x.last.amount ? coins(x.last.amount) : "")))})),
+        h("span",{class:"ar",text:"›"})));
     const note = tab === "pending" ? h("p",{class:"hint",style:{margin:"0 0 10px"},text: r.approval ?
       "Товары этих продавцов не видны покупателям, пока вы не нажмёте «Одобрить». Перед одобрением позвоните продавцу и посмотрите его товары." :
       "Одобрение выключено (SELLER_APPROVAL = false): товары видны сразу."}) : null;
