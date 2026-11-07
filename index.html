@@ -634,6 +634,47 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .dl-card small{color:var(--mut2);font-size:12px}
 .dl-card.on img{outline:2.5px solid var(--fg);outline-offset:2px}
 
+/* ===== v38: магазины на главной, VIP, срок объявления ===== */
+:root{--vip:#ffc400;--vipBg:#fff8d6;--vipLine:#f2d24b;--vipFg:#6b4a00}
+.badge.dot{min-width:12px;width:12px;height:12px;padding:0;top:6px}
+.home-shops{padding-top:12px}
+.home-shops .sec-h h2{font-size:17px}
+.vip-h h2{color:var(--vipFg)}
+.shop-row{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:4px 12px 12px}
+.shop-row::-webkit-scrollbar{display:none}
+.shop-t{flex:none;width:132px;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;position:relative;display:flex;flex-direction:column;align-items:flex-start;padding:0 0 9px;text-align:left;color:var(--fg)}
+.shop-t .shop-ph{width:100%;height:78px;flex:none;background:var(--soft,#f3f3f5);position:relative;overflow:hidden;display:grid;place-items:center;font-size:30px}
+.shop-t .shop-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.shop-t .ava{margin:-17px 0 0 9px;border:2px solid #fff;position:relative;z-index:1}
+.shop-t b{font-size:13px;line-height:1.25;margin:5px 9px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:calc(100% - 18px)}
+.shop-t small{font-size:11.5px;color:var(--mut2);margin:2px 9px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 18px)}
+.shop-t.vip{background:var(--vipBg);border-color:var(--vipLine)}
+.shop-t.vip .shop-ph{background:#ffefa3}
+.shop-t.how{justify-content:flex-start;border-style:dashed}
+.shop-t.how b{margin-top:9px}
+.vip-tag{position:absolute;left:6px;top:6px;z-index:2;background:var(--vip);color:#3a2a00;font-size:10.5px;font-weight:800;border-radius:5px;padding:2px 6px;letter-spacing:.3px}
+.shops-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:12px}
+.shops-grid .shop-t{width:auto}
+.shops-grid .empty{grid-column:1/-1}
+/* VIP-объявления: жёлтые */
+.card.vip,.lcard.vip,.bcard.vip{background:var(--vipBg);border:1.5px solid var(--vipLine)}
+.card.vip .bd,.bcard.vip .bc-bd{background:var(--vipBg)}
+.lb.vip{background:var(--vip);color:#3a2a00}
+.vip-pill{display:inline-flex;align-items:center;background:var(--vip);color:#3a2a00;font-weight:800;font-size:12px;border-radius:999px;padding:3px 9px}
+.vip-ask{background:var(--vipBg);color:var(--vipFg);border:1px solid var(--vipLine);font-weight:700;font-size:12px;border-radius:999px;padding:4px 10px}
+/* мои товары: карандаш, корзина и время до удаления */
+.row.my{flex-direction:column;align-items:stretch;gap:8px}
+.row.my .my-top{display:flex;gap:12px;align-items:center}
+.row.my .my-bot{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-left:76px}
+.row.my.vip{background:var(--vipBg);border-radius:12px;padding:10px;margin:4px 0;border:1px solid var(--vipLine)}
+.ebtn.del{background:#fde8e8;color:#c62828}
+.row.my .acts{gap:5px}
+.row.my .acts .ebtn,.row.my .acts .xbtn{width:34px;height:34px}
+.exp{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--mut);font-weight:600}
+.exp.soon{color:#c62828}
+.exp .btn.sm{padding:6px 12px;font-size:12.5px}
+@media (max-width:420px){ .row.my .my-bot{padding-left:0} }
+
 </style>
 </head>
 <body>
@@ -644,6 +685,15 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 const T = {
 ru: {
   allCats:"Все ›",
+  allShops:"Все магазины", vipShops:"VIP-магазины", shopsEmpty:"Пока нет магазинов", nShopGoods:"{n} тов.",
+  vipHowT:"Как попасть в VIP?", vipHowS:"Ваши объявления выше всех", vipNone:"Здесь будут VIP-магазины",
+  vipTitle:"VIP-объявление", vipUntil:"VIP до {d}", makeVip:"Сделать VIP",
+  vipAbout:"VIP-объявление выделяется жёлтым цветом и показывается выше остальных на главной и в магазине. А ваш магазин попадает в «VIP-магазины» на главной странице.",
+  vipHowTo:"Чтобы подключить VIP, напишите или позвоните администратору и назовите номер объявления:",
+  vipSeller:"Продавцам: VIP можно подключить к своему объявлению в разделе «Профиль» → «Мои товары».",
+  expLeft:"Удалится через {d} дн {h} ч", expLeftH:"Удалится через {h} ч {m} мин", expGone:"Срок истёк, удаляется",
+  renew:"Продлить на 30 дней", renewOk:"Продлено на 30 дней", expSoon:"{n} объявл. удалятся в ближайшие 3 дня. Нажмите «Продлить», чтобы они остались.",
+  expRule:"Объявление живёт 30 дней. За 3 дня до конца появится кнопка «Продлить». Если не продлить — оно удалится само.",
   tAdd:"Добавить", addListing:"Добавить объявление",
   location:"Где находится товар", placeOpt:"Город / этрап (необязательно)", placePh:"Например: Baýramaly, 30-njy mkr", video:"Видео", watchVideo:"Смотреть видео в {svc}", videoOpt:"Видео в TikTok или Instagram (необязательно)", videoHint:"Вставьте ссылку на ваше видео с этим товаром. Покупатель нажмёт — и откроется TikTok или Instagram.", e_video:"Ссылка должна быть на TikTok, Instagram или YouTube.",
   reviewsWord:"отзывов",
@@ -747,6 +797,15 @@ ru: {
 
 tm: {
   allCats:"Ählisi ›",
+  allShops:"Ähli dükanlar", vipShops:"VIP dükanlar", shopsEmpty:"Häzirlikçe dükan ýok", nShopGoods:"{n} haryt",
+  vipHowT:"Nädip VIP bolmaly?", vipHowS:"Bildirişleriňiz hemmeden ýokarda", vipNone:"Bu ýerde VIP dükanlar bolar",
+  vipTitle:"VIP bildiriş", vipUntil:"VIP {d} çenli", makeVip:"VIP etmek",
+  vipAbout:"VIP bildiriş sary reňk bilen bellenýär we baş sahypada hem dükanda beýlekilerden ýokarda görkezilýär. Dükanyňyz baş sahypadaky «VIP dükanlar» bölümine düşýär.",
+  vipHowTo:"VIP birikdirmek üçin administratora ýazyň ýa-da jaň ediň we bildirişiň belgisini aýdyň:",
+  vipSeller:"Satyjylar üçin: VIP-i «Profil» → «Meniň harytlarym» bölüminde öz bildirişiňize birikdirip bilersiňiz.",
+  expLeft:"{d} gün {h} sagatdan pozular", expLeftH:"{h} sagat {m} minutdan pozular", expGone:"Möhleti gutardy, pozulýar",
+  renew:"30 güne uzaltmak", renewOk:"30 güne uzaldyldy", expSoon:"{n} bildiriş 3 günüň içinde pozular. Galmagy üçin «Uzaltmak» düwmesine basyň.",
+  expRule:"Bildiriş 30 gün durýar. Möhletiň gutarmagyna 3 gün galanda «Uzaltmak» düwmesi çykar. Uzaldylmasa, özi pozular.",
   tAdd:"Goşmak", addListing:"Bildiriş goşmak",
   location:"Haryt nirede", placeOpt:"Şäher / etrap (hökman däl)", placePh:"Mysal: Baýramaly, 30-njy mkr", video:"Wideo", watchVideo:"{svc}-da wideo görmek", videoOpt:"TikTok ýa-da Instagram wideo (hökman däl)", videoHint:"Bu haryt bilen wideoňyzyň salgysyny goýuň. Alyjy basar — TikTok ýa-da Instagram açylar.", e_video:"Salgy TikTok, Instagram ýa-da YouTube bolmaly.",
   reviewsWord:"teswir",
@@ -850,6 +909,15 @@ tm: {
 
 en: {
   allCats:"All ›",
+  allShops:"All shops", vipShops:"VIP shops", shopsEmpty:"No shops yet", nShopGoods:"{n} items",
+  vipHowT:"How to get VIP?", vipHowS:"Your listings on top", vipNone:"VIP shops will appear here",
+  vipTitle:"VIP listing", vipUntil:"VIP until {d}", makeVip:"Make VIP",
+  vipAbout:"A VIP listing is highlighted in yellow and shown above others on the home page and in the shop. Your shop also appears in “VIP shops” on the home page.",
+  vipHowTo:"To get VIP, message or call the administrator and give the listing number:",
+  vipSeller:"Sellers: you can add VIP to your listing in Profile → My products.",
+  expLeft:"Deleted in {d} d {h} h", expLeftH:"Deleted in {h} h {m} min", expGone:"Expired, being deleted",
+  renew:"Renew for 30 days", renewOk:"Renewed for 30 days", expSoon:"{n} listing(s) will be deleted within 3 days. Tap “Renew” to keep them.",
+  expRule:"A listing lives 30 days. 3 days before the end a “Renew” button appears. If not renewed, it is deleted automatically.",
   tAdd:"Add", addListing:"Post an ad",
   location:"Item location", placeOpt:"Town / district (optional)", placePh:"e.g. Baýramaly, 30th microdistrict", video:"Video", watchVideo:"Watch video on {svc}", videoOpt:"TikTok or Instagram video (optional)", videoHint:"Paste a link to your video of this item. Buyers tap it and TikTok or Instagram opens.", e_video:"The link must be TikTok, Instagram or YouTube.",
   reviewsWord:"reviews",
@@ -1819,7 +1887,7 @@ const Mock = (() => {
       Object.assign(p, {place:(o.place||"").slice(0,40), video:videoUrl(o.video), title:o.title, price:String(price), cat:o.cat, city:o.city, cond:o.cond, desc:o.desc||"", photos:JSON.stringify(photos),
         status: p.status === "banned" ? "banned" : (o.status || "active"), upd:now()});
       if (o.vs != null) p.vs = o.vs; if (o.vm != null) p.vm = o.vm;
-      if (!u.seller) u.seller = "pending";
+      if (!u.seller || u.seller === "pending") u.seller = "active";
       return {ok:true, id:p.id, seller:u.seller};
     },
     uploadPhoto(d){
@@ -1897,14 +1965,33 @@ const Mock = (() => {
       if (d.pin){ u.pin = hash(u.phone, d.pin); u.token = ""; } return {ok:true}; },
     adminProduct(d){ if (!admOk(d)) return {ok:false,error:"auth"}; const i = db.products.findIndex(x => x.id === d.id); if (i < 0) return {ok:false,error:"not_found"};
       if (d.remove) db.products.splice(i,1); else db.products[i].status = d.status; return {ok:true}; },
-    adminReport(d){ if (!admOk(d)) return {ok:false,error:"auth"}; const x = db.reports.find(r => r.id === d.id); if (x) x.status = d.status; return {ok:true}; }
+    adminReport(d){ if (!admOk(d)) return {ok:false,error:"auth"}; const x = db.reports.find(r => r.id === d.id); if (x) x.status = d.status; return {ok:true}; },
+    // v38: VIP и срок объявления 30 дней
+    renewProduct(d){ const u = userByToken(d.token), p = db.products.find(x => x.id === d.id);
+      if (!u || !p || p.user !== u.id) return {ok:false,error:"not_found"}; p.at = now(); return {ok:true, at:p.at, exp:mExp(p)}; },
+    adminVip(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.vip = db.vip || {};
+      if (+d.days > 0) db.vip[d.id] = new Date(Date.now() + d.days * 864e5).toISOString(); else delete db.vip[d.id]; return {ok:true}; }
+  };
+  const mExp = p => new Date(new Date(p.at).getTime() + 30 * 864e5).toISOString();
+  const mDecorate = (r, d) => {
+    if (!r || !r.ok) return r;
+    if (!db.vip){ db.vip = {}; const u2 = db.products.length && db.products[3] ? db.products[3].user : "";   // демо: пара VIP-объявлений
+      db.products.filter(p => p.user === u2).slice(0, 3).forEach(p => { db.vip[p.id] = new Date(Date.now() + 9 * 864e5).toISOString(); }); }
+    const deco = x => { const p = db.products.find(y => y.id === x.id); if (p){ x.exp = mExp(p); x.vip = db.vip[x.id] || ""; } return x; };
+    if (d.action === "catalog"){
+      r.products = r.products.filter(x => new Date(deco(x).exp) > Date.now());
+      r.expDays = 30;
+    }
+    if (d.action === "me" || d.action === "adminData"){ r.products.forEach(deco); r.expDays = 30; }
+    if (d.action === "product" && r.product) deco(r.product);
+    return r;
   };
   return {
     async run(d){
       load();
       await new Promise(r => setTimeout(r, 120));
       const fn = A[d.action]; if (!fn) return {ok:false,error:"server"};
-      const r = fn(d); save(); return r;
+      const r = mDecorate(fn(d), d); save(); return r;
     },
     reset(){ localStorage.removeItem("tmb_mockdb7"); db = null; }
   };
@@ -1919,7 +2006,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "37";   // номер версии — виден внизу профиля
+const APP_VER = "38";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2015,6 +2102,7 @@ const S = {
   favs: new Set(lsGet("favs", [])),
   unread: 0, pollAt: "",
   sort: "rec", city: "",
+  expDays: lsGet("expDays", 0),     // срок жизни объявления (дней); 0 — сервер ещё без этой функции
   photoSearch: null,
   pendingFiles: null,
   timers: []
@@ -2044,7 +2132,7 @@ async function loadCatalog(force){
   if (S.catalogLoading) return S.catalogLoading;
   S.catalogLoading = call("catalog").then(r => {
     S.catalogLoading = null;
-    if (r.ok){ r.products.forEach(migrateProduct); S.catalog = r.products; S.catalogAt = Date.now(); lsSet("catalog", r.products.slice(0, 300)); S.tiles = r.tiles || {}; lsSet("tiles", S.tiles); }
+    if (r.ok){ r.products.forEach(migrateProduct); S.catalog = r.products; S.catalogAt = Date.now(); lsSet("catalog", r.products.slice(0, 300)); S.tiles = r.tiles || {}; lsSet("tiles", S.tiles); setExpDays(r.expDays); updateBadge(); }
     return S.catalog;
   });
   return S.catalogLoading;
@@ -2085,6 +2173,29 @@ function migrateProduct(p){
   return p;
 }
 function byId(id){ return S.catalog.find(p => p.id === id); }
+
+/* ===== VIP и срок объявления ===== */
+function setExpDays(n){ n = +n || 0; if (n !== S.expDays){ S.expDays = n; lsSet("expDays", n); } }
+function isVip(p){ return !!(p && p.vip && new Date(p.vip) > Date.now()); }
+// когда объявление удалится (мс); 0 — неизвестно
+function expAt(p){ if (!S.expDays || !p) return 0; const x = new Date(p.exp || 0).getTime(); return isNaN(x) ? 0 : x; }
+function expSoon(p){ const x = expAt(p); return !!x && x - Date.now() < 3 * 864e5; }
+function expText(p){
+  const ms = expAt(p) - Date.now();
+  if (ms <= 0) return t("expGone");
+  const hTot = Math.floor(ms / 36e5);
+  return hTot >= 24 ? t("expLeft",{d:Math.floor(hTot/24), h:hTot%24}) : t("expLeftH",{h:hTot, m:Math.floor(ms/6e4)%60});
+}
+// магазины из каталога: VIP-магазин — у кого есть хотя бы одно VIP-объявление
+function shopsList(){
+  const m = {};
+  S.catalog.forEach(p => {
+    const x = m[p.user] || (m[p.user] = {id:p.user, name:p.sellerName, logo:p.sellerLogo, stype:p.stype, city:p.city, n:0, vip:false, thumb:""});
+    x.n++; if (isVip(p)){ x.vip = true; if (!x.thumb) x.thumb = p.thumb; }
+    if (!x.thumb && p.thumb) x.thumb = p.thumb;
+  });
+  return Object.values(m).sort((a,b) => (b.vip - a.vip) || (b.n - a.n));
+}
 
 function saveAuth(r){
   S.token = r.token; S.user = r.user;
@@ -2203,6 +2314,8 @@ const ROUTES = [
   [/^\/deal\/(\w+)\/(\w+)$/, m => viewDeals(m[1], m[2])],
   [/^\/models\/(\w+)\/(\w+)\/(.+)$/, m => viewModels(m[1], m[2], decodeURIComponent(m[3]))],
   [/^\/cats$/, () => viewBrowse("")],
+  [/^\/shops$/, () => viewShops(false)],
+  [/^\/shops\/vip$/, () => viewShops(true)],
   [/^\/p\/(\w+)$/, m => viewProduct(m[1])],
   [/^\/u\/(\w+)$/, m => viewShop(m[1])],
   [/^\/photo$/, () => viewPhoto()],
@@ -2243,18 +2356,22 @@ function topBar(title, opts){
 
 /* ===== ТАББАР ===== */
 function renderTabbar(){
-  const tabs = [["home","/",IC.home,t("tHome")],["fav","/fav",IC.heart,t("fav")],["add","/sell",IC.plus,t("tAdd")],
+  const tabs = [["home","/",IC.home,t("tHome")],["cats","/cats",IC.grid,t("tCats")],["add","/sell",IC.plus,t("tAdd")],
     ["chats","/chats",IC.chat,t("tChats")],["me","/me",IC.user,t("tMe")]];
   $("tabbar").replaceChildren(h("div",{class:"wrap"}, ...tabs.map(([k,href,ic,label]) =>
     h("a",{href:"#"+href,"data-tab":k,class:k==="add"?"cam":null,onclick:k==="add"?(()=>{ S.sellPreset = null; }):null},
       k === "add" ? h("span",{class:"c",html:ic}) : h("span",{html:ic}),
       h("span",{text:label}),
-      k === "chats" ? h("span",{class:"badge",id:"badge",hidden:true}) : null))));
+      k === "chats" ? h("span",{class:"badge",id:"badge",hidden:true}) : null,
+      k === "me" ? h("span",{class:"badge dot",id:"badge-me",hidden:true}) : null))));
   updateBadge();
 }
 function updateBadge(){
   const b = $("badge"); if (!b) return;
   b.hidden = !S.unread; b.textContent = S.unread > 9 ? "9+" : S.unread;
+  // красная точка на «Профиль»: свои объявления скоро удалятся
+  const m = $("badge-me");
+  if (m) m.hidden = !(S.user && S.catalog.some(p => p.user === S.user.id && expSoon(p)));
 }
 let pollTimer = null;
 function startPoll(){
@@ -2708,8 +2825,8 @@ function heartBtn(id, cls){
   return b;
 }
 function card(p, extra){
-  return h("a",{class:"card",href:"#/p/"+p.id},
-    h("div",{class:"ph"},
+  return h("a",{class:"card"+(isVip(p)?" vip":""),href:"#/p/"+p.id},
+    h("div",{class:"ph"}, isVip(p) ? h("span",{class:"vip-tag",text:"VIP"}) : null,
       p.thumb ? h("img",{src:p.thumb,alt:p.title,loading:"lazy",decoding:"async"}) : null,
       (p.cond === "used" && !NO_COND[p.cat]) || p.hasVideo ? h("div",{class:"tag-tl"},
         p.hasVideo ? h("span",{class:"tag vid",text:"▶ "+t("video")}) : null,
@@ -2731,7 +2848,8 @@ function listCard(p){
   if (a.exchange === "yes") badges.push(h("span",{class:"lb red",text:t("o_f_exchange")}));
   if (p.hasVideo) badges.push(h("span",{class:"lb dark",text:"▶ "+t("video")}));
   if (p.cond === "used" && !NO_COND[p.cat]) badges.push(h("span",{class:"lb amber",text:t("used")}));
-  return h("a",{class:"lcard",href:"#/p/"+p.id},
+  if (isVip(p)) badges.unshift(h("span",{class:"lb vip",text:"VIP"}));
+  return h("a",{class:"lcard"+(isVip(p)?" vip":""),href:"#/p/"+p.id},
     h("div",{class:"lph"}, p.thumb ? h("img",{src:p.thumb,alt:p.title,loading:"lazy",decoding:"async"}) : null,
       badges.length ? h("div",{class:"lbs"}, ...badges) : null,
       p.photoCount > 1 ? h("span",{class:"cnt",text:"1/"+p.photoCount}) : null),
@@ -2772,7 +2890,8 @@ function bigCard(p){
   if (a.exchange === "yes") badges.push(h("span",{class:"lb red",text:t("o_f_exchange")}));
   if (p.hasVideo) badges.push(h("span",{class:"lb dark",text:"▶ "+t("video")}));
   if (p.cond === "used" && !NO_COND[p.cat]) badges.push(h("span",{class:"lb amber",text:t("used")}));
-  const el = h("div",{class:"bcard"},
+  if (isVip(p)) badges.unshift(h("span",{class:"lb vip",text:"VIP"}));
+  const el = h("div",{class:"bcard"+(isVip(p)?" vip":"")},
     h("div",{class:"bc-gal"}, track, heartBtn(p.id), cnt, badges.length ? h("div",{class:"lbs"}, ...badges) : null),
     h("a",{class:"bc-bd",href:"#/p/"+p.id},
       priceEl(p.price, null, priceSuffix(p), p.cat),
@@ -2830,6 +2949,7 @@ function sortList(list){
   else if (S.sort === "exp") l.sort((a,b) => b.price - a.price);
   else if (S.sort === "new") l.sort((a,b) => a.at < b.at ? 1 : -1);
   else l = recommend(l);
+  if (S.sort === "rec" || S.sort === "new") l = l.filter(isVip).concat(l.filter(p => !isVip(p)));
   return l;
 }
 // «Рекомендуем»: свежие товары + чуть перемешаны, чтобы лента была живой (каждый день по-новому)
@@ -2877,7 +2997,7 @@ function viewHome(q){
     let list = S.catalog;
     if (words.length) list = list.filter(p => textMatch(p, words));
     const sorted = sortList(list);
-    if (!q) catsBox.replaceChildren(homeCats());
+    if (!q) catsBox.replaceChildren(homeShops());
     listBox.replaceChildren(
       h("div",{class:"sec"},
         q ? h("div",{class:"sec-h"}, h("h2",{text:t("results",{n:list.length})})) : null,
@@ -2885,16 +3005,57 @@ function viewHome(q){
         feed(sorted, !S.catalog.length && S.catalogLoading ? h("div",{class:"empty"}, h("div",{class:"spin"})) :
           q ? emptyBox("🔎", t("nothingQ",{q}), t("nothingSub"), h("a",{class:"btn soft",href:"#/photo",text:t("tryPhoto")})) : null)));
   };
-  const sellBanner = (!S.user || S.user.seller !== "active") && !q ?
-    h("div",{class:"banner"}, h("div",{style:{fontSize:"30px"},text:"🏪"}),
-      h("div",null, h("b",{text:t("sellBanner")}), h("span",{text:t("sellBannerSub")})),
-      h("a",{class:"btn sm",href:"#/sell",text:t("sell")})) : null;
   page(isDemo ? h("div",{class:"demo",text:t("demo")}) : null, head,
-    h("div",{class:"wrap"}, catsBox, sellBanner, listBox));
+    h("div",{class:"wrap"}, catsBox, listBox));
   draw();
   loadCatalog().then(draw);
 }
-// главная: категории крупными фото-карточками в 2 ряда (как в Aýterek)
+// главная: VIP-магазины и все магазины (категории — во вкладке «Категории» внизу)
+function shopTile(x){
+  return h("a",{class:"shop-t"+(x.vip?" vip":""),href:"#/u/"+x.id},
+    h("div",{class:"shop-ph"}, x.thumb ? h("img",{src:x.thumb,alt:"",loading:"lazy",decoding:"async"}) : null,
+      x.vip ? h("span",{class:"vip-tag",text:"VIP"}) : null),
+    avaEl(x.name, x.logo, "sm"),
+    h("b",{text:x.name}), h("small",{text:t("nShopGoods",{n:x.n})+" · "+x.city}));
+}
+function vipInfoSheet(p){
+  return sheet((box) => {
+    box.append(h("h2",{text:"⭐ "+t("vipTitle")}), h("p",{text:t("vipAbout")}),
+      p ? h("p",{text:t("vipHowTo")}) : h("p",{class:"hint",text:t("vipSeller")}),
+      p ? h("div",{style:{fontSize:"24px",fontWeight:"800",textAlign:"center",margin:"0 0 14px"},text:p.id}) : null,
+      h("div",{style:{fontSize:"18px",fontWeight:"700",textAlign:"center",margin:"4px 0 14px"},text:"☎️ "+phoneFmt(ADMIN_PHONE)}),
+      h("div",{style:{display:"grid",gap:"10px"}},
+        imoBtn(ADMIN_PHONE, t("writeAdminImo")),
+        h("a",{class:"btn block ghost",href:"tel:+993"+ADMIN_PHONE}, icon("phone"), t("call"))));
+  });
+}
+function homeShops(){
+  const all = shopsList(), vip = all.filter(x => x.vip);
+  return h("div",{class:"home-cats home-shops"},
+    h("div",{class:"sec-h vip-h",style:{padding:"0 12px"}}, h("h2",{text:"⭐ "+t("vipShops")}), h("div",{class:"sp"}),
+      vip.length ? h("a",{class:"lnk-red",href:"#/shops/vip",text:t("allCats")}) : null),
+    h("div",{class:"shop-row"}, ...vip.slice(0, 20).map(shopTile),
+      h("button",{type:"button",class:"shop-t vip how",onclick:()=>vipInfoSheet()},
+        h("div",{class:"shop-ph"}, h("span",{text:"⭐"})),
+        h("b",{text:vip.length ? t("vipHowT") : t("vipNone")}), h("small",{text:t("vipHowS")}))),
+    h("div",{class:"sec-h",style:{padding:"6px 12px 0"}}, h("h2",{text:t("allShops")}), h("div",{class:"sp"}),
+      all.length ? h("a",{class:"lnk-red",href:"#/shops",text:t("allCats")}) : null),
+    all.length ? h("div",{class:"shop-row"}, ...all.slice(0, 30).map(shopTile)) :
+      h("p",{class:"hint",style:{padding:"0 12px"},text:S.catalogLoading ? "…" : t("shopsEmpty")}));
+}
+function viewShops(vipOnly){
+  setTab("home");
+  const box = h("div",{class:"shops-grid"});
+  const draw = () => {
+    const list = shopsList().filter(x => !vipOnly || x.vip);
+    box.replaceChildren(...(list.length ? list.map(shopTile) : [emptyBox("🏪", vipOnly ? t("vipNone") : t("shopsEmpty"))]));
+  };
+  page(topBar((vipOnly ? "⭐ " : "") + t(vipOnly ? "vipShops" : "allShops"),
+      {right: vipOnly ? h("button",{class:"btn sm ghost",text:"?",onclick:()=>vipInfoSheet()}) : null}),
+    h("div",{class:"wrap"}, box));
+  draw(); loadCatalog().then(draw);
+}
+// (старое) категории крупными фото-карточками в 2 ряда
 function homeCats(){
   return h("div",{class:"home-cats"},
     h("div",{class:"sec-h",style:{padding:"0 12px"}}, h("h2",{text:t("tCats")}), h("div",{class:"sp"}), h("a",{class:"lnk-red",href:"#/cats",text:t("allCats")})),
@@ -2908,7 +3069,7 @@ function catsRow(active){
     h("a",{class:"cat"+(active===c.id?" on":""),href:"#/c/"+c.id}, h("b",{style:{background:c.c},text:c.e}), h("span",{text:catName(c.id)}))));
 }
 function viewBrowse(catId, listMode){
-  setTab("home");
+  setTab("cats");
   const st = S.browse = (S.browse && S.browse.cat === catId) ? S.browse : {cat: catId, sub: "", f: {}, r: {}};
   // компактный вид: категории скрыты, сверху — быстрые фильтры (после выбора марки/модели)
   const compact = !!(listMode && catId && st.sub);
@@ -3155,7 +3316,7 @@ function viewShop(uid){
   draw(); loadCatalog().then(draw);
 }
 function viewFav(){
-  setTab("fav");
+  setTab("me");
   const box = h("div",{class:"sec"});
   const draw = () => {
     const list = S.catalog.filter(p => S.favs.has(p.id));
@@ -3220,7 +3381,7 @@ function renderProduct(root, p){
       h("h1",{text:p.title}),
       p.rating ? h("a",{class:"rt-line",href:"#rev",onclick:e=>{ e.preventDefault(); revBox.scrollIntoView({behavior:"smooth"}); }},
         stars(p.rating), h("b",{text:p.rating.toFixed(1)}), h("span",{text:t("nReviews",{n:p.reviews})})) : null,
-      h("div",{class:"tags"},
+      h("div",{class:"tags"}, isVip(p) ? h("span",{class:"vip-pill",text:"⭐ VIP"}) : null,
         h("a",{href:"#/c/"+p.cat,text:catOf(p.cat).e+" "+catName(p.cat)+(p.sub ? " · "+subName(p.sub) : "")}),
         NO_COND[p.cat] ? null : h("span",{text:p.cond === "used" ? t("used") : t("new")}),
         h("span",{text:ago(p.at)})),
@@ -3626,7 +3787,6 @@ async function viewMe(){
           h("button",{class:"btn block ghost",text:t("login"),onclick:async()=>{ if (await authSheet("authTitle","login")) viewMe(); }}))),
         h("div",{class:"box menu"},
           h("a",{href:"#/fav"}, "💛 ", t("favs"), h("span",{class:"ar",text:"›"})),
-          h("a",{href:"#/sell"}, "🏪 ", t("sellBanner"), h("span",{class:"ar",text:"›"})),
           h("a",{href:"#/rules"}, "📄 ", t("rulesTitle"), h("span",{class:"ar",text:"›"})),
           h("button",{onclick:()=>adminContactSheet()}, "☎️ ", t("contactAdmin"), h("span",{class:"ar",text:"›"})))));
     $("app").append(verLine());
@@ -3656,13 +3816,22 @@ async function viewMe(){
   $("app").append(verLine());
   const r = await call("me");
   if (!r.ok){ list.replaceChildren(h("div",{class:"err",text:errText(r)})); return; }
-  S.user = r.user; lsSet("user", r.user);
+  S.user = r.user; lsSet("user", r.user); setExpDays(r.expDays);
   if (r.user.seller === "pending") statusBox.replaceChildren(h("div",{class:"box"}, h("div",{class:"warn"}, h("span",{text:"⏳"}), h("span",{text:t("pendingNote")}))));
   if (r.user.seller === "pending") statusBox.querySelector(".box").append(h("button",{class:"link",style:{marginTop:"10px"},text:t("contactAdmin"),onclick:()=>adminContactSheet()}));
   if (r.user.seller === "blocked") statusBox.replaceChildren(h("div",{class:"box"}, h("div",{class:"warn",style:{background:"#fde8e8",color:"#9b1c1c"}}, h("span",{text:"⛔"}), h("span",{text:t("blockedNote")}))));
   count.textContent = r.products.length ? "("+r.products.length+")" : "";
   if (!r.products.length){ list.replaceChildren(h("p",{class:"hint",style:{margin:0},text:t("noGoods")})); return; }
-  list.replaceChildren(...r.products.map(p => myRow(p, r.user)));
+  // скоро удалятся — наверх списка и предупреждение
+  const soon = r.products.filter(expSoon);
+  const prods = soon.concat(r.products.filter(p => !expSoon(p)));
+  if (soon.length) statusBox.append(h("div",{class:"box",id:"exp-warn"}, h("div",{class:"warn",style:{background:"#fde8e8",color:"#9b1c1c"}},
+    h("span",{text:"⏳"}), h("span",{text:t("expSoon",{n:soon.length})}))));
+  const rows = prods.map(p => myRow(p, r.user));
+  list.replaceChildren(S.expDays ? h("p",{class:"hint",style:{margin:"0 0 4px"},text:t("expRule")}) : null, ...rows);
+  // обратный отсчёт — обновляем раз в минуту
+  if (S.expDays) S.timers.push(setInterval(() => rows.forEach(x => x._tick && x._tick()), 60000));
+  updateBadge();
 }
 function myRow(p, u){
   const stChip = () => {
@@ -3671,21 +3840,43 @@ function myRow(p, u){
       p.status === "hidden" ? ["off","st_short_hidden"] : live ? ["ok","st_short_active"] : ["wait","st_short_wait"];
     return h("span",{class:"st "+cls,text:t(key)});
   };
-  const row = h("div",{class:"row"});
+  const row = h("div",{class:"row my"+(isVip(p)?" vip":"")});
+  const timer = h("div",{class:"exp"});
+  row._tick = () => {
+    if (!expAt(p)){ timer.hidden = true; return; }
+    const soon = expSoon(p);
+    timer.hidden = false; timer.className = "exp" + (soon ? " soon" : "");
+    timer.replaceChildren(h("span",{text:"⏳ "+expText(p)}),
+      soon ? h("button",{class:"btn sm",text:t("renew"),onclick:renew}) : null);
+  };
   const draw = () => {
     const acts = h("div",{class:"acts"});
     if (p.status === "active"){
-      acts.append(h("button",{class:"ebtn","aria-label":t("edit"),html:IC.edit,onclick:()=>go("/edit/"+p.id)}),
-        h("button",{class:"xbtn","aria-label":t("removeSale"),title:t("removeSale"),text:"✕",onclick:()=>setStatus("sold")}));
+      acts.append(h("button",{class:"ebtn","aria-label":t("edit"),title:t("edit"),html:IC.edit,onclick:()=>go("/edit/"+p.id)}),
+        h("button",{class:"xbtn","aria-label":t("removeSale"),title:t("removeSale"),text:"✕",onclick:()=>setStatus("sold")}),
+        h("button",{class:"ebtn del","aria-label":t("delete"),title:t("delete"),html:IC.trash,onclick:()=>del()}));
     } else if (p.status !== "banned"){
       acts.append(h("button",{class:"btn sm soft",text:t("backSale"),onclick:()=>setStatus("active")}),
-        h("button",{class:"ebtn","aria-label":t("delete"),html:IC.trash,onclick:()=>del()}));
+        h("button",{class:"ebtn del","aria-label":t("delete"),title:t("delete"),html:IC.trash,onclick:()=>del()}));
     }
+    const vip = isVip(p) ? h("span",{class:"vip-pill",text:"⭐ "+t("vipUntil",{d:dayName(p.vip)})}) :
+      S.expDays && p.status === "active" ? h("button",{class:"vip-ask",text:"⭐ "+t("makeVip"),onclick:()=>vipInfoSheet(p)}) : null;
     row.replaceChildren(
-      p.thumb ? h("img",{src:p.thumb,alt:""}) : h("div",{class:"noimg"}),
-      h("a",{class:"in",href:"#/p/"+p.id}, h("div",{class:"t",text:p.title}),
-        h("div",{class:"s"}, priceEl(p.price), stChip())), acts);
+      h("div",{class:"my-top"},
+        p.thumb ? h("img",{src:p.thumb,alt:""}) : h("div",{class:"noimg"}),
+        h("a",{class:"in",href:"#/p/"+p.id}, h("div",{class:"t",text:p.title}),
+          h("div",{class:"s"}, priceEl(p.price), stChip())), acts),
+      vip || expAt(p) ? h("div",{class:"my-bot"}, vip, timer) : null);
+    row._tick();
   };
+  async function renew(){
+    const r = await call("renewProduct", {id: p.id});
+    if (!r.ok) return toast(errText(r));
+    p.exp = r.exp; p.at = r.at || p.at; const c = byId(p.id); if (c){ c.exp = p.exp; c.at = p.at; }
+    S.catalogAt = 0; draw(); toast(t("renewOk"));
+    if (!document.querySelector(".row.my .exp.soon") && $("exp-warn")) $("exp-warn").remove();
+    updateBadge();
+  }
   async function setStatus(st){
     const old = p.status; p.status = st; draw();
     const r = await call("setStatus", {id: p.id, status: st});
@@ -4154,7 +4345,7 @@ async function viewAdmin(){
   const pending = users.filter(u => u.seller === "pending");
   const newRep = reports.filter(x => x.status !== "done");
   const tabs = [["pending","Ждут одобрения ("+pending.length+")"],["users","Пользователи ("+users.length+")"],
-    ["prods","Товары ("+prods.length+")"],["reports","Жалобы ("+newRep.length+")"],["reviews","Отзывы ("+reviews.length+")"],["tiles","Картинки"]];
+    ["prods","Товары ("+prods.length+")"],["vip","⭐ VIP ("+prods.filter(isVip).length+")"],["reports","Жалобы ("+newRep.length+")"],["reviews","Отзывы ("+reviews.length+")"],["tiles","Картинки"]];
   let tab = S.admTab || (pending.length ? "pending" : newRep.length ? "reports" : "prods");
   let q = "";
   const body = h("div");
@@ -4204,8 +4395,18 @@ async function viewAdmin(){
       h("div",{class:"in"},
         h("a",{class:"t link",href:"#/p/"+p.id,text:p.title+"  ·  "+p.id}),
         h("div",{class:"s"}, priceEl(p.price), "· "+catName(p.cat)+" · "+p.city, h("span",{class:"st "+st[0],text:st[1]})),
-        h("div",{class:"kv"}, "Продавец: "+(u.name||"?")+" ", sellerChip(u.seller))),
+        h("div",{class:"kv"}, "Продавец: "+(u.name||"?")+" ", sellerChip(u.seller),
+          isVip(p) ? h("span",{class:"vip-pill",text:"⭐ VIP до "+new Date(p.vip).toLocaleDateString("ru-RU")}) : null,
+          p.exp ? h("span",{style:{color:"var(--mut)"},text:" · удалится "+new Date(p.exp).toLocaleDateString("ru-RU")}) : null)),
       h("div",{class:"acts"},
+        r.expDays ? h("button",{class:"btn sm ghost",style:{color:"#8a6200"},text:isVip(p) ? "⭐ VIP: изменить" : "⭐ Сделать VIP",onclick:async()=>{
+          const days = await sheet((box, close) => box.append(h("h2",{text:"VIP: "+p.title}),
+            h("p",{text:"VIP-объявление выделяется жёлтым, стоит выше других, а магазин попадает в «VIP-магазины» на главной."}),
+            h("div",{style:{display:"grid",gap:"10px"}},
+              ...[7,15,30].map(n => h("button",{class:"btn block",text:"VIP на "+n+" дней",onclick:()=>close(n)})),
+              isVip(p) ? h("button",{class:"btn block ghost",style:{color:"#c62828"},text:"Убрать VIP",onclick:()=>close(-1)}) : null)));
+          if (days) act("adminVip",{id:p.id,days:days > 0 ? days : 0}, days > 0 ? "VIP включён на "+days+" дн." : "VIP убран");
+        }}) : null,
         p.status === "banned" ? h("button",{class:"btn sm ghost",text:"Вернуть",onclick:()=>act("adminProduct",{id:p.id,status:"active"})}) :
           h("button",{class:"btn sm ghost",text:"Снять",onclick:()=>act("adminProduct",{id:p.id,status:"banned"},"Товар снят")}),
         h("button",{class:"btn sm ghost",style:{color:"#c62828"},text:"Удалить",onclick:async()=>{
@@ -4296,6 +4497,7 @@ async function viewAdmin(){
     if (tab === "pending") rows = pending.filter(u => match(u.name+u.phone+u.id)).map(userRow);
     if (tab === "users") rows = users.filter(u => match(u.name+u.phone+u.id+u.city)).map(userRow);
     if (tab === "prods") rows = prods.filter(p => match(p.title+p.id+(ubyId[p.user]||{}).name)).map(prodRow);
+    if (tab === "vip") rows = prods.filter(p => isVip(p) && match(p.title+p.id+(ubyId[p.user]||{}).name)).map(prodRow);
     if (tab === "reports") rows = reports.filter(x => match(x.text+x.product+x.reason)).map(repRow);
     if (tab === "reviews") rows = reviews.filter(x => match(x.text+x.product+x.name)).map(revRow);
     if (tab === "tiles") rows = tileRows();
