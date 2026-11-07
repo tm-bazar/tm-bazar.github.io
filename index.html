@@ -804,6 +804,10 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .my-rows.v-grid .exp{font-size:11.5px}
 .my-rows.v-grid .row .t{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .sheet{touch-action:pan-y}
+.sizes{margin:10px 0 2px}
+.sizes small{display:block;color:var(--mut);font-size:12.5px;margin-bottom:6px}
+.sz-row{display:flex;flex-wrap:wrap;gap:6px}
+.sz{min-width:40px;height:36px;padding:0 10px;border:1.5px solid var(--fg);border-radius:10px;display:grid;place-items:center;font-weight:700;font-size:14px}
 
 </style>
 </head>
@@ -838,6 +842,7 @@ ru: {
   mallPick:"Торговый центр или рынок", mallPickSub:"Если вы продаёте в ТЦ или на рынке — выберите его. Если нет — выберите район ниже.",
   mallSearch:"Найти ТЦ или рынок", mallOther:"Моего ТЦ / рынка нет в списке", mallOtherPh:"Название ТЦ или рынка", mallNone:"Убрать ТЦ / рынок",
   distSub:"Или укажите район, если вы не в ТЦ и не на рынке.", mallF:"Торговый центр / рынок", mallAny:"Любой",
+  sizesHave:"Есть размеры:",
   allShops:"Все магазины", vipShops:"VIP-магазины", shopsEmpty:"Пока нет магазинов", nShopGoods:"{n} тов.",
   vipHowT:"Как попасть в VIP?", vipHowS:"Ваши объявления выше всех", vipNone:"Здесь будут VIP-магазины",
   vipTitle:"VIP-объявление", vipUntil:"VIP до {d}", makeVip:"Сделать VIP",
@@ -973,6 +978,7 @@ tm: {
   mallPick:"Söwda merkezi ýa-da bazar", mallPickSub:"Söwda merkezinde ýa-da bazarda satýan bolsaňyz — saýlaň. Ýogsa aşakda etraby saýlaň.",
   mallSearch:"Söwda merkezini ýa-da bazary tap", mallOther:"Meniň söwda merkezim sanawda ýok", mallOtherPh:"Söwda merkeziniň ýa-da bazaryň ady", mallNone:"Söwda merkezini aýyrmak",
   distSub:"Ýa-da söwda merkezinde däl bolsaňyz, etraby görkeziň.", mallF:"Söwda merkezi / bazar", mallAny:"Islendik",
+  sizesHave:"Bar ölçegler:",
   allShops:"Ähli dükanlar", vipShops:"VIP dükanlar", shopsEmpty:"Häzirlikçe dükan ýok", nShopGoods:"{n} haryt",
   vipHowT:"Nädip VIP bolmaly?", vipHowS:"Bildirişleriňiz hemmeden ýokarda", vipNone:"Bu ýerde VIP dükanlar bolar",
   vipTitle:"VIP bildiriş", vipUntil:"VIP {d} çenli", makeVip:"VIP etmek",
@@ -1108,6 +1114,7 @@ en: {
   mallPick:"Mall or market", mallPickSub:"If you sell in a mall or market, choose it. If not, choose a district below.",
   mallSearch:"Find a mall or market", mallOther:"My mall / market is not listed", mallOtherPh:"Mall or market name", mallNone:"Remove mall / market",
   distSub:"Or choose a district if you are not in a mall or market.", mallF:"Mall / market", mallAny:"Any",
+  sizesHave:"Sizes in stock:",
   allShops:"All shops", vipShops:"VIP shops", shopsEmpty:"No shops yet", nShopGoods:"{n} items",
   vipHowT:"How to get VIP?", vipHowS:"Your listings on top", vipNone:"VIP shops will appear here",
   vipTitle:"VIP listing", vipUntil:"VIP until {d}", makeVip:"Make VIP",
@@ -2198,6 +2205,8 @@ const Mock = (() => {
       if (!text) return {ok:false,error:"fields"};
       db.sup.push({id:"M"+Date.now(), at:now(), user:u.id, name:u.name, phone:u.phone, from:"admin", text, photo:"", amount:a, readA:"1", readU:""});
       return {ok:true, balance:db.bal[u.id]}; },
+    adminMallSug(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.mallSug = (db.mallSug||[]).filter(x => !(x.city === d.city && x.name === d.name));
+      if (d.ok){ db.malls = db.malls || JSON.parse(JSON.stringify(MALLS_DEFAULT)); (db.malls[d.city] = db.malls[d.city] || []).push(d.name); } return {ok:true}; },
     adminMalls(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.malls = d.malls; return {ok:true, malls:d.malls}; },
     adminVipShop(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.vipShop = db.vipShop || {};
       if (+d.days > 0) db.vipShop[d.user] = new Date(Date.now() + d.days * 864e5).toISOString(); else delete db.vipShop[d.user]; return {ok:true}; },
@@ -2219,6 +2228,10 @@ const Mock = (() => {
     if (d.action === "me" || d.action === "adminData"){ r.products.forEach(deco); r.expDays = 30; r.vipPrices = mPrices(); }
     if (!db.bal){ db.bal = {}; db.users.forEach(u => { if (u.seller === "active") db.bal[u.id] = 50; }); }
     if (d.action === "me"){ r.balance = db.bal[r.user.id] || 0; r.shopVip = (db.vipShop || {})[r.user.id] || ""; }
+    if (d.action === "adminData"){ r.mallSug = db.mallSug || []; if (db.malls) r.malls = db.malls; }
+    if (d.action === "saveProduct" && r.ok && d.product && d.product.attrs && d.product.attrs.mall){
+      const known = ((db.malls || MALLS_DEFAULT)[d.product.city] || []);
+      if (!known.includes(d.product.attrs.mall)){ db.mallSug = db.mallSug || []; db.mallSug.push({city:d.product.city, name:d.product.attrs.mall, at:now()}); } }
     if (d.action === "adminData") r.users.forEach(u => { u.balance = db.bal[u.id] || 0; u.shopVip = (db.vipShop || {})[u.id] || ""; });
     if (d.action === "product" && r.product) deco(r.product);
     return r;
@@ -2243,7 +2256,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "49";   // номер версии — виден внизу профиля
+const APP_VER = "50";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3858,7 +3871,10 @@ function renderProduct(root, p){
         h("a",{href:"#/c/"+p.cat,text:catOf(p.cat).e+" "+catName(p.cat)+(p.sub ? " · "+subName(p.sub) : "")}),
         NO_COND[p.cat] ? null : h("span",{text:p.cond === "used" ? t("used") : t("new")}),
         h("span",{text:ago(p.at)})),
-      h("div",{class:"loc"}, h("span",{text:"📍"}), h("div",null, h("small",{text:t("location")}), h("b",{text:placeText(p)}))),
+      // размеры в наличии — крупно, сразу под названием
+      (() => { const z = (p.attrs || {}).size; const arr = Array.isArray(z) ? z : z ? [z] : [];
+        return arr.length ? h("div",{class:"sizes"}, h("small",{text:t("sizesHave")}), h("div",{class:"sz-row"}, ...arr.map(v => h("span",{class:"sz",text:v})))) : null; })(),
+      h("div",{class:"loc"}, h("span",{text:(p.attrs||{}).mall ? "🏬" : "📍"}), h("div",null, h("small",{text:t("location")}), h("b",{text:placeText(p)}))),
       p.video ? h("a",{class:"btn vid-btn block",href:p.video,target:"_blank",rel:"noopener"},
         h("span",{text:"▶"}), t("watchVideo",{svc:videoKind(p.video)})) : null,
       statusNote),
@@ -5028,7 +5044,7 @@ async function viewAdmin(){
   const pending = users.filter(u => u.seller === "pending");
   const newRep = reports.filter(x => x.status !== "done");
   const tabs = [["pending","Ждут одобрения ("+pending.length+")"],["users","Пользователи ("+users.length+")"],
-    ["prods","Товары ("+prods.length+")"],["vip","⭐ VIP ("+prods.filter(isVip).length+")"],["topup","🪙 Пополнения"+(threads ? " ("+threads.filter(x => x.unread).length+")" : "")],["reports","Жалобы ("+newRep.length+")"],["reviews","Отзывы ("+reviews.length+")"],["malls","🏬 ТЦ и рынки"],["tiles","Картинки"]];
+    ["prods","Товары ("+prods.length+")"],["vip","⭐ VIP ("+prods.filter(isVip).length+")"],["topup","🪙 Пополнения"+(threads ? " ("+threads.filter(x => x.unread).length+")" : "")],["reports","Жалобы ("+newRep.length+")"],["reviews","Отзывы ("+reviews.length+")"],["malls","🏬 ТЦ и рынки"+((r.mallSug||[]).length ? " ("+r.mallSug.length+")" : "")],["tiles","Картинки"]];
   let tab = S.admTab || (threads && threads.some(x => x.unread) ? "topup" : pending.length ? "pending" : newRep.length ? "reports" : "prods");
   let q = "";
   const body = h("div");
@@ -5223,8 +5239,18 @@ async function viewAdmin(){
     if (tab === "reviews") rows = reviews.filter(x => match(x.text+x.product+x.name)).map(revRow);
     if (tab === "tiles") rows = tileRows();
     if (tab === "malls"){
+      if (r.malls){ S.malls = r.malls; lsSet("malls", r.malls); }
+      const sug = r.mallSug || [];
+      const sugBox = sug.length ? h("div",{class:"box",style:{background:"var(--vipBg)",borderColor:"var(--vipLine)"}},
+        h("h3",{text:"🆕 Новые от продавцов ("+sug.length+")"}),
+        h("p",{class:"hint",style:{margin:"0 0 8px"},text:"Продавцы вписали ТЦ или рынок, которого нет в списке. «Добавить» — и его смогут выбирать все."}),
+        ...sug.map(sgi => h("div",{class:"row"},
+          h("div",{class:"in"}, h("div",{class:"t",text:"🏬 "+sgi.name}), h("div",{class:"s",text:"📍 "+sgi.city+" · "+new Date(sgi.at).toLocaleDateString("ru-RU")})),
+          h("div",{class:"acts"},
+            h("button",{class:"btn sm green",text:"✅ Добавить",onclick:()=>act("adminMallSug",{city:sgi.city,name:sgi.name,ok:true},"Добавлено в список")}),
+            h("button",{class:"btn sm ghost",text:"✕",onclick:()=>act("adminMallSug",{city:sgi.city,name:sgi.name,ok:false},"Отклонено")}))))) : null;
       const areas = CITIES.map(c => ({c, ta: h("textarea",{class:"inp",rows:"6",value:mallsOf(c).join("\n"),placeholder:"Каждое название с новой строки"})}));
-      rows = [h("div",{class:"box"},
+      rows = [sugBox, h("div",{class:"box"},
         h("h3",{text:"🏬 Торговые центры и рынки"}),
         h("p",{class:"hint",style:{margin:"0 0 10px"},text:"Продавец выбирает свой ТЦ или рынок при подаче объявления, покупатель может искать по нему. Пишите каждое название с новой строки."}),
         ...areas.map(a => h("label",{class:"field",style:{display:"block",marginBottom:"12px"}}, h("span",{style:{fontWeight:"700"},text:"📍 "+a.c}), a.ta)),
