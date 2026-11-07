@@ -2282,7 +2282,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "54";   // номер версии — виден внизу профиля
+const APP_VER = "55";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -4394,6 +4394,9 @@ async function viewMe(){
 // свой магазин: все свои товары (и снятые), у каждого ✎ ✕ 🗑, VIP за монеты и «удалится через…»
 async function viewMyShop(uid){
   setTab("me");
+  let cat = (S.shopPre && S.shopPre.cat) || "";   // категория, выбранная наверху (главная / VIP-магазины)
+  S.shopPre = null;
+  const catBox = h("div");
   const u = S.user || {};
   const list = h("div",{class:"rows"}, h("div",{class:"empty",style:{padding:"20px"}}, h("div",{class:"spin"})));
   const top = h("div"), warn = h("div"), vBox = h("div");
@@ -4411,7 +4414,7 @@ async function viewMyShop(uid){
         h("div",{class:"ms-tools"},
           h("div",{class:"search",style:{border:"1px solid var(--line)"}}, h("span",{html:IC.search}), q),
           h("button",{class:"btn sm",onclick:()=>picker.click()}, icon("plus"), t("tAdd")), picker),
-        vBox, list)));
+        catBox, vBox, list)));
   const r = await call("me");
   if (location.hash !== "#/u/"+uid) return;
   if (!r.ok){ list.replaceChildren(h("div",{class:"err",text:errText(r)})); return; }
@@ -4428,12 +4431,17 @@ async function viewMyShop(uid){
     h("span",{text:"⏳"}), h("span",{text:t("expSoon",{n:soon.length})}))));
   const prods = soon.concat(r.products.filter(p => !expSoon(p)));
   const rows = prods.map(p => { const x = myRow(p, r.user, drawTop); x._p = p; return x; });
+  const cats = [...new Set(r.products.map(p => p.cat))];
+  if (cat && !cats.includes(cat)) cat = "";
+  const drawCats = () => catBox.replaceChildren(cats.length > 1 ? h("div",{class:"chips",style:{padding:"0 0 8px"}},
+    h("button",{class:"chip"+(!cat?" on":""),text:t("allGoods"),onclick:()=>{ cat = ""; drawCats(); draw(); }}),
+    ...cats.map(c => h("button",{class:"chip"+(cat===c?" on":""),text:catOf(c).e+" "+catName(c),onclick:()=>{ cat = c; drawCats(); draw(); }}))) : null);
   const draw = () => {
     const v = q.value.trim().toLowerCase();
-    const vis = rows.filter(x => !v || looseHas((x._p.title+" "+catName(x._p.cat)).toLowerCase(), v));
+    const vis = rows.filter(x => (!cat || x._p.cat === cat) && (!v || looseHas((x._p.title+" "+catName(x._p.cat)).toLowerCase(), v)));
     list.replaceChildren(...(vis.length ? vis : [h("p",{class:"hint",style:{margin:0},text:t("nothingQ",{q:q.value.trim()})})]));
   };
-  q.oninput = draw; draw();
+  q.oninput = draw; drawCats(); draw();
   // обратный отсчёт — раз в минуту
   S.timers.push(setInterval(() => rows.forEach(x => x._tick && x._tick()), 60000));
   updateBadge();
