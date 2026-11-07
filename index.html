@@ -701,6 +701,41 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .shops-q .search{border:1px solid var(--line);background:#fff}
 .home-strip .cs{width:74px;padding:2px 2px}
 .home-strip .cs span{font-size:10px;line-height:1.15;overflow-wrap:anywhere;hyphens:auto;max-width:100%}
+/* v41: магазины кружками на главной, список магазинов */
+.sc-row{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;background:#fff;padding:12px 8px 10px;border-bottom:8px solid var(--soft,#f3f3f5)}
+.sc-row::-webkit-scrollbar{display:none}
+.sc{flex:none;width:74px;display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--fg)}
+.sc-ring{position:relative;width:62px;height:62px;border-radius:50%;padding:2px;background:#fff;border:2px solid var(--line);display:grid;place-items:center;flex:none}
+.sc-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.sc-ring i{font-style:normal;font-size:24px;font-weight:800;color:var(--mut)}
+.sc.vip .sc-ring{border-color:var(--vip);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--vipLine)}
+.sc-ring em{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);background:var(--vip);color:#3a2a00;font-style:normal;font-size:9.5px;font-weight:800;border-radius:6px;padding:1px 5px;border:1.5px solid #fff}
+.sc-t{font-size:11px;line-height:1.2;text-align:center;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.sc.vip-all .sc-ring{background:linear-gradient(160deg,#ffd84a,#ffb800);border-color:#f2b600}
+.sc.vip-all .sc-ring i{font-size:28px}
+.sc.vip-all .sc-t{font-weight:800;color:#6b4a00}
+.sc.shops-all .sc-ring{background:linear-gradient(160deg,var(--red2),var(--red));border-color:var(--red)}
+.sc.shops-all .sc-ring i{font-size:26px}
+.sc.shops-all .sc-t{font-weight:800}
+.sc-n{position:absolute;top:-4px;right:-4px;background:#1d1d1f;color:#fff;font-size:10px;font-weight:800;border-radius:9px;padding:1px 6px;border:2px solid #fff}
+.shops-list{background:#fff;margin:12px;border-radius:14px;border:1px solid var(--line);overflow:hidden}
+.shop-line{display:flex;gap:12px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);color:var(--fg)}
+.shop-line:last-child{border-bottom:0}
+.shop-line .sc-ring{width:50px;height:50px}
+.shop-line.vip{background:var(--vipBg)}
+.shop-line.vip .sc-ring{border-color:var(--vip)}
+.shop-line .sl-in{flex:1;min-width:0;display:flex;flex-direction:column}
+.shop-line b{font-size:15px;display:flex;gap:6px;align-items:center}
+.shop-line small{color:var(--mut);font-size:12.5px}
+.shop-line .ar{color:var(--mut2);font-size:20px}
+.vip-tag-i{font-style:normal;background:var(--vip);color:#3a2a00;font-size:10px;font-weight:800;border-radius:5px;padding:1px 5px}
+.shops-list .empty{border:0}
+.md-row .ck{font-size:20px;width:26px;flex:none;color:var(--mut2)}
+.md-row.on .ck{color:var(--red)}
+.md-row.on .mk-name{font-weight:700}
+.md-bar{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + var(--safe));background:#fff;border-top:1px solid var(--line);z-index:30;max-width:1180px;margin:0 auto}
+.md-show{font-size:16px}
+.mk{padding-bottom:90px}
 
 </style>
 </head>
@@ -718,6 +753,8 @@ ru: {
   vipBought:"Готово! VIP до {d}", yourBal:"Ваш баланс: {b} TMT", needTopUp:"Не хватает денег — пополнить баланс", vipMore:"Продлить VIP",
   e_no_money:"Недостаточно денег на балансе. Пополните баланс у администратора.", e_no_price:"Цена VIP ещё не назначена. Свяжитесь с администратором.",
   allVipSub:"Все VIP-магазины ›", searchShopName:"Название магазина",
+  showModels:"Показать {c} объявл. ({n} мод.)", inSaleModels:"Есть в продаже",
+  catalogOld:"Сервер не ответил — показаны сохранённые товары.",
   allShops:"Все магазины", vipShops:"VIP-магазины", shopsEmpty:"Пока нет магазинов", nShopGoods:"{n} тов.",
   vipHowT:"Как попасть в VIP?", vipHowS:"Ваши объявления выше всех", vipNone:"Здесь будут VIP-магазины",
   vipTitle:"VIP-объявление", vipUntil:"VIP до {d}", makeVip:"Сделать VIP",
@@ -836,6 +873,8 @@ tm: {
   vipBought:"Taýýar! VIP {d} çenli", yourBal:"Balansyňyz: {b} TMT", needTopUp:"Pul ýetmeýär — balansy doldurmak", vipMore:"VIP-i uzaltmak",
   e_no_money:"Balansda pul ýeterlik däl. Balansy administratordan dolduryň.", e_no_price:"VIP bahasy entek bellenmedi. Administrator bilen habarlaşyň.",
   allVipSub:"Ähli VIP dükanlar ›", searchShopName:"Dükanyň ady",
+  showModels:"{c} bildirişi görkez ({n} model)", inSaleModels:"Satuwda bar",
+  catalogOld:"Serwer jogap bermedi — ýatda saklanan harytlar görkezilýär.",
   allShops:"Ähli dükanlar", vipShops:"VIP dükanlar", shopsEmpty:"Häzirlikçe dükan ýok", nShopGoods:"{n} haryt",
   vipHowT:"Nädip VIP bolmaly?", vipHowS:"Bildirişleriňiz hemmeden ýokarda", vipNone:"Bu ýerde VIP dükanlar bolar",
   vipTitle:"VIP bildiriş", vipUntil:"VIP {d} çenli", makeVip:"VIP etmek",
@@ -954,6 +993,8 @@ en: {
   vipBought:"Done! VIP until {d}", yourBal:"Your balance: {b} TMT", needTopUp:"Not enough money — top up balance", vipMore:"Extend VIP",
   e_no_money:"Not enough money on your balance. Ask the administrator to top it up.", e_no_price:"VIP price is not set yet. Contact the administrator.",
   allVipSub:"All VIP shops ›", searchShopName:"Shop name",
+  showModels:"Show {c} listings ({n} models)", inSaleModels:"On sale now",
+  catalogOld:"Server did not respond — showing saved items.",
   allShops:"All shops", vipShops:"VIP shops", shopsEmpty:"No shops yet", nShopGoods:"{n} items",
   vipHowT:"How to get VIP?", vipHowS:"Your listings on top", vipNone:"VIP shops will appear here",
   vipTitle:"VIP listing", vipUntil:"VIP until {d}", makeVip:"Make VIP",
@@ -2066,7 +2107,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "40";   // номер версии — виден внизу профиля
+const APP_VER = "41";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2195,6 +2236,8 @@ async function loadCatalog(force){
   S.catalogLoading = call("catalog").then(r => {
     S.catalogLoading = null;
     if (r.ok){ r.products.forEach(migrateProduct); S.catalog = r.products; S.catalogAt = Date.now(); lsSet("catalog", r.products.slice(0, 300)); S.tiles = r.tiles || {}; lsSet("tiles", S.tiles); setExpDays(r.expDays); updateBadge(); }
+    // сервер не ответил — показываем сохранённые товары и говорим об этом (раз за сеанс)
+    else if (!S.catalogWarned){ S.catalogWarned = true; toast(t("catalogOld") + (r.error && r.error !== "net" ? " (" + r.error + ")" : "")); }
     return S.catalog;
   });
   return S.catalogLoading;
@@ -2267,6 +2310,13 @@ function sameName(a, b){
   return sx.length >= 2 && sx === sy;
 }
 // привести введённую модель к названию из списка («toyota camry» → «Camry»)
+// подпись выбранных моделей: «Camry, Highlander»
+function modelLabel(v){ return Array.isArray(v) ? v.join(", ") : (v || ""); }
+// объявление подходит под выбранную модель (или под одну из нескольких)
+function modelIn(p, v){
+  const a = p.attrs || {}, m = canonName(modelsOf(p.sub, a.brand).concat(CAR_MODELS[a.brand] || []), a.model, a.brand);
+  return (Array.isArray(v) ? v : [v]).some(x => sameName(m, x));
+}
 function canonName(list, v, brand){
   let s = String(v || "").trim(); if (!s || !list || !list.length) return s;
   if (brand){ const b = String(brand).toLowerCase(); if (s.toLowerCase().startsWith(b + " ")) s = s.slice(b.length + 1).trim(); }
@@ -2711,22 +2761,35 @@ async function viewModels(cat, sub, b){
     .forEach(p => { const m = canonName(known, (p.attrs||{}).model, b); if (m) counts[m] = (counts[m]||0) + 1; });
   const all = [...new Set([...known, ...Object.keys(counts)])].sort(modelSort);
   const st = S.browse && S.browse.cat === cat ? S.browse : null;
-  const selected = st && st.sub === sub && (st.f||{}).brand === b ? (st.f.model || "") : null;
-  const pick = m => { S.browse = {cat, sub, f: m ? {brand: b, model: m} : {brand: b}, r: st ? st.r || {} : {}}; go("/c/"+cat+"/list"); };
+  const cur = st && st.sub === sub && (st.f||{}).brand === b ? st.f.model : null;
+  // можно отметить несколько моделей галочками
+  const sel = new Set(Array.isArray(cur) ? cur : cur ? [cur] : []);
+  const show = ms => { const m = [...ms]; S.browse = {cat, sub, f: m.length ? {brand: b, model: m.length === 1 ? m[0] : m} : {brand: b}, r: st ? st.r || {} : {}}; go("/c/"+cat+"/list"); };
   const q = h("input",{class:"inp mk-q",type:"search",placeholder:"🔍  "+t("searchModel")});
   const list = h("div");
-  const row = m => h("button",{type:"button",class:"mk-row md-row"+(selected===m?" on":""),onclick:()=>pick(m)},
-    h("span",{class:"mk-name",text:m}),
-    counts[m] ? h("span",{class:"mk-n",text:String(counts[m])}) : null, h("span",{class:"ar",text:selected===m ? "✓" : "›"}));
+  const cnt = () => [...sel].reduce((a, m) => a + (counts[m] || 0), 0);
+  const showBtn = h("button",{type:"button",class:"btn block md-show",onclick:()=>show(sel)});
+  const bar = h("div",{class:"md-bar"}, showBtn);
+  const upd = () => {
+    bar.hidden = !sel.size;
+    showBtn.textContent = t("showModels",{n: sel.size, c: cnt()});
+    list.querySelectorAll(".md-row[data-m]").forEach(r => { const on = sel.has(r.dataset.m); r.classList.toggle("on", on); r.querySelector(".ck").textContent = on ? "☑" : "☐"; });
+  };
+  const row = m => h("button",{type:"button",class:"mk-row md-row","data-m":m,onclick:()=>{ sel.has(m) ? sel.delete(m) : sel.add(m); upd(); }},
+    h("span",{class:"ck",text:"☐"}), h("span",{class:"mk-name",text:m}),
+    counts[m] ? h("span",{class:"mk-n",text:String(counts[m])}) : null);
   const draw = () => {
     const v = q.value.trim().toLowerCase();
     const parts = [];
     if (v) parts.push(...all.filter(m => looseHas(m.toLowerCase(), v)).map(row));
     else {
       const total = Object.values(counts).reduce((a, x) => a + x, 0);
-      parts.push(h("button",{type:"button",class:"mk-row md-row md-any"+(selected===""?" on":""),onclick:()=>pick("")},
+      parts.push(h("button",{type:"button",class:"mk-row md-row md-any"+(cur === "" || cur == null && st && (st.f||{}).brand === b ? " on" : ""),onclick:()=>show([])},
         h("span",{class:"mk-name",text:t("anyModel")}), total ? h("span",{class:"mk-n",text:String(total)}) : null,
-        h("span",{class:"ar",text:selected==="" ? "✓" : "›"})));
+        h("span",{class:"ar",text:"›"})));
+      // сначала модели, которые уже продаются
+      const have = all.filter(m => counts[m]);
+      if (have.length) parts.push(h("div",{class:"mk-h",text:t("inSaleModels")}), ...have.map(row));
       const popIn = pop.filter(m => all.includes(m));
       if (popIn.length && all.length > popIn.length){
         parts.push(h("div",{class:"mk-h",text:t("popularModels")}), ...popIn.map(row), h("div",{class:"mk-h",text:t("allModels")}));
@@ -2734,9 +2797,10 @@ async function viewModels(cat, sub, b){
       parts.push(...all.map(row));
     }
     list.replaceChildren(...parts);
+    upd();
   };
   q.oninput = draw; draw();
-  wrap.append(h("div",{class:"mk"}, q, list));
+  wrap.append(h("div",{class:"mk"}, q, list), bar);
 }
 
 /* ===== IMO ===== */
@@ -3179,30 +3243,44 @@ function homeCatStrip(redraw){
   return strip;
 }
 // главная: VIP-магазины в один ряд, листаются пальцем вправо
+// главная: один ряд круглых значков, листается вправо:
+// ⭐ VIP-магазины → все VIP (с поиском), 🏪 Все магазины → все магазины (с поиском), дальше — сами магазины (VIP первыми)
+function shopCircle(x){
+  const pic = x.logo || x.thumb;
+  return h("a",{class:"sc"+(x.vip?" vip":""),href:"#/u/"+x.id},
+    h("span",{class:"sc-ring"}, pic ? h("img",{src:pic,alt:"",loading:"lazy",decoding:"async"}) : h("i",{text:initials(x.name)}),
+      x.vip ? h("em",{text:"VIP"}) : null),
+    h("span",{class:"sc-t",text:x.name}));
+}
 function homeShops(cat){
-  const vip = shopsList(cat).filter(x => x.vip);
-  return h("div",{class:"home-cats home-shops"},
-    h("div",{class:"sec-h vip-h",style:{padding:"0 12px"}}, h("h2",{text:"⭐ "+t("vipShops")}), h("div",{class:"sp"}),
-      vip.length ? h("a",{class:"lnk-red",href:"#/shops/vip",text:t("allCats")}) : null),
-    h("div",{class:"shop-row"},
-      // первая плитка — вход во все VIP-магазины (там поиск по названию)
-      h("a",{class:"shop-t vip all-vip",href:"#/shops/vip"},
-        h("div",{class:"shop-ph"}, h("span",{class:"av-ic",text:"⭐"}), vip.length ? h("span",{class:"av-n",text:String(vip.length)}) : null),
-        h("b",{text:t("vipShops")}), h("small",{text:t("allVipSub")})),
-      ...vip.map(shopTile),
-      h("button",{type:"button",class:"shop-t vip how"+(vip.length ? " mini" : ""),onclick:()=>vipInfoSheet()},
-        h("div",{class:"shop-ph"}, h("span",{text:"⭐"})),
-        h("b",{text:vip.length ? t("vipHowT") : t("vipNone")}), h("small",{text:t("vipHowS")}))));
+  const all = shopsList(cat), vipN = all.filter(x => x.vip).length;
+  return h("div",{class:"home-shops sc-row"},
+    h("a",{class:"sc vip-all",href:"#/shops/vip"},
+      h("span",{class:"sc-ring"}, h("i",{text:"⭐"}), vipN ? h("b",{class:"sc-n",text:String(vipN)}) : null),
+      h("span",{class:"sc-t",text:t("vipShops")})),
+    h("a",{class:"sc shops-all",href:"#/shops"},
+      h("span",{class:"sc-ring"}, h("i",{text:"🏪"}), all.length ? h("b",{class:"sc-n",text:String(all.length)}) : null),
+      h("span",{class:"sc-t",text:t("allShops")})),
+    ...all.map(shopCircle));
+}
+// список магазинов: круглое фото, название, сколько товаров
+function shopLine(x){
+  const pic = x.logo || x.thumb;
+  return h("a",{class:"shop-line"+(x.vip?" vip":""),href:"#/u/"+x.id},
+    h("span",{class:"sc-ring"}, pic ? h("img",{src:pic,alt:"",loading:"lazy",decoding:"async"}) : h("i",{text:initials(x.name)})),
+    h("span",{class:"sl-in"}, h("b",null, x.name, x.vip ? h("em",{class:"vip-tag-i",text:"VIP"}) : null),
+      h("small",{text:t("nShopGoods",{n:x.n})+" · "+x.city})),
+    h("span",{class:"ar",text:"›"}));
 }
 function viewShops(vipOnly){
   setTab("home");
   let q = "";
-  const box = h("div",{class:"shops-grid"});
+  const box = h("div",{class:"shops-list"});
   const qIn = h("input",{type:"search",enterkeyhint:"search",placeholder:t("searchShopName"),"aria-label":t("searchShopName")});
   qIn.oninput = () => { q = qIn.value.trim().toLowerCase(); draw(); };
   const draw = () => {
     const list = shopsList().filter(x => (!vipOnly || x.vip) && (!q || looseHas(String(x.name).toLowerCase(), q)));
-    box.replaceChildren(...(list.length ? list.map(shopTile) :
+    box.replaceChildren(...(list.length ? list.map(shopLine) :
       [emptyBox(q ? "🔎" : "🏪", q ? t("nothingQ",{q:qIn.value.trim()}) : vipOnly ? t("vipNone") : t("shopsEmpty"))]));
   };
   page(topBar((vipOnly ? "⭐ " : "") + t(vipOnly ? "vipShops" : "allShops"),
@@ -3251,7 +3329,7 @@ function viewBrowse(catId, listMode){
   const base = () => catId ? S.catalog.filter(p => p.cat === catId) : S.catalog;
   st.f = st.f || {}; st.r = st.r || {};
   const fval = (p, k) => (p.attrs || {})[k];
-  const hasVal = (p, k, v) => { const x = fval(p, k); return Array.isArray(x) ? x.includes(v) : k === "model" ? sameName(canonName(modelsOf(p.sub, (p.attrs||{}).brand), x, (p.attrs||{}).brand), v) : x === v; };
+  const hasVal = (p, k, v) => { const x = fval(p, k); return Array.isArray(x) ? x.includes(v) : k === "model" ? modelIn(p, v) : x === v; };
   const ctxA = () => Object.assign({}, st.f);
   const applyF = (list, skip) => list.filter(p => {
     if (st.sub && p.sub !== st.sub) return false;
@@ -3297,7 +3375,7 @@ function viewBrowse(catId, listMode){
           if (!MODELS) loadModels().then(d => { if (d && S.browse === st) draw(); });
           else if (modelsOf(st.sub, b).length || st.f.model)
             rows.push(h("div",{class:"mk-pick-wrap"}, h("button",{class:"mk-pick md-pick",onclick:()=>go(modelsHref("auto", st.sub, b))},
-              h("span",null, h("small",{text:t("f_model")}), h("b",{text: st.f.model || t("anyModel")})), h("span",{class:"ar",text:"›"})),
+              h("span",null, h("small",{text:t("f_model")}), h("b",{text: modelLabel(st.f.model) || t("anyModel")})), h("span",{class:"ar",text:"›"})),
               st.f.model ? h("button",{class:"chip",text:"✕",onclick:()=>{ delete st.f.model; draw(); }}) : null));
         }
         return;
@@ -3336,7 +3414,7 @@ function viewBrowse(catId, listMode){
       // модель (если выбрана марка и есть список моделей)
       if (catId === "auto" && st.f.brand && st.f.brand !== "other" && VEHICLE_SUBS[st.sub] && modelsOf(st.sub, st.f.brand).length){
         parts.push(lbl(t("f_model")), h("button",{type:"button",class:"mk-pick md-pick f-model",onclick:()=>{ close(); go(modelsHref("auto", st.sub, st.f.brand)); }},
-          h("span",null, h("b",{text: st.f.model || t("anyModel")})), h("span",{class:"ar",text:"›"})));
+          h("span",null, h("b",{text: modelLabel(st.f.model) || t("anyModel")})), h("span",{class:"ar",text:"›"})));
       }
       // год — выбор колесом (от / до)
       if (flds.some(f => f.k === "year" && f.filter === "range")){
@@ -3366,7 +3444,7 @@ function viewBrowse(catId, listMode){
     topFilt.textContent = t("filters") + (n ? " (" + n + ")" : "");
     topFilt.classList.toggle("on", !!n);
     const mode = viewMode();
-    const title = st.f.brand ? brandName(st.f.brand) + (st.f.model ? " " + st.f.model : "") : st.sub ? subName(st.sub) : catId ? catName(catId) : t("allGoods");
+    const title = st.f.brand ? brandName(st.f.brand) + (st.f.model ? " " + modelLabel(st.f.model) : "") : st.sub ? subName(st.sub) : catId ? catName(catId) : t("allGoods");
     const viewBtn = h("button",{class:"view-btn","aria-label":t("vView"),html: mode === "list" ? IC.rows : mode === "big" ? IC.big : IC.grid,
       onclick:()=>sheet((box, close) => box.append(h("h2",{text:t("vView")}), viewSwitch(() => close(true)))).then(() => drawList())});
     body.replaceChildren(
@@ -3391,12 +3469,12 @@ function viewBrowse(catId, listMode){
   }).then(() => draw());
   const drawQuick = () => {
     if (!compact) return;
-    cTitle.textContent = st.f.brand ? brandName(st.f.brand) + (st.f.model ? " " + st.f.model : "") : subName(st.sub);
+    cTitle.textContent = st.f.brand ? brandName(st.f.brand) + (st.f.model ? " " + modelLabel(st.f.model) : "") : subName(st.sub);
     const chips = [];
     const vehicle = catId === "auto" && VEHICLE_SUBS[st.sub];
     if (vehicle) chips.push(qchip(t("makeBtn"), st.f.brand ? brandName(st.f.brand) : "", () => go("/brands/auto/"+st.sub)));
     if (catId === "auto" && st.f.brand && st.f.brand !== "other" && modelsOf(st.sub, st.f.brand).length)
-      chips.push(qchip(t("f_model"), st.f.model, () => go(modelsHref("auto", st.sub, st.f.brand))));
+      chips.push(qchip(t("f_model"), modelLabel(st.f.model), () => go(modelsHref("auto", st.sub, st.f.brand))));
     // основные фильтры раздела (размер, комнаты, тип сделки, марка телефона и т.п.)
     fieldsFor(catId, st.sub, Object.assign({}, st.f)).filter(f => f.filter === "main" && f.k !== "model" && !(vehicle && f.k === "brand")).forEach(f => {
       const cur = st.f[f.k];
