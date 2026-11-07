@@ -831,6 +831,7 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .sup-dot.red{background:var(--red);color:#fff;margin-left:auto;margin-right:6px}
 .menu .del-acc{color:#c62828}
 .del-list{margin:6px 0 0;padding-left:18px;line-height:1.5}
+.no-sub{display:block;width:100%;text-align:left;background:#fde8e8;color:#9b1c1c;border-radius:10px;padding:8px 10px;font-size:12.5px;font-weight:600;line-height:1.35}
 
 </style>
 </head>
@@ -875,6 +876,7 @@ ru: {
   delAccVip:"VIP-объявления и VIP-магазин — оплаченные дни пропадут ({n} VIP)", delAccBal:"баланс {b} — монеты не вернутся", delAccChats:"вход в аккаунт по этому номеру",
   delAccNoUndo:"Это нельзя отменить.", yesDelete:"Да, удалить", delAccSure:"Вы точно уверены?", delAccLast:"Аккаунт и {n} товаров будут удалены навсегда.",
   delAccFinal:"Удалить навсегда", delAccDone:"Аккаунт удалён.", delAccOld:"Удаление аккаунта заработает после обновления сервера. Напишите администратору.",
+  noSubWarn:"Не указан раздел (марка, модель) — покупатели не найдут его в фильтрах. Нажмите, проверьте и сохраните.",
   allShops:"Все магазины", vipShops:"VIP-магазины", shopsEmpty:"Пока нет магазинов", nShopGoods:"{n} тов.",
   vipHowT:"Как попасть в VIP?", vipHowS:"Ваши объявления выше всех", vipNone:"Здесь будут VIP-магазины",
   vipTitle:"VIP-объявление", vipUntil:"VIP до {d}", makeVip:"Сделать VIP",
@@ -1020,6 +1022,7 @@ tm: {
   delAccVip:"VIP bildirişler we VIP dükan — tölenen günler ýiter ({n} VIP)", delAccBal:"balans {b} — teňňeler gaýtarylmaz", delAccChats:"bu belgi bilen hasaba girmek",
   delAccNoUndo:"Muny yzyna gaýtaryp bolmaz.", yesDelete:"Hawa, pozmak", delAccSure:"Hakykatdanam ynamlymy?", delAccLast:"Hasap we {n} haryt hemişelik pozular.",
   delAccFinal:"Hemişelik pozmak", delAccDone:"Hasap pozuldy.", delAccOld:"Hasaby pozmak serwer täzelenenden soň işlär. Administratora ýazyň.",
+  noSubWarn:"Bölüm (marka, model) görkezilmedi — alyjylar ony süzgüçlerde tapmaz. Basyň, barlaň we ýatda saklaň.",
   allShops:"Ähli dükanlar", vipShops:"VIP dükanlar", shopsEmpty:"Häzirlikçe dükan ýok", nShopGoods:"{n} haryt",
   vipHowT:"Nädip VIP bolmaly?", vipHowS:"Bildirişleriňiz hemmeden ýokarda", vipNone:"Bu ýerde VIP dükanlar bolar",
   vipTitle:"VIP bildiriş", vipUntil:"VIP {d} çenli", makeVip:"VIP etmek",
@@ -1165,6 +1168,7 @@ en: {
   delAccVip:"VIP listings and VIP shop — paid days will be lost ({n} VIP)", delAccBal:"balance {b} — coins will not be returned", delAccChats:"login with this number",
   delAccNoUndo:"This cannot be undone.", yesDelete:"Yes, delete", delAccSure:"Are you absolutely sure?", delAccLast:"The account and {n} items will be deleted forever.",
   delAccFinal:"Delete forever", delAccDone:"Account deleted.", delAccOld:"Account deletion will work after the server is updated. Contact the administrator.",
+  noSubWarn:"Section (make, model) is missing — buyers won’t find it in filters. Tap, check and save.",
   allShops:"All shops", vipShops:"VIP shops", shopsEmpty:"No shops yet", nShopGoods:"{n} items",
   vipHowT:"How to get VIP?", vipHowS:"Your listings on top", vipNone:"VIP shops will appear here",
   vipTitle:"VIP listing", vipUntil:"VIP until {d}", makeVip:"Make VIP",
@@ -2308,7 +2312,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "57";   // номер версии — виден внизу профиля
+const APP_VER = "58";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -4553,7 +4557,9 @@ function myRow(p, u, onBal){
         h("a",{class:"in",href:"#/p/"+p.id}, h("div",{class:"t",text:p.title}),
           h("div",{class:"s"}, priceEl(p.price), stChip()),
           h("div",{class:"where",text:[catName(p.cat), p.sub ? subName(p.sub) : "", [(p.attrs||{}).brand ? brandName(p.attrs.brand) : "", modelLabel((p.attrs||{}).model)].filter(Boolean).join(" ")].filter(Boolean).join(" · ")})), acts),
-      vip || expAt(p) ? h("div",{class:"my-bot"}, vip, more, timer) : null);
+      vip || expAt(p) ? h("div",{class:"my-bot"}, vip, more, timer) : null,
+      // старое объявление без раздела — покупатели не найдут его в разделе и фильтрах
+      SUBS[p.cat] && !p.sub && p.status !== "banned" ? h("button",{class:"no-sub",onclick:()=>go("/edit/"+p.id)}, "⚠️ ", t("noSubWarn")) : null);
     row._tick();
   };
   function afterVip(){ row.className = "row my" + (isVip(p) ? " vip" : ""); draw(); if ($("bal-sum")) $("bal-sum").textContent = coins(S.balance); onBal && onBal(); }
