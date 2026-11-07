@@ -821,6 +821,13 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .mall-add{display:flex;gap:8px;margin-top:10px}
 .mall-add .inp{flex:1;min-width:0}
 .lgrid > .lcard,.bgrid > .bcard,.grid > .card{min-width:0;max-width:100%}
+/* v53: VIP-магазины — категории, велаят, ТЦ */
+.shops-top{background:#fff;border-bottom:1px solid var(--line)}
+.shops-top .home-strip{border:0;padding:8px 4px 4px}
+.shops-top .shops-q{padding:4px 12px 0}
+.sl-cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.sl-cats i{font-style:normal;font-size:11px;background:var(--soft,#f3f3f5);border-radius:6px;padding:2px 6px;color:var(--mut)}
+.shop-line.vip .sl-cats i{background:#fff}
 
 </style>
 </head>
@@ -857,6 +864,7 @@ ru: {
   distSub:"Или укажите район, если вы не в ТЦ и не на рынке.", mallF:"Торговый центр / рынок", mallAny:"Любой",
   sizesHave:"Есть размеры:",
   mallAll:"Все ТЦ и рынки",
+  shopsNone:"Нет магазинов по этому выбору. Попробуйте другую категорию или ТЦ.",
   allShops:"Все магазины", vipShops:"VIP-магазины", shopsEmpty:"Пока нет магазинов", nShopGoods:"{n} тов.",
   vipHowT:"Как попасть в VIP?", vipHowS:"Ваши объявления выше всех", vipNone:"Здесь будут VIP-магазины",
   vipTitle:"VIP-объявление", vipUntil:"VIP до {d}", makeVip:"Сделать VIP",
@@ -994,6 +1002,7 @@ tm: {
   distSub:"Ýa-da söwda merkezinde däl bolsaňyz, etraby görkeziň.", mallF:"Söwda merkezi / bazar", mallAny:"Islendik",
   sizesHave:"Bar ölçegler:",
   mallAll:"Ähli söwda merkezleri",
+  shopsNone:"Bu saýlaw boýunça dükan ýok. Başga kategoriýany ýa-da söwda merkezini synap görüň.",
   allShops:"Ähli dükanlar", vipShops:"VIP dükanlar", shopsEmpty:"Häzirlikçe dükan ýok", nShopGoods:"{n} haryt",
   vipHowT:"Nädip VIP bolmaly?", vipHowS:"Bildirişleriňiz hemmeden ýokarda", vipNone:"Bu ýerde VIP dükanlar bolar",
   vipTitle:"VIP bildiriş", vipUntil:"VIP {d} çenli", makeVip:"VIP etmek",
@@ -1131,6 +1140,7 @@ en: {
   distSub:"Or choose a district if you are not in a mall or market.", mallF:"Mall / market", mallAny:"Any",
   sizesHave:"Sizes in stock:",
   mallAll:"All malls & markets",
+  shopsNone:"No shops for this choice. Try another category or mall.",
   allShops:"All shops", vipShops:"VIP shops", shopsEmpty:"No shops yet", nShopGoods:"{n} items",
   vipHowT:"How to get VIP?", vipHowS:"Your listings on top", vipNone:"VIP shops will appear here",
   vipTitle:"VIP listing", vipUntil:"VIP until {d}", makeVip:"Make VIP",
@@ -2272,7 +2282,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "52";   // номер версии — виден внизу профиля
+const APP_VER = "53";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2502,11 +2512,15 @@ function expText(p){
   return hTot >= 24 ? t("expLeft",{d:Math.floor(hTot/24), h:hTot%24}) : t("expLeftH",{h:hTot, m:Math.floor(ms/6e4)%60});
 }
 // магазины из каталога: VIP-магазин — у кого есть хотя бы одно VIP-объявление
-function shopsList(cat){
+// магазины, у которых есть товары под выбор: категория, велаят, ТЦ
+function shopsList(cat, city, mall){
   const m = {};
   S.catalog.forEach(p => {
     if (cat && p.cat !== cat) return;
-    const x = m[p.user] || (m[p.user] = {id:p.user, name:p.sellerName, logo:p.sellerLogo, stype:p.stype, city:p.city, n:0, vip:false, thumb:""});
+    if (city && p.city !== city) return;
+    if (mall && (p.attrs || {}).mall !== mall) return;
+    const x = m[p.user] || (m[p.user] = {id:p.user, name:p.sellerName, logo:p.sellerLogo, stype:p.stype, city:p.city, n:0, vip:false, thumb:"", cats:new Set(), malls:new Set()});
+    x.cats.add(p.cat); if ((p.attrs || {}).mall) x.malls.add(p.attrs.mall);
     x.n++; if (isVip(p)){ x.vip = true; if (!x.thumb) x.thumb = p.thumb; }
     if (!x.thumb && p.thumb) x.thumb = p.thumb;
   });
@@ -3526,7 +3540,7 @@ function shopCircle(x){
     h("span",{class:"sc-t",text:x.name}));
 }
 function homeShops(cat){
-  const vip = shopsList(cat).filter(x => x.vip);
+  const vip = shopsList(cat, S.city, S.mall).filter(x => x.vip);
   return h("div",{class:"home-shops sc-row"},
     h("a",{class:"sc vip-all",href:"#/shops/vip"},
       h("span",{class:"sc-ring"}, h("i",{text:"⭐"}), vip.length ? h("b",{class:"sc-n",text:String(vip.length)}) : null),
@@ -3536,28 +3550,32 @@ function homeShops(cat){
 // список магазинов: круглое фото, название, сколько товаров
 function shopLine(x){
   const pic = x.logo || x.thumb;
-  return h("a",{class:"shop-line"+(x.vip?" vip":""),href:"#/u/"+x.id},
+  return h("a",{class:"shop-line"+(x.vip?" vip":""),href:"#/u/"+x.id,onclick:()=>{ S.shopPre = {cat: S.homeCat || ""}; }},
     h("span",{class:"sc-ring"}, pic ? h("img",{src:pic,alt:"",loading:"lazy",decoding:"async"}) : h("i",{text:initials(x.name)})),
     h("span",{class:"sl-in"}, h("b",null, x.name, x.vip ? h("em",{class:"vip-tag-i",text:"VIP"}) : null),
-      h("small",{text:t("nShopGoods",{n:x.n})+" · "+x.city})),
+      h("small",{text:t("nShopGoods",{n:x.n})+" · "+x.city+(x.malls && x.malls.size ? " · 🏬 "+[...x.malls].slice(0,2).join(", ") : "")}),
+      x.cats && x.cats.size ? h("span",{class:"sl-cats"}, ...[...x.cats].slice(0,4).map(c => h("i",{text:catOf(c).e+" "+catName(c)}))) : null),
     h("span",{class:"ar",text:"›"}));
 }
 function viewShops(vipOnly){
   setTab("home");
   let q = "";
-  const box = h("div",{class:"shops-list"});
+  const box = h("div",{class:"shops-list"}), stripBox = h("div"), placeBox = h("div");
   const qIn = h("input",{type:"search",enterkeyhint:"search",placeholder:t("searchShopName"),"aria-label":t("searchShopName")});
-  qIn.oninput = () => { q = qIn.value.trim().toLowerCase(); draw(); };
-  const draw = () => {
-    const list = shopsList().filter(x => (!vipOnly || x.vip) && (!q || looseHas(String(x.name).toLowerCase(), q)));
+  qIn.oninput = () => { q = qIn.value.trim().toLowerCase(); drawList(); };
+  const drawList = () => {
+    const list = shopsList(S.homeCat, S.city, S.mall).filter(x => (!vipOnly || x.vip) && (!q || looseHas(String(x.name).toLowerCase(), q)));
+    const any = S.homeCat || S.city || S.mall || q;
     box.replaceChildren(...(list.length ? list.map(shopLine) :
-      [emptyBox(q ? "🔎" : "🏪", q ? t("nothingQ",{q:qIn.value.trim()}) : vipOnly ? t("vipNone") : t("shopsEmpty"))]));
+      [emptyBox(any ? "🔎" : "🏪", any ? t("shopsNone") : vipOnly ? t("vipNone") : t("shopsEmpty"))]));
   };
+  const draw = () => { stripBox.replaceChildren(homeCatStrip(draw)); placeBox.replaceChildren(placePick(draw)); drawList(); };
   page(topBar((vipOnly ? "⭐ " : "") + t(vipOnly ? "vipShops" : "allShops"),
       {right: vipOnly ? h("button",{class:"btn sm ghost",text:"?",onclick:()=>vipInfoSheet()}) : null}),
-    h("div",{class:"wrap"},
-      h("div",{class:"shops-q"}, h("div",{class:"search"}, h("span",{html:IC.search}), qIn)),
-      box));
+    h("div",{class:"shops-top"}, stripBox,
+      h("div",{class:"wrap"}, h("div",{class:"shops-q"}, h("div",{class:"search"}, h("span",{html:IC.search}), qIn))),
+      h("div",{class:"wrap"}, placeBox)),
+    h("div",{class:"wrap"}, box));
   draw(); loadCatalog().then(draw);
 }
 // (старое) категории крупными фото-карточками в 2 ряда
@@ -3787,7 +3805,8 @@ function viewBrowse(catId, listMode){
 }
 function viewShop(uid){
   setTab("");
-  let q = "", cat = "";
+  let q = "", cat = (S.shopPre && S.shopPre.cat) || "";
+  S.shopPre = null;
   const head = h("div"), body = h("div",{class:"sec"});
   const qIn = h("input",{type:"search",placeholder:t("searchShop"),"aria-label":t("searchShop")});
   qIn.oninput = () => { q = qIn.value.trim().toLowerCase(); drawList(); };
