@@ -697,6 +697,7 @@ ru: {
   city:"Велаят", pin4:"PIN (4 цифры)", pinNew:"Придумайте PIN (4 цифры)", pinHint:"Им вы будете входить. Не говорите его никому.",
   createAcc:"Создать аккаунт",
   getCode:"Получить код", smsCode:"Код из SMS", codeSent:"Код отправлен на +993 {phone}", resendIn:"Повторно через {s} с",
+  resetTitle:"Новый PIN по SMS", resetSub:"Получите код на свой номер и придумайте новый PIN.", resetSave:"Сохранить и войти", backToLogin:"Назад ко входу", askAdmin:"Не приходит SMS? Написать администратору", pinChanged:"PIN изменён. Вы вошли.", e_no_user:"Этот номер не зарегистрирован. Нажмите «Регистрация».",
   e_code:"Неверный код из SMS.", e_wait:"Подождите минуту и запросите код снова.", e_sms:"Не удалось отправить SMS. Попробуйте позже.", e_code_tries:"Слишком много попыток. Запросите новый код.",
   agree:"Я прочитал(а) и понимаю: {app} не несёт ответственности за сделку между покупателем и продавцом.",
   rule1:"{app} — доска объявлений. Мы не продаём товары, не принимаем оплату и не доставляем.",
@@ -799,6 +800,7 @@ tm: {
   city:"Welaýat", pin4:"PIN (4 san)", pinNew:"PIN oýlap tapyň (4 san)", pinHint:"Onuň bilen girersiňiz. Hiç kime aýtmaň.",
   createAcc:"Hasap döretmek",
   getCode:"Kod almak", smsCode:"SMS kody", codeSent:"Kod +993 {phone} belgä iberildi", resendIn:"{s} sek soň gaýtadan",
+  resetTitle:"SMS arkaly täze PIN", resetSub:"Belgiňize kod alyň we täze PIN oýlap tapyň.", resetSave:"Ýatda sakla we gir", backToLogin:"Girişe dolan", askAdmin:"SMS gelmeýärmi? Administratora ýazyň", pinChanged:"PIN üýtgedildi. Siz girdiňiz.", e_no_user:"Bu belgi hasaba alynmadyk. «Hasaba durmak» basyň.",
   e_code:"SMS kody nädogry.", e_wait:"Bir minut garaşyň we kody täzeden soraň.", e_sms:"SMS ugradyp bolmady. Soňrak synanyşyň.", e_code_tries:"Synanyşyk köp boldy. Täze kod soraň.",
   agree:"Okadym we düşündim: {app} alyjy bilen satyjynyň arasyndaky söwda üçin jogap bermeýär.",
   rule1:"{app} — bildiriş tagtasy. Biz haryt satmaýarys, töleg kabul etmeýäris we eltip bermeýäris.",
@@ -901,6 +903,7 @@ en: {
   city:"Region", pin4:"PIN (4 digits)", pinNew:"Choose a PIN (4 digits)", pinHint:"You'll use it to sign in. Don't share it.",
   createAcc:"Create account",
   getCode:"Get code", smsCode:"SMS code", codeSent:"Code sent to +993 {phone}", resendIn:"Resend in {s} s",
+  resetTitle:"New PIN via SMS", resetSub:"Get a code on your number and choose a new PIN.", resetSave:"Save and sign in", backToLogin:"Back to sign in", askAdmin:"No SMS? Message the administrator", pinChanged:"PIN changed. You are signed in.", e_no_user:"This number is not registered. Tap “Sign up”.",
   e_code:"Wrong SMS code.", e_wait:"Wait a minute and request the code again.", e_sms:"Could not send SMS. Try again later.", e_code_tries:"Too many attempts. Request a new code.",
   agree:"I have read and understand: {app} is not responsible for deals between buyers and sellers.",
   rule1:"{app} is a listings board. We don't sell items, take payments or deliver.",
@@ -1773,6 +1776,12 @@ const Mock = (() => {
     uploadLogo(d){ const u = userByToken(d.token); if (!u) return {ok:false,error:"auth"}; u.logo = d.data ? "data:image/jpeg;base64,"+d.data : ""; return {ok:true, logo:u.logo}; },
     report(d){ const me = userByToken(d.token); db.reports.push({id:"R"+next("R"), product:d.id, user:me?me.id:"", reason:d.reason, text:d.text||"", at:now(), status:"new"}); return {ok:true}; },
     sendCode(d){ return {ok:true}; },
+    resetPin(d){
+      const u = db.users.find(x => x.phone === d.phone); if (!u) return {ok:false,error:"no_user"};
+      if (!/^\d{4}$/.test(String(d.pin||""))) return {ok:false,error:"pin"};
+      u.pin = hash(d.phone, d.pin); if (!u.token) u.token = "t"+Math.random().toString(36).slice(2);
+      return {ok:true, user:pub(u), token:u.token};
+    },
     register(d){
       if (!d.name) return {ok:false,error:"fields"};
       if (!/^(6[1-5]|71)\d{6}$/.test(d.phone)) return {ok:false,error:"phone"};
@@ -1910,7 +1919,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "36";   // номер версии — виден внизу профиля
+const APP_VER = "37";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2542,6 +2551,30 @@ function adminContactSheet(reasonKey){
 function rulesList(){
   return h("div",{class:"rules"}, h("ul",null, ...[1,2,3,4].map(i => h("li",{text:t("rule"+i)}))));
 }
+function smsCodeField(phoneIn, err, purpose){
+  const input = h("input",{class:"inp",type:"text",inputmode:"numeric",maxlength:"4",placeholder:"••••",autocomplete:"one-time-code",style:{flex:"1"}});
+  const btn = h("button",{type:"button",class:"btn ghost",text:t("getCode"),style:{whiteSpace:"nowrap"}});
+  const hint = h("div",{class:"hint"});
+  let timer = null;
+  btn.onclick = async () => {
+    const phone = digits(phoneIn.value);
+    if (!validPhone(phone)) return err.textContent = t("e_phone");
+    err.textContent = ""; btn.disabled = true;
+    const r = await call("sendCode", {phone, purpose, token: null});
+    if (!r.ok){ btn.disabled = false; return err.textContent = errText(r); }
+    hint.textContent = t("codeSent",{phone}); input.focus();
+    let left = 60; clearInterval(timer);
+    btn.textContent = t("resendIn",{s:left});
+    timer = setInterval(() => {
+      left--;
+      if (left <= 0 || !btn.isConnected){ clearInterval(timer); btn.disabled = false; btn.textContent = t("getCode"); }
+      else btn.textContent = t("resendIn",{s:left});
+    }, 1000);
+  };
+  const field = h("label",{class:"field"}, h("span",{text:t("smsCode")}),
+    h("div",{style:{display:"flex",gap:"8px",alignItems:"center"}}, input, btn), hint);
+  return {field, input};
+}
 function authSheet(reasonKey, startMode, startRole){
   return sheet((box, close) => {
     let mode = startMode || (lsGet("knownPhone") ? "login" : "reg");
@@ -2555,11 +2588,33 @@ function authSheet(reasonKey, startMode, startRole){
         h("button",{class:mode==="reg"?"on":null,text:t("register"),onclick:()=>{ mode="reg"; draw(); }}),
         h("button",{class:mode==="login"?"on":null,text:t("login"),onclick:()=>{ mode="login"; draw(); }}));
       let submit;
-      if (mode === "login"){
+      if (mode === "reset"){
+        const sc = smsCodeField(phoneIn, err, "reset");
+        submit = h("button",{class:"btn block",text:t("resetSave")});
+        body.replaceChildren(seg,
+          h("p",{class:"hint",style:{marginBottom:"12px"},text:t("resetSub")}),
+          phoneField, sc.field,
+          h("label",{class:"field"}, h("span",{text:t("pinNew")}), pinIn, h("div",{class:"hint",text:t("pinHint")})),
+          err, submit,
+          h("div",{style:{textAlign:"center",marginTop:"14px",display:"grid",gap:"10px"}},
+            h("button",{class:"link",text:t("backToLogin"),onclick:()=>{ mode="login"; draw(); }}),
+            h("button",{class:"link",text:t("askAdmin"),onclick:()=>adminContactSheet("forgotPin")})));
+        submit.onclick = async () => {
+          const phone = digits(phoneIn.value);
+          if (!validPhone(phone)) return err.textContent = t("e_phone");
+          if (!/^\d{4}$/.test(sc.input.value.trim())) return err.textContent = t("e_code");
+          if (!/^\d{4}$/.test(pinIn.value)) return err.textContent = t("e_pin");
+          submit.disabled = true;
+          const r = await call("resetPin", {phone, code: sc.input.value.trim(), pin: pinIn.value, token: null});
+          submit.disabled = false;
+          if (!r.ok) return err.textContent = errText(r);
+          lsSet("knownPhone", phone); saveAuth(r); toast(t("pinChanged")); close(true);
+        };
+      } else if (mode === "login"){
         submit = h("button",{class:"btn block",text:t("login")});
         body.replaceChildren(seg, phoneField, h("label",{class:"field"}, h("span",{text:t("pin4")}), pinIn), err, submit,
           h("div",{style:{textAlign:"center",marginTop:"14px"}},
-            h("button",{class:"link",text:t("forgotPinQ"),onclick:()=>adminContactSheet("forgotPin")})));
+            h("button",{class:"link",text:t("forgotPinQ"),onclick:()=>{ mode="reset"; draw(); }})));
         submit.onclick = async () => {
           const phone = digits(phoneIn.value);
           if (!validPhone(phone)) return err.textContent = t("e_phone");
@@ -2591,27 +2646,7 @@ function authSheet(reasonKey, startMode, startRole){
         const agree = h("input",{type:"checkbox"});
         submit = h("button",{class:"btn block",text:t("createAcc"),disabled:true});
         agree.onchange = () => submit.disabled = !agree.checked;
-        const codeIn = h("input",{class:"inp",type:"text",inputmode:"numeric",maxlength:"4",placeholder:"••••",autocomplete:"one-time-code",style:{flex:"1"}});
-        const codeBtn = h("button",{type:"button",class:"btn ghost",text:t("getCode"),style:{whiteSpace:"nowrap"}});
-        const codeHint = h("div",{class:"hint"});
-        let codeTimer = null;
-        codeBtn.onclick = async () => {
-          const phone = digits(phoneIn.value);
-          if (!validPhone(phone)) return err.textContent = t("e_phone");
-          err.textContent = ""; codeBtn.disabled = true;
-          const r = await call("sendCode", {phone, token: null});
-          if (!r.ok){ codeBtn.disabled = false; return err.textContent = errText(r); }
-          codeHint.textContent = t("codeSent",{phone}); codeIn.focus();
-          let left = 60; clearInterval(codeTimer);
-          codeBtn.textContent = t("resendIn",{s:left});
-          codeTimer = setInterval(() => {
-            left--;
-            if (left <= 0 || !codeBtn.isConnected){ clearInterval(codeTimer); codeBtn.disabled = false; codeBtn.textContent = t("getCode"); }
-            else codeBtn.textContent = t("resendIn",{s:left});
-          }, 1000);
-        };
-        const codeField = h("label",{class:"field"}, h("span",{text:t("smsCode")}),
-          h("div",{style:{display:"flex",gap:"8px",alignItems:"center"}}, codeIn, codeBtn), codeHint);
+        const sc = smsCodeField(phoneIn, err, "reg"), codeIn = sc.input, codeField = sc.field;
         body.replaceChildren(seg,
           h("div",{class:"field"}, h("span",{text:t("whoAreYou")}), roleBox),
           h("label",{class:"field"}, nameLbl, nameIn),
