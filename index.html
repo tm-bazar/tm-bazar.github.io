@@ -736,6 +736,7 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .md-bar{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + var(--safe));background:#fff;border-top:1px solid var(--line);z-index:30;max-width:1180px;margin:0 auto}
 .md-show{font-size:16px}
 .mk{padding-bottom:90px}
+.row.my .where{font-size:11.5px;color:var(--mut2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 </style>
 </head>
@@ -755,6 +756,7 @@ ru: {
   allVipSub:"Все VIP-магазины ›", searchShopName:"Название магазина",
   showModels:"Показать {c} объявл. ({n} мод.)", inSaleModels:"Есть в продаже",
   catalogOld:"Сервер не ответил — показаны сохранённые товары.",
+  showAllSub:"Показать все: {s} ({n})",
   allShops:"Все магазины", vipShops:"VIP-магазины", shopsEmpty:"Пока нет магазинов", nShopGoods:"{n} тов.",
   vipHowT:"Как попасть в VIP?", vipHowS:"Ваши объявления выше всех", vipNone:"Здесь будут VIP-магазины",
   vipTitle:"VIP-объявление", vipUntil:"VIP до {d}", makeVip:"Сделать VIP",
@@ -875,6 +877,7 @@ tm: {
   allVipSub:"Ähli VIP dükanlar ›", searchShopName:"Dükanyň ady",
   showModels:"{c} bildirişi görkez ({n} model)", inSaleModels:"Satuwda bar",
   catalogOld:"Serwer jogap bermedi — ýatda saklanan harytlar görkezilýär.",
+  showAllSub:"Ählisini görkez: {s} ({n})",
   allShops:"Ähli dükanlar", vipShops:"VIP dükanlar", shopsEmpty:"Häzirlikçe dükan ýok", nShopGoods:"{n} haryt",
   vipHowT:"Nädip VIP bolmaly?", vipHowS:"Bildirişleriňiz hemmeden ýokarda", vipNone:"Bu ýerde VIP dükanlar bolar",
   vipTitle:"VIP bildiriş", vipUntil:"VIP {d} çenli", makeVip:"VIP etmek",
@@ -995,6 +998,7 @@ en: {
   allVipSub:"All VIP shops ›", searchShopName:"Shop name",
   showModels:"Show {c} listings ({n} models)", inSaleModels:"On sale now",
   catalogOld:"Server did not respond — showing saved items.",
+  showAllSub:"Show all: {s} ({n})",
   allShops:"All shops", vipShops:"VIP shops", shopsEmpty:"No shops yet", nShopGoods:"{n} items",
   vipHowT:"How to get VIP?", vipHowS:"Your listings on top", vipNone:"VIP shops will appear here",
   vipTitle:"VIP listing", vipUntil:"VIP until {d}", makeVip:"Make VIP",
@@ -2107,7 +2111,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "41";   // номер версии — виден внизу профиля
+const APP_VER = "42";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2700,8 +2704,10 @@ function makeList(opts, counts, onPick, selected, withAny){
   box.append(q, list);
   return box;
 }
-function viewMakes(cat, sub){
+async function viewMakes(cat, sub){
   setTab("home", false);
+  // свежий список объявлений, чтобы цифры у марок были точными
+  if (!S.catalogAt){ const here = location.hash; page(h("div",{class:"empty"}, h("div",{class:"spin"}))); await loadCatalog(); if (location.hash !== here) return; }
   const f = fieldsFor(cat, sub, {}).find(x => x.k === "brand");
   const opts = f ? optsOf(f, sub, {}) : CAR_BRANDS;
   const counts = {};
@@ -2717,7 +2723,10 @@ function viewMakes(cat, sub){
   page(h("div",{class:"silver-head"},
       h("button",{class:"sh-back","aria-label":t("back"),html:IC.back,onclick:()=>back("/c/"+cat)}),
       h("div",null, h("small",{text:catName(cat)}), h("h1",{text:subName(sub)}))),
-    h("div",{class:"wrap"}, makeList(opts, counts, pick, st && st.sub === sub ? (st.f||{}).brand : "", true)));
+    h("div",{class:"wrap"}, makeList(opts, counts, pick, st && st.sub === sub ? (st.f||{}).brand : "", true),
+      // внизу: показать все объявления раздела, не выбирая марку
+      h("div",{class:"md-bar"}, h("button",{type:"button",class:"btn block md-show",onclick:()=>pick(""),
+        text:t("showAllSub",{s:subName(sub), n:S.catalog.filter(p => p.cat === cat && p.sub === sub).length})}))));
 }
 
 /* ===== НЕДВИЖИМОСТЬ: после раздела — продажа / аренда / аренда комнат ===== */
@@ -2752,7 +2761,7 @@ async function viewModels(cat, sub, b){
   page(h("div",{class:"silver-head"},
       h("button",{class:"sh-back","aria-label":t("back"),html:IC.back,onclick:()=>back("/brands/"+cat+"/"+sub)}),
       h("div",null, h("small",{text:subName(sub)}), h("h1",{text:brandName(b)}))), wrap);
-  await loadModels();
+  await Promise.all([loadModels(), loadCatalog()]);
   if (location.hash !== here) return;
   const counts = {};
   const pop = (sub === "cars" || sub === "imported") ? ((POP_MODELS || CAR_MODELS)[b] || []) : [];
@@ -3253,15 +3262,12 @@ function shopCircle(x){
     h("span",{class:"sc-t",text:x.name}));
 }
 function homeShops(cat){
-  const all = shopsList(cat), vipN = all.filter(x => x.vip).length;
+  const vip = shopsList(cat).filter(x => x.vip);
   return h("div",{class:"home-shops sc-row"},
     h("a",{class:"sc vip-all",href:"#/shops/vip"},
-      h("span",{class:"sc-ring"}, h("i",{text:"⭐"}), vipN ? h("b",{class:"sc-n",text:String(vipN)}) : null),
+      h("span",{class:"sc-ring"}, h("i",{text:"⭐"}), vip.length ? h("b",{class:"sc-n",text:String(vip.length)}) : null),
       h("span",{class:"sc-t",text:t("vipShops")})),
-    h("a",{class:"sc shops-all",href:"#/shops"},
-      h("span",{class:"sc-ring"}, h("i",{text:"🏪"}), all.length ? h("b",{class:"sc-n",text:String(all.length)}) : null),
-      h("span",{class:"sc-t",text:t("allShops")})),
-    ...all.map(shopCircle));
+    ...vip.map(shopCircle));
 }
 // список магазинов: круглое фото, название, сколько товаров
 function shopLine(x){
@@ -4108,7 +4114,8 @@ function myRow(p, u){
       h("div",{class:"my-top"},
         p.thumb ? h("img",{src:p.thumb,alt:""}) : h("div",{class:"noimg"}),
         h("a",{class:"in",href:"#/p/"+p.id}, h("div",{class:"t",text:p.title}),
-          h("div",{class:"s"}, priceEl(p.price), stChip())), acts),
+          h("div",{class:"s"}, priceEl(p.price), stChip()),
+          h("div",{class:"where",text:[catName(p.cat), p.sub ? subName(p.sub) : "", [(p.attrs||{}).brand ? brandName(p.attrs.brand) : "", modelLabel((p.attrs||{}).model)].filter(Boolean).join(" ")].filter(Boolean).join(" · ")})), acts),
       vip || expAt(p) ? h("div",{class:"my-bot"}, vip, more, timer) : null);
     row._tick();
   };
