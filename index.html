@@ -2312,7 +2312,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "58";   // номер версии — виден внизу профиля
+const APP_VER = "59";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2441,7 +2441,7 @@ async function loadCatalog(force){
   if (S.catalogLoading) return S.catalogLoading;
   S.catalogLoading = call("catalog").then(r => {
     S.catalogLoading = null;
-    if (r.ok){ r.products.forEach(migrateProduct); S.catalog = r.products; S.catalogAt = Date.now(); lsSet("catalog", r.products.slice(0, 300)); S.tiles = r.tiles || {}; lsSet("tiles", S.tiles); setExpDays(r.expDays); if (r.malls){ S.malls = r.malls; lsSet("malls", r.malls); } updateBadge(); }
+    if (r.ok){ r.products.forEach(migrateProduct); S.catalog = r.products; S.catalogAt = Date.now(); lsSet("catalog", r.products.slice(0, 300)); S.tiles = r.tiles || {}; lsSet("tiles", S.tiles); setExpDays(r.expDays); S.srvInfo = {vipVer: r.vipVer || 0, malls: !!r.malls, expDays: r.expDays || 0}; if (r.malls){ S.malls = r.malls; lsSet("malls", r.malls); } updateBadge(); }
     // сервер не ответил — показываем сохранённые товары и говорим об этом (раз за сеанс)
     else if (!S.catalogWarned){ S.catalogWarned = true; toast(t("catalogOld") + (r.error && r.error !== "net" ? " (" + r.error + ")" : "")); }
     return S.catalog;
@@ -4398,7 +4398,12 @@ function maybeReload(){
     location.reload();
   }
 }
-function verLine(){ return h("div",{style:{textAlign:"center",color:"var(--mut2)",fontSize:"12px",padding:"14px 0 90px"},text:APP_NAME+" · "+t("version")+" "+APP_VER}); }
+// версия сайта и что стоит на сервере (по ответу каталога): помогает понять, обновлён ли Vip.gs
+function verLine(){
+  const c = S.srvInfo || {};
+  const srv = c.vipVer ? "Vip.gs " + c.vipVer : c.malls ? "Vip.gs 49–58" : c.expDays ? "Vip.gs старый (до 49)" : "Vip.gs не установлен";
+  return h("div",{style:{textAlign:"center",color:"var(--mut2)",fontSize:"12px",padding:"14px 0 90px"},text:APP_NAME+" · "+t("version")+" "+APP_VER+" · сервер: "+srv});
+}
 async function viewMe(){
   setTab("me");
   if (!S.token){
