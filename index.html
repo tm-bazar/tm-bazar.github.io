@@ -2312,7 +2312,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "59";   // номер версии — виден внизу профиля
+const APP_VER = "60";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -4399,10 +4399,18 @@ function maybeReload(){
   }
 }
 // версия сайта и что стоит на сервере (по ответу каталога): помогает понять, обновлён ли Vip.gs
+function srvText(){
+  const c = S.srvInfo;
+  if (!c) return "…";
+  return c.vipVer ? "Vip.gs " + c.vipVer : c.malls ? "Vip.gs 49–58" : c.expDays ? "Vip.gs старый (до 49)" : "Vip.gs не установлен";
+}
 function verLine(){
-  const c = S.srvInfo || {};
-  const srv = c.vipVer ? "Vip.gs " + c.vipVer : c.malls ? "Vip.gs 49–58" : c.expDays ? "Vip.gs старый (до 49)" : "Vip.gs не установлен";
-  return h("div",{style:{textAlign:"center",color:"var(--mut2)",fontSize:"12px",padding:"14px 0 90px"},text:APP_NAME+" · "+t("version")+" "+APP_VER+" · сервер: "+srv});
+  const el = h("div",{id:"ver-line",style:{textAlign:"center",color:"var(--mut2)",fontSize:"12px",padding:"14px 0 90px"}});
+  const upd = () => { el.textContent = APP_NAME+" · "+t("version")+" "+APP_VER+" · сервер: "+srvText(); };
+  upd();
+  // свежий ответ сервера — и строка обновится
+  call("catalog").then(r => { if (r && r.ok){ S.srvInfo = {vipVer: r.vipVer || 0, malls: !!r.malls, expDays: r.expDays || 0}; upd(); } else { el.textContent = APP_NAME+" · "+t("version")+" "+APP_VER+" · сервер не ответил"; } });
+  return el;
 }
 async function viewMe(){
   setTab("me");
