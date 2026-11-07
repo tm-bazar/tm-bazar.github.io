@@ -737,6 +737,13 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .md-show{font-size:16px}
 .mk{padding-bottom:90px}
 .row.my .where{font-size:11.5px;color:var(--mut2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shop-vip-box{display:grid;gap:10px}
+.shop-vip-box .my-shop{display:flex;align-items:center;gap:6px;font-weight:700;font-size:15px}
+.shop-vip-box .my-shop .ar{margin-left:auto;color:var(--mut2);font-size:20px}
+.vip-shop-btn{background:var(--vip)!important;color:#3a2a00!important;font-weight:800}
+.own-vip{background:var(--vipBg);border:1px solid var(--vipLine);border-radius:14px;margin:12px 12px 0;padding:12px;display:grid;gap:10px}
+.own-vip .ov-bal{display:flex;gap:8px;align-items:center;font-weight:800;color:var(--vipFg)}
+.own-vip .ov-bal .link{margin-left:auto;font-weight:700}
 
 </style>
 </head>
@@ -749,14 +756,17 @@ const T = {
 ru: {
   allCats:"Все ›",
   balance:"Баланс", balanceSub:"Тратится на VIP-продвижение объявлений", topUp:"Пополнить",
-  topUpHow:"Баланс пополняет администратор. Напишите или позвоните ему: назовите свой номер телефона и сумму.",
+  topUpHow:"Баланс пополняет администратор. Напишите ему в IMO или позвоните: назовите свой номер телефона и сколько монет нужно.",
   vipBuy:"VIP на {d} дней", vipBuyQ:"Списать {p} TMT с баланса и сделать объявление VIP на {d} дней?", payBal:"Оплатить с баланса",
-  vipBought:"Готово! VIP до {d}", yourBal:"Ваш баланс: {b} TMT", needTopUp:"Не хватает денег — пополнить баланс", vipMore:"Продлить VIP",
+  vipBought:"Готово! VIP до {d}", yourBal:"Ваш баланс: {b}", needTopUp:"Не хватает денег — пополнить баланс", vipMore:"Продлить VIP",
   e_no_money:"Недостаточно денег на балансе. Пополните баланс у администратора.", e_no_price:"Цена VIP ещё не назначена. Свяжитесь с администратором.",
   allVipSub:"Все VIP-магазины ›", searchShopName:"Название магазина",
   showModels:"Показать {c} объявл. ({n} мод.)", inSaleModels:"Есть в продаже",
   catalogOld:"Сервер не ответил — показаны сохранённые товары.",
   showAllSub:"Показать все: {s} ({n})",
+  coinsW:"монет", coinRate:"1 монета = 1 манат", payQ:"С баланса спишется {p}. Продолжить?",
+  vipShopT:"VIP-магазин", vipShopAbout:"Все объявления вашего магазина станут жёлтыми и будут выше остальных, а магазин появится в «VIP-магазинах» на главной.",
+  vipShopBtn:"Сделать весь магазин VIP", vipItemBuy:"Только это объявление · {d} дней", myShop:"Мой магазин", makeShopVip:"Сделать магазин VIP", vipShopOn:"Магазин VIP до {d} · продлить",
   allShops:"Все магазины", vipShops:"VIP-магазины", shopsEmpty:"Пока нет магазинов", nShopGoods:"{n} тов.",
   vipHowT:"Как попасть в VIP?", vipHowS:"Ваши объявления выше всех", vipNone:"Здесь будут VIP-магазины",
   vipTitle:"VIP-объявление", vipUntil:"VIP до {d}", makeVip:"Сделать VIP",
@@ -872,12 +882,15 @@ tm: {
   balance:"Balans", balanceSub:"Bildirişleri VIP öňe çykarmak üçin harçlanýar", topUp:"Doldurmak",
   topUpHow:"Balansy administrator doldurýar. Oňa ýazyň ýa-da jaň ediň: telefon belgiňizi we möçberi aýdyň.",
   vipBuy:"{d} günlük VIP", vipBuyQ:"Balansdan {p} TMT aýryp, bildirişi {d} günlük VIP etmelimi?", payBal:"Balansdan tölemek",
-  vipBought:"Taýýar! VIP {d} çenli", yourBal:"Balansyňyz: {b} TMT", needTopUp:"Pul ýetmeýär — balansy doldurmak", vipMore:"VIP-i uzaltmak",
+  vipBought:"Taýýar! VIP {d} çenli", yourBal:"Balansyňyz: {b}", needTopUp:"Pul ýetmeýär — balansy doldurmak", vipMore:"VIP-i uzaltmak",
   e_no_money:"Balansda pul ýeterlik däl. Balansy administratordan dolduryň.", e_no_price:"VIP bahasy entek bellenmedi. Administrator bilen habarlaşyň.",
   allVipSub:"Ähli VIP dükanlar ›", searchShopName:"Dükanyň ady",
   showModels:"{c} bildirişi görkez ({n} model)", inSaleModels:"Satuwda bar",
   catalogOld:"Serwer jogap bermedi — ýatda saklanan harytlar görkezilýär.",
   showAllSub:"Ählisini görkez: {s} ({n})",
+  coinsW:"teňňe", coinRate:"1 teňňe = 1 manat", payQ:"Balansdan {p} aýrylar. Dowam etmelimi?",
+  vipShopT:"VIP dükan", vipShopAbout:"Dükanyňyzyň ähli bildirişleri sary bolar we beýlekilerden ýokarda durar, dükan baş sahypadaky «VIP dükanlara» düşer.",
+  vipShopBtn:"Bütin dükany VIP etmek", vipItemBuy:"Diňe şu bildiriş · {d} gün", myShop:"Meniň dükanym", makeShopVip:"Dükany VIP etmek", vipShopOn:"Dükan {d} çenli VIP · uzaltmak",
   allShops:"Ähli dükanlar", vipShops:"VIP dükanlar", shopsEmpty:"Häzirlikçe dükan ýok", nShopGoods:"{n} haryt",
   vipHowT:"Nädip VIP bolmaly?", vipHowS:"Bildirişleriňiz hemmeden ýokarda", vipNone:"Bu ýerde VIP dükanlar bolar",
   vipTitle:"VIP bildiriş", vipUntil:"VIP {d} çenli", makeVip:"VIP etmek",
@@ -993,12 +1006,15 @@ en: {
   balance:"Balance", balanceSub:"Spent on VIP promotion of listings", topUp:"Top up",
   topUpHow:"The administrator tops up your balance. Message or call them: give your phone number and the amount.",
   vipBuy:"VIP for {d} days", vipBuyQ:"Pay {p} TMT from your balance and make the listing VIP for {d} days?", payBal:"Pay from balance",
-  vipBought:"Done! VIP until {d}", yourBal:"Your balance: {b} TMT", needTopUp:"Not enough money — top up balance", vipMore:"Extend VIP",
+  vipBought:"Done! VIP until {d}", yourBal:"Your balance: {b}", needTopUp:"Not enough money — top up balance", vipMore:"Extend VIP",
   e_no_money:"Not enough money on your balance. Ask the administrator to top it up.", e_no_price:"VIP price is not set yet. Contact the administrator.",
   allVipSub:"All VIP shops ›", searchShopName:"Shop name",
   showModels:"Show {c} listings ({n} models)", inSaleModels:"On sale now",
   catalogOld:"Server did not respond — showing saved items.",
   showAllSub:"Show all: {s} ({n})",
+  coinsW:"coins", coinRate:"1 coin = 1 manat", payQ:"{p} will be taken from your balance. Continue?",
+  vipShopT:"VIP shop", vipShopAbout:"All listings of your shop turn yellow and go above others, and the shop appears in “VIP shops” on the home page.",
+  vipShopBtn:"Make the whole shop VIP", vipItemBuy:"Only this listing · {d} days", myShop:"My shop", makeShopVip:"Make shop VIP", vipShopOn:"Shop VIP until {d} · extend",
   allShops:"All shops", vipShops:"VIP shops", shopsEmpty:"No shops yet", nShopGoods:"{n} items",
   vipHowT:"How to get VIP?", vipHowS:"Your listings on top", vipNone:"VIP shops will appear here",
   vipTitle:"VIP listing", vipUntil:"VIP until {d}", makeVip:"Make VIP",
@@ -2062,32 +2078,35 @@ const Mock = (() => {
     adminVip(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.vip = db.vip || {};
       if (+d.days > 0) db.vip[d.id] = new Date(Date.now() + d.days * 864e5).toISOString(); else delete db.vip[d.id]; return {ok:true}; },
     // v39: баланс и покупка VIP
-    buyVip(d){ const u = userByToken(d.token), p = db.products.find(x => x.id === d.id);
-      if (!u || !p || p.user !== u.id) return {ok:false,error:"not_found"};
-      const pr = mPrices()[d.days]; if (!pr) return {ok:false,error:"no_price"};
-      db.bal = db.bal || {}; if ((db.bal[u.id] || 0) < pr) return {ok:false,error:"no_money"};
-      db.bal[u.id] -= pr; db.vip = db.vip || {};
+    buyVip(d){ const u = userByToken(d.token); if (!u) return {ok:false,error:"auth"}; db.bal = db.bal || {}; const pr = mPrices();
+      if (d.shop){ const price = pr.shop[d.days]; if (!price) return {ok:false,error:"no_price"}; if ((db.bal[u.id]||0) < price) return {ok:false,error:"no_money"};
+        db.bal[u.id] -= price; db.vipShop = db.vipShop || {}; const from = Math.max(Date.now(), new Date(db.vipShop[u.id] || 0).getTime() || 0);
+        db.vipShop[u.id] = new Date(from + d.days * 864e5).toISOString(); return {ok:true, shopVip:db.vipShop[u.id], balance:db.bal[u.id]}; }
+      const p = db.products.find(x => x.id === d.id); if (!p || p.user !== u.id) return {ok:false,error:"not_found"};
+      if ((db.bal[u.id]||0) < pr.item) return {ok:false,error:"no_money"}; db.bal[u.id] -= pr.item; db.vip = db.vip || {};
       const from = Math.max(Date.now(), new Date(db.vip[p.id] || 0).getTime() || 0);
-      db.vip[p.id] = new Date(from + d.days * 864e5).toISOString(); return {ok:true, vip:db.vip[p.id], balance:db.bal[u.id]}; },
+      db.vip[p.id] = new Date(from + 7 * 864e5).toISOString(); return {ok:true, vip:db.vip[p.id], balance:db.bal[u.id]}; },
+    adminVipShop(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.vipShop = db.vipShop || {};
+      if (+d.days > 0) db.vipShop[d.user] = new Date(Date.now() + d.days * 864e5).toISOString(); else delete db.vipShop[d.user]; return {ok:true}; },
     adminBalance(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.bal = db.bal || {};
       const v = (db.bal[d.id] || 0) + (+d.amount || 0); if (v < 0) return {ok:false,error:"no_money"}; db.bal[d.id] = v; return {ok:true, balance:v}; },
-    adminPrices(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.prices = {}; [7,15,30].forEach(n => { db.prices[n] = +d.prices[n] > 0 ? +d.prices[n] : 0; }); return {ok:true}; }
+    adminPrices(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.prices2 = {shop:{}, item:+d.prices.item||0, itemDays:7}; [7,15,30].forEach(n => { db.prices2.shop[n] = +d.prices.shop[n] || 0; }); return {ok:true}; }
   };
-  const mPrices = () => db.prices || (db.prices = {7:20, 15:35, 30:60});
+  const mPrices = () => db.prices2 || (db.prices2 = {shop:{7:30, 15:55, 30:100}, item:10, itemDays:7});
   const mExp = p => new Date(new Date(p.at).getTime() + 30 * 864e5).toISOString();
   const mDecorate = (r, d) => {
     if (!r || !r.ok) return r;
     if (!db.vip){ db.vip = {}; const u2 = db.products.length && db.products[3] ? db.products[3].user : "";   // демо: пара VIP-объявлений
       db.products.filter(p => p.user === u2).slice(0, 3).forEach(p => { db.vip[p.id] = new Date(Date.now() + 9 * 864e5).toISOString(); }); }
-    const deco = x => { const p = db.products.find(y => y.id === x.id); if (p){ x.exp = mExp(p); x.vip = db.vip[x.id] || ""; } return x; };
+    const deco = x => { const p = db.products.find(y => y.id === x.id); if (p){ x.exp = mExp(p); const a = db.vip[x.id] || "", b = (db.vipShop || {})[p.user] || ""; x.vip = a > b ? a : b; x.shopVip = b; } return x; };
     if (d.action === "catalog"){
       r.products = r.products.filter(x => new Date(deco(x).exp) > Date.now());
       r.expDays = 30;
     }
     if (d.action === "me" || d.action === "adminData"){ r.products.forEach(deco); r.expDays = 30; r.vipPrices = mPrices(); }
     if (!db.bal){ db.bal = {}; db.users.forEach(u => { if (u.seller === "active") db.bal[u.id] = 50; }); }
-    if (d.action === "me") r.balance = db.bal[r.user.id] || 0;
-    if (d.action === "adminData") r.users.forEach(u => { u.balance = db.bal[u.id] || 0; });
+    if (d.action === "me"){ r.balance = db.bal[r.user.id] || 0; r.shopVip = (db.vipShop || {})[r.user.id] || ""; }
+    if (d.action === "adminData") r.users.forEach(u => { u.balance = db.bal[u.id] || 0; u.shopVip = (db.vipShop || {})[u.id] || ""; });
     if (d.action === "product" && r.product) deco(r.product);
     return r;
   };
@@ -2111,7 +2130,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "43";   // номер версии — виден внизу профиля
+const APP_VER = "44";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2208,7 +2227,7 @@ const S = {
   unread: 0, pollAt: "",
   sort: "rec", city: "",
   homeCat: "",
-  balance: 0, vipPrices: {},        // баланс продавца (TMT) и цены VIP: {7: 20, 15: 35, 30: 60}                      // категория, выбранная на главной («» — все)
+  balance: 0, vipPrices: {}, shopVip: "",        // баланс продавца (TMT) и цены VIP: {7: 20, 15: 35, 30: 60}                      // категория, выбранная на главной («» — все)
   expDays: lsGet("expDays", 0),     // срок жизни объявления (дней); 0 — сервер ещё без этой функции
   photoSearch: null,
   pendingFiles: null,
@@ -3193,7 +3212,9 @@ function shopTile(x){
     avaEl(x.name, x.logo, "sm"),
     h("b",{text:x.name}), h("small",{text:t("nShopGoods",{n:x.n})+" · "+x.city}));
 }
-function hasVipPrices(){ return Object.values(S.vipPrices || {}).some(v => +v > 0); }
+// цены VIP (в монетах): {shop: {7: 30, 15: 55, 30: 100}, item: 10, itemDays: 7}
+function hasVipPrices(){ const v = S.vipPrices || {}; return +v.item > 0 || Object.values(v.shop || {}).some(x => +x > 0); }
+function coins(n){ return fmt(n) + " " + t("coinsW"); }
 function adminContactBtns(){
   return [h("div",{style:{fontSize:"18px",fontWeight:"700",textAlign:"center",margin:"4px 0 14px"},text:"☎️ "+phoneFmt(ADMIN_PHONE)}),
     h("div",{style:{display:"grid",gap:"10px"}},
@@ -3203,30 +3224,56 @@ function adminContactBtns(){
 // как пополнить баланс — через администратора
 function topUpSheet(){
   return sheet((box) => box.append(h("h2",{text:"🪙 "+t("topUp")}),
-    h("p",{text:t("topUpHow")}),
+    h("p",{text:t("topUpHow")}), h("p",{class:"hint",text:t("coinRate")}),
     S.user ? h("div",{style:{fontSize:"20px",fontWeight:"800",textAlign:"center",margin:"0 0 6px"},text:phoneFmt(S.user.phone)}) : null,
     ...adminContactBtns()));
 }
-// VIP: продавец покупает со своего баланса; если цены ещё нет — связаться с администратором
+// спросить «списать N монет?»
+function payConfirm(title, price, sub){
+  return sheet((box, close) => box.append(h("h2",{text:title}),
+    h("p",{text:t("payQ",{p:coins(price)})}), sub ? h("p",{class:"hint",text:sub}) : null,
+    h("div",{class:"bal-line"}, "🪙 ", t("yourBal",{b:coins(S.balance)})),
+    h("div",{style:{display:"grid",gap:"10px"}},
+      h("button",{class:"btn block",text:t("payBal")+" · "+coins(price),onclick:()=>close(true)}),
+      h("button",{class:"btn block ghost",text:t("cancel"),onclick:()=>close(false)}))));
+}
+// VIP-магазин: все объявления продавца жёлтые и выше всех; 7 / 15 / 30 дней
+async function shopVipSheet(onDone){
+  const pr = (S.vipPrices || {}).shop || {}, bal = +S.balance || 0;
+  const opts = [7,15,30].filter(d => +pr[d] > 0);
+  if (!opts.length) return vipInfoSheet();
+  const days = await sheet((box, close) => box.append(h("h2",{text:"⭐ "+t("vipShopT")}), h("p",{text:t("vipShopAbout")}),
+    S.shopVip && new Date(S.shopVip) > Date.now() ? h("div",{class:"bal-line"}, "⭐ ", t("vipUntil",{d:dayName(S.shopVip)})) : null,
+    h("div",{class:"bal-line"}, "🪙 ", t("yourBal",{b:coins(bal)})),
+    h("div",{style:{display:"grid",gap:"10px"}},
+      ...opts.map(d => h("button",{class:"btn block vip-buy"+(bal < pr[d] ? " ghost" : ""),disabled:bal < pr[d] || null,onclick:()=>close(d)},
+        h("span",{text:t("vipBuy",{d})}), h("b",{text:coins(pr[d])}))),
+      opts.some(d => +pr[d] > bal) ? h("button",{class:"btn block soft",text:"🪙 "+t("needTopUp"),onclick:()=>{ close(0); topUpSheet(); }}) : null)));
+  if (!days) return;
+  if (!await payConfirm("⭐ "+t("vipShopT")+" · "+t("vipBuy",{d:days}), pr[days])) return;
+  const r = await call("buyVip", {shop: true, days});
+  if (!r.ok) return toast(errText(r));
+  S.balance = r.balance; S.shopVip = r.shopVip; S.catalogAt = 0;
+  S.catalog.forEach(p => { if (S.user && p.user === S.user.id && !(p.vip > r.shopVip)) p.vip = r.shopVip; });
+  toast(t("vipBought",{d:dayName(r.shopVip)}));
+  onDone && onDone();
+}
+// VIP одного объявления (10 монет на 7 дней) или всего магазина; если цен нет — связаться с администратором
 async function vipInfoSheet(p, onDone){
+  const pr = S.vipPrices || {};
   if (p && hasVipPrices()){
-    const bal = +S.balance || 0;
-    const days = await sheet((box, close) => box.append(h("h2",{text:"⭐ "+t("vipTitle")}), h("p",{text:t("vipAbout")}),
-      h("div",{class:"bal-line"}, "🪙 ", t("yourBal",{b:fmt(bal)})),
+    const bal = +S.balance || 0, price = +pr.item || 0, days = pr.itemDays || 7;
+    const what = await sheet((box, close) => box.append(h("h2",{text:"⭐ "+t("vipTitle")}), h("p",{text:t("vipAbout")}),
+      h("div",{class:"bal-line"}, "🪙 ", t("yourBal",{b:coins(bal)})),
       h("div",{style:{display:"grid",gap:"10px"}},
-        ...Object.entries(S.vipPrices).filter(([, v]) => +v > 0).map(([d, v]) =>
-          h("button",{class:"btn block vip-buy"+(bal < v ? " ghost" : ""),disabled:bal < v || null,onclick:()=>close(+d)},
-            h("span",{text:t("vipBuy",{d})}), h("b",{text:fmt(v)+" TMT"}))),
-        Object.values(S.vipPrices).some(v => +v > bal) ? h("button",{class:"btn block soft",text:"🪙 "+t("needTopUp"),onclick:()=>{ close(0); topUpSheet(); }}) : null)));
-    if (!days) return;
-    const price = S.vipPrices[days];
-    const ok = await sheet((box, close) => box.append(h("h2",{text:"⭐ "+t("vipBuy",{d:days})}),
-      h("p",{text:t("vipBuyQ",{p:fmt(price), d:days})}), h("p",{class:"hint",text:p.title}),
-      h("div",{style:{display:"grid",gap:"10px"}},
-        h("button",{class:"btn block",text:t("payBal")+" · "+fmt(price)+" TMT",onclick:()=>close(true)}),
-        h("button",{class:"btn block ghost",text:t("cancel"),onclick:()=>close(false)}))));
-    if (!ok) return;
-    const r = await call("buyVip", {id: p.id, days});
+        price ? h("button",{class:"btn block vip-buy"+(bal < price ? " ghost" : ""),disabled:bal < price || null,onclick:()=>close("item")},
+          h("span",{text:t("vipItemBuy",{d:days})}), h("b",{text:coins(price)})) : null,
+        h("button",{class:"btn block soft",onclick:()=>close("shop")}, "⭐ ", t("vipShopBtn")),
+        bal < price ? h("button",{class:"btn block soft",text:"🪙 "+t("needTopUp"),onclick:()=>{ close(0); topUpSheet(); }}) : null)));
+    if (what === "shop") return shopVipSheet(onDone);
+    if (what !== "item") return;
+    if (!await payConfirm("⭐ "+t("vipItemBuy",{d:days}), price, p.title)) return;
+    const r = await call("buyVip", {id: p.id});
     if (!r.ok) return toast(errText(r));
     S.balance = r.balance; p.vip = r.vip; const c = byId(p.id); if (c) c.vip = r.vip;
     S.catalogAt = 0; toast(t("vipBought",{d:dayName(r.vip)}));
@@ -3552,7 +3599,17 @@ function viewShop(uid){
     body.replaceChildren(filterBar(drawList), feed(sortList(list)));
   };
   const bar = topBar(t("shop")); bar.querySelector("h1").id = "shop-title";
-  page(bar, h("div",{class:"wrap"}, head, body));
+  // свой магазин: сверху «Сделать магазин VIP» и баланс
+  const own = h("div");
+  const drawOwn = () => {
+    if (!S.user || S.user.id !== uid || !S.expDays) return own.replaceChildren();
+    own.replaceChildren(h("div",{class:"own-vip"},
+      h("div",{class:"ov-bal"}, "🪙 ", coins(S.balance), h("button",{class:"link",text:t("topUp"),onclick:()=>topUpSheet()})),
+      h("button",{class:"btn block vip-shop-btn",onclick:()=>shopVipSheet(() => { drawOwn(); draw(); })},
+        "⭐ ", S.shopVip ? t("vipShopOn",{d:dayName(S.shopVip)}) : t("makeShopVip"))));
+  };
+  page(bar, h("div",{class:"wrap"}, own, head, body));
+  if (S.user && S.user.id === uid) call("me").then(r => { if (r.ok && r.balance != null){ S.balance = +r.balance || 0; S.vipPrices = r.vipPrices || {}; S.shopVip = r.shopVip || ""; setExpDays(r.expDays); drawOwn(); } });
   const draw = () => { drawHead(); drawList(); };
   draw(); loadCatalog().then(draw);
 }
@@ -4059,11 +4116,16 @@ async function viewMe(){
   if (!r.ok){ list.replaceChildren(h("div",{class:"err",text:errText(r)})); return; }
   S.user = r.user; lsSet("user", r.user); setExpDays(r.expDays);
   if (r.balance != null){
-    S.balance = +r.balance || 0; S.vipPrices = r.vipPrices || {};
-    balBox.replaceChildren(h("div",{class:"box bal-box"},
+    S.balance = +r.balance || 0; S.vipPrices = r.vipPrices || {}; S.shopVip = r.shopVip || "";
+    const drawBal = () => balBox.replaceChildren(h("div",{class:"box bal-box"},
       h("div",{class:"coin",text:"🪙"}),
-      h("div",{style:{flex:1,minWidth:0}}, h("small",{text:t("balance")}), h("b",{id:"bal-sum",text:fmt(S.balance)+" TMT"}), h("span",{text:t("balanceSub")})),
-      h("button",{class:"btn sm",text:t("topUp"),onclick:()=>topUpSheet()})));
+      h("div",{style:{flex:1,minWidth:0}}, h("small",{text:t("balance")}), h("b",{id:"bal-sum",text:coins(S.balance)}), h("span",{text:t("coinRate")})),
+      h("button",{class:"btn sm",text:t("topUp"),onclick:()=>topUpSheet()})),
+      r.products.length ? h("div",{class:"box shop-vip-box"+(S.shopVip ? " on" : "")},
+        h("a",{class:"my-shop",href:"#/u/"+r.user.id}, "🏪 ", t("myShop"), h("span",{class:"ar",text:"›"})),
+        h("button",{class:"btn block vip-shop-btn",onclick:()=>shopVipSheet(() => { drawBal(); })},
+          "⭐ ", S.shopVip ? t("vipShopOn",{d:dayName(S.shopVip)}) : t("makeShopVip"))) : null);
+    drawBal();
   }
   if (r.user.seller === "pending") statusBox.replaceChildren(h("div",{class:"box"}, h("div",{class:"warn"}, h("span",{text:"⏳"}), h("span",{text:t("pendingNote")}))));
   if (r.user.seller === "pending") statusBox.querySelector(".box").append(h("button",{class:"link",style:{marginTop:"10px"},text:t("contactAdmin"),onclick:()=>adminContactSheet()}));
@@ -4119,7 +4181,7 @@ function myRow(p, u){
       vip || expAt(p) ? h("div",{class:"my-bot"}, vip, more, timer) : null);
     row._tick();
   };
-  function afterVip(){ row.className = "row my" + (isVip(p) ? " vip" : ""); draw(); if ($("bal-sum")) $("bal-sum").textContent = fmt(S.balance)+" TMT"; }
+  function afterVip(){ row.className = "row my" + (isVip(p) ? " vip" : ""); draw(); if ($("bal-sum")) $("bal-sum").textContent = coins(S.balance); }
   async function renew(){
     const r = await call("renewProduct", {id: p.id});
     if (!r.ok) return toast(errText(r));
@@ -4632,10 +4694,18 @@ async function viewAdmin(){
         h("div",{class:"t",text:u.name+"  ·  "+u.id}),
         h("div",{class:"s"}, h("a",{class:"link",href:"tel:+993"+u.phone,text:phoneFmt(u.phone)}), "· "+u.city, "· товаров: "+u.count, stypeBadge(u.stype), sellerChip(u.seller),
           u.status === "blocked" ? h("span",{class:"st bad",text:"Аккаунт заблокирован"}) : null,
-          u.balance != null ? h("span",{class:"vip-pill",text:"🪙 "+fmt(u.balance)+" TMT"}) : null),
+          u.balance != null ? h("span",{class:"vip-pill",text:"🪙 "+coins(u.balance)}) : null,
+          u.shopVip ? h("span",{class:"vip-pill",text:"⭐ VIP-магазин до "+new Date(u.shopVip).toLocaleDateString("ru-RU")}) : null),
         h("div",{class:"kv",text:"С "+new Date(u.at).toLocaleDateString("ru-RU")})),
       h("div",{class:"acts"},
         u.balance != null ? h("button",{class:"btn sm ghost",style:{color:"#8a6200"},text:"🪙 Баланс",onclick:()=>balanceSheet(u)}) : null,
+        u.balance != null && u.count ? h("button",{class:"btn sm ghost",style:{color:"#8a6200"},text:u.shopVip ? "⭐ VIP-магазин: изменить" : "⭐ VIP-магазин",onclick:async()=>{
+          const days = await sheet((box, close) => box.append(h("h2",{text:"VIP-магазин: "+u.name}),
+            h("p",{text:"Бесплатно, без списания с баланса. Все объявления магазина станут VIP."}),
+            h("div",{style:{display:"grid",gap:"10px"}}, ...[7,15,30].map(n => h("button",{class:"btn block",text:"+ "+n+" дней",onclick:()=>close(n)})),
+              u.shopVip ? h("button",{class:"btn block ghost",style:{color:"#c62828"},text:"Убрать VIP",onclick:()=>close(-1)}) : null)));
+          if (days) act("adminVipShop",{user:u.id,days:days > 0 ? days : 0}, days > 0 ? "VIP-магазин на "+days+" дн." : "VIP убран");
+        }}) : null,
         u.seller !== "active" && u.count ? h("button",{class:"btn sm green",text:"Одобрить",onclick:()=>act("adminUser",{id:u.id,seller:"active"},"Продавец одобрен")}) : null,
         u.count ? h("a",{class:"btn sm ghost",href:"#/u/"+u.id,text:"Товары"}) : null,
         u.seller === "active" || u.seller === "pending" ? h("button",{class:"btn sm ghost",text:"Запретить продажу",onclick:()=>act("adminUser",{id:u.id,seller:"blocked"})}) : null,
@@ -4653,11 +4723,11 @@ async function viewAdmin(){
   // пополнить (+) или списать (−) баланс
   async function balanceSheet(u){
     const res = await sheet((box, close) => {
-      const sum = h("input",{class:"inp",inputmode:"decimal",placeholder:"Сумма, TMT"});
+      const sum = h("input",{class:"inp",inputmode:"decimal",placeholder:"Сколько монет"});
       const note = h("input",{class:"inp",placeholder:"Комментарий (необязательно)",style:{marginTop:"8px"}});
       const go_ = sign => { const v = parseFloat(String(sum.value).replace(",", ".")); if (!(v > 0)) return toast("Введите сумму"); close({amount: sign * v, note: note.value}); };
       box.append(h("h2",{text:"🪙 Баланс: "+u.name}),
-        h("p",{text:"Сейчас: "+fmt(u.balance)+" TMT · "+phoneFmt(u.phone)}), sum, note, h("div",{style:{height:"12px"}}),
+        h("p",{text:"Сейчас: "+coins(u.balance)+" · "+phoneFmt(u.phone)+" · 1 монета = 1 манат"}), sum, note, h("div",{style:{height:"12px"}}),
         h("div",{style:{display:"grid",gap:"10px"}},
           h("button",{class:"btn block green",text:"＋ Пополнить",onclick:()=>go_(1)}),
           h("button",{class:"btn block ghost",style:{color:"#c62828"},text:"− Списать",onclick:()=>go_(-1)})),
@@ -4667,14 +4737,16 @@ async function viewAdmin(){
   }
   // цены VIP, по которым продавцы покупают VIP со своего баланса
   function pricesBox(){
-    const pr = r.vipPrices || {};
-    const ins = Object.fromEntries([7,15,30].map(d => [d, h("input",{class:"inp",inputmode:"decimal",value:pr[d] ? String(pr[d]) : "",placeholder:"0"})]));
+    const pr = r.vipPrices || {}, sh = pr.shop || {};
+    const inp = v => h("input",{class:"inp",inputmode:"decimal",value:+v ? String(v) : "",placeholder:"0"});
+    const ins = {7: inp(sh[7]), 15: inp(sh[15]), 30: inp(sh[30])}, item = inp(pr.item);
     return h("div",{class:"box",style:{marginBottom:"10px"}},
-      h("h3",{text:"💰 Цены VIP (TMT)"}),
-      h("p",{class:"hint",style:{margin:"0 0 8px"},text:"Продавец сам покупает VIP со своего баланса. Пусто или 0 — этот срок не продаётся (продавец увидит «свяжитесь с администратором»)."}),
+      h("h3",{text:"💰 Цены VIP (в монетах, 1 монета = 1 манат)"}),
+      h("p",{class:"hint",style:{margin:"0 0 8px"},text:"VIP-магазин — все объявления продавца жёлтые и выше всех. Продавец платит со своего баланса. 0 — этот вариант не продаётся."}),
       h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"8px"}},
-        ...[7,15,30].map(d => h("label",{style:{fontSize:"13px",fontWeight:"600"}}, d+" дней", ins[d]))),
-      h("button",{class:"btn block",style:{marginTop:"10px"},text:"Сохранить цены",onclick:()=>act("adminPrices",{prices:Object.fromEntries([7,15,30].map(d => [d, ins[d].value]))},"Цены сохранены")}));
+        ...[7,15,30].map(d => h("label",{style:{fontSize:"13px",fontWeight:"600"}}, "Магазин "+d+" дн", ins[d]))),
+      h("label",{style:{fontSize:"13px",fontWeight:"600",display:"block",marginTop:"8px"}}, "Одно объявление ("+(pr.itemDays||7)+" дн)", item),
+      h("button",{class:"btn block",style:{marginTop:"10px"},text:"Сохранить цены",onclick:()=>act("adminPrices",{prices:{shop:{7:ins[7].value,15:ins[15].value,30:ins[30].value}, item:item.value}},"Цены сохранены")}));
   }
   function prodRow(p){
     const u = ubyId[p.user] || {};
