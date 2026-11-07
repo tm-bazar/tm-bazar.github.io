@@ -829,6 +829,8 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .sl-cats i{font-style:normal;font-size:11px;background:var(--soft,#f3f3f5);border-radius:6px;padding:2px 6px;color:var(--mut)}
 .shop-line.vip .sl-cats i{background:#fff}
 .sup-dot.red{background:var(--red);color:#fff;margin-left:auto;margin-right:6px}
+.menu .del-acc{color:#c62828}
+.del-list{margin:6px 0 0;padding-left:18px;line-height:1.5}
 
 </style>
 </head>
@@ -868,6 +870,11 @@ ru: {
   shopsNone:"Нет магазинов по этому выбору. Попробуйте другую категорию или ТЦ.",
   chatAdmin:"Чат с администратором", chatAdminSub:"Напишите вопрос администратору — ответ придёт сюда. Можно приложить фото или скриншот.",
   chatMsg:"Сообщение", chatPh:"Ваш вопрос…", chatPhoto:"Фото или скриншот (необязательно)", chatSend:"Отправить", chatNeed:"Напишите сообщение или приложите фото.", chatSent:"Отправлено! Администратор ответит здесь.",
+  logoutQ:"Выйти из аккаунта?", logoutSub:"Чтобы снова войти, понадобятся номер телефона и PIN.", yesLogout:"Да, выйти", no:"Нет",
+  delAcc:"Удалить аккаунт", delAccQ:"Удалить аккаунт?", delAccWarn:"Вместе с аккаунтом удалится всё:", delAccGoods:"все товары вашего магазина ({n} шт.) и их фото",
+  delAccVip:"VIP-объявления и VIP-магазин — оплаченные дни пропадут ({n} VIP)", delAccBal:"баланс {b} — монеты не вернутся", delAccChats:"вход в аккаунт по этому номеру",
+  delAccNoUndo:"Это нельзя отменить.", yesDelete:"Да, удалить", delAccSure:"Вы точно уверены?", delAccLast:"Аккаунт и {n} товаров будут удалены навсегда.",
+  delAccFinal:"Удалить навсегда", delAccDone:"Аккаунт удалён.", delAccOld:"Удаление аккаунта заработает после обновления сервера. Напишите администратору.",
   allShops:"Все магазины", vipShops:"VIP-магазины", shopsEmpty:"Пока нет магазинов", nShopGoods:"{n} тов.",
   vipHowT:"Как попасть в VIP?", vipHowS:"Ваши объявления выше всех", vipNone:"Здесь будут VIP-магазины",
   vipTitle:"VIP-объявление", vipUntil:"VIP до {d}", makeVip:"Сделать VIP",
@@ -1008,6 +1015,11 @@ tm: {
   shopsNone:"Bu saýlaw boýunça dükan ýok. Başga kategoriýany ýa-da söwda merkezini synap görüň.",
   chatAdmin:"Administrator bilen çat", chatAdminSub:"Soragyňyzy administratora ýazyň — jogap şu ýere geler. Surat ýa-da skrinşot goşup bilersiňiz.",
   chatMsg:"Hat", chatPh:"Soragyňyz…", chatPhoto:"Surat ýa-da skrinşot (hökman däl)", chatSend:"Ibermek", chatNeed:"Hat ýazyň ýa-da surat goşuň.", chatSent:"Iberildi! Administrator şu ýerde jogap berer.",
+  logoutQ:"Hasapdan çykmalymy?", logoutSub:"Täzeden girmek üçin telefon belgisi we PIN gerek bolar.", yesLogout:"Hawa, çykmak", no:"Ýok",
+  delAcc:"Hasaby pozmak", delAccQ:"Hasaby pozmalymy?", delAccWarn:"Hasap bilen bilelikde hemmesi pozular:", delAccGoods:"dükanyňyzyň ähli harytlary ({n} sany) we suratlary",
+  delAccVip:"VIP bildirişler we VIP dükan — tölenen günler ýiter ({n} VIP)", delAccBal:"balans {b} — teňňeler gaýtarylmaz", delAccChats:"bu belgi bilen hasaba girmek",
+  delAccNoUndo:"Muny yzyna gaýtaryp bolmaz.", yesDelete:"Hawa, pozmak", delAccSure:"Hakykatdanam ynamlymy?", delAccLast:"Hasap we {n} haryt hemişelik pozular.",
+  delAccFinal:"Hemişelik pozmak", delAccDone:"Hasap pozuldy.", delAccOld:"Hasaby pozmak serwer täzelenenden soň işlär. Administratora ýazyň.",
   allShops:"Ähli dükanlar", vipShops:"VIP dükanlar", shopsEmpty:"Häzirlikçe dükan ýok", nShopGoods:"{n} haryt",
   vipHowT:"Nädip VIP bolmaly?", vipHowS:"Bildirişleriňiz hemmeden ýokarda", vipNone:"Bu ýerde VIP dükanlar bolar",
   vipTitle:"VIP bildiriş", vipUntil:"VIP {d} çenli", makeVip:"VIP etmek",
@@ -1148,6 +1160,11 @@ en: {
   shopsNone:"No shops for this choice. Try another category or mall.",
   chatAdmin:"Chat with administrator", chatAdminSub:"Write your question to the administrator — the reply will appear here. You can attach a photo or screenshot.",
   chatMsg:"Message", chatPh:"Your question…", chatPhoto:"Photo or screenshot (optional)", chatSend:"Send", chatNeed:"Write a message or attach a photo.", chatSent:"Sent! The administrator will reply here.",
+  logoutQ:"Log out?", logoutSub:"To log in again you will need your phone number and PIN.", yesLogout:"Yes, log out", no:"No",
+  delAcc:"Delete account", delAccQ:"Delete account?", delAccWarn:"Everything will be deleted with the account:", delAccGoods:"all items in your shop ({n}) and their photos",
+  delAccVip:"VIP listings and VIP shop — paid days will be lost ({n} VIP)", delAccBal:"balance {b} — coins will not be returned", delAccChats:"login with this number",
+  delAccNoUndo:"This cannot be undone.", yesDelete:"Yes, delete", delAccSure:"Are you absolutely sure?", delAccLast:"The account and {n} items will be deleted forever.",
+  delAccFinal:"Delete forever", delAccDone:"Account deleted.", delAccOld:"Account deletion will work after the server is updated. Contact the administrator.",
   allShops:"All shops", vipShops:"VIP shops", shopsEmpty:"No shops yet", nShopGoods:"{n} items",
   vipHowT:"How to get VIP?", vipHowS:"Your listings on top", vipNone:"VIP shops will appear here",
   vipTitle:"VIP listing", vipUntil:"VIP until {d}", makeVip:"Make VIP",
@@ -2240,6 +2257,8 @@ const Mock = (() => {
       return {ok:true, balance:db.bal[u.id]}; },
     adminMallSug(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.mallSug = (db.mallSug||[]).filter(x => !(x.city === d.city && x.name === d.name));
       if (d.ok){ db.malls = db.malls || JSON.parse(JSON.stringify(MALLS_DEFAULT)); (db.malls[d.city] = db.malls[d.city] || []).push(d.name); } return {ok:true}; },
+    deleteAccount(d){ const u = userByToken(d.token); if (!u) return {ok:false,error:"auth"}; const n = db.products.filter(p => p.user === u.id).length;
+      db.products = db.products.filter(p => p.user !== u.id); db.users = db.users.filter(x => x.id !== u.id); return {ok:true, removed:n}; },
     adminMalls(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.malls = d.malls; return {ok:true, malls:d.malls}; },
     adminVipShop(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.vipShop = db.vipShop || {};
       if (+d.days > 0) db.vipShop[d.user] = new Date(Date.now() + d.days * 864e5).toISOString(); else delete db.vipShop[d.user]; return {ok:true}; },
@@ -2289,7 +2308,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "56";   // номер версии — виден внизу профиля
+const APP_VER = "57";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2538,6 +2557,44 @@ function saveAuth(r){
   S.token = r.token; S.user = r.user;
   lsSet("token", r.token); lsSet("user", r.user);
   startPoll();
+}
+// выйти — только после «Да»
+async function logoutAsk(){
+  const yes = await sheet((box, close) => box.append(h("h2",{text:"🚪 "+t("logoutQ")}), h("p",{text:t("logoutSub")}),
+    h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}},
+      h("button",{class:"btn ghost",text:t("no"),onclick:()=>close(false)}),
+      h("button",{class:"btn",text:t("yesLogout"),onclick:()=>close(true)}))));
+  if (yes) logout();
+}
+// удалить аккаунт: предупреждаем, что пропадут все товары, VIP и монеты
+async function deleteAccountAsk(){
+  const r = await call("me");
+  const prods = r.ok ? r.products : [], vipN = prods.filter(isVip).length, bal = r.ok ? +r.balance || 0 : 0, shopVip = r.ok && r.shopVip;
+  const ok1 = await sheet((box, close) => box.append(h("h2",{text:"⚠️ "+t("delAccQ")}),
+    h("div",{class:"warn",style:{background:"#fde8e8",color:"#9b1c1c",marginBottom:"12px"}}, h("span",{text:"🗑"}),
+      h("div",null, h("b",{text:t("delAccWarn")}),
+        h("ul",{class:"del-list"},
+          h("li",{text:t("delAccGoods",{n:prods.length})}),
+          vipN || shopVip ? h("li",{text:t("delAccVip",{n:vipN})}) : null,
+          bal ? h("li",{text:t("delAccBal",{b:coins(bal)})}) : null,
+          h("li",{text:t("delAccChats")})))),
+    h("p",{text:t("delAccNoUndo")}),
+    h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}},
+      h("button",{class:"btn ghost",text:t("no"),onclick:()=>close(false)}),
+      h("button",{class:"btn",style:{background:"#c62828"},text:t("yesDelete"),onclick:()=>close(true)}))));
+  if (!ok1) return;
+  // второй шаг: точно?
+  const ok2 = await sheet((box, close) => box.append(h("h2",{text:t("delAccSure")}),
+    h("p",{text:t("delAccLast",{n:prods.length})}),
+    h("div",{style:{display:"grid",gap:"10px"}},
+      h("button",{class:"btn block",style:{background:"#c62828"},text:"🗑 "+t("delAccFinal"),onclick:()=>close(true)}),
+      h("button",{class:"btn block ghost",text:t("cancel"),onclick:()=>close(false)}))));
+  if (!ok2) return;
+  const b = busy(t("wait"));
+  const x = await call("deleteAccount");
+  b.done();
+  if (!x.ok) return toast(x.error === "server" ? t("delAccOld") : errText(x));
+  S.catalogAt = 0; logout(true); toast(t("delAccDone")); go("/");
 }
 function logout(silent){
   S.token = null; S.user = null; S.unread = 0;
@@ -4376,7 +4433,8 @@ async function viewMe(){
         h("a",{href:"#/rules"}, "📄 ", t("rulesTitle"), h("span",{class:"ar",text:"›"})),
         h("a",{href:"#/support"}, "💬 ", t("chatAdmin"), S.supportUnread ? h("span",{class:"sup-dot red",text:String(S.supportUnread)}) : null, h("span",{class:"ar",text:"›"})),
         h("button",{onclick:()=>adminContactSheet()}, "☎️ ", t("contactAdmin"), h("span",{class:"ar",text:"›"})),
-        h("button",{onclick:()=>logout()}, "🚪 ", t("logout")))));
+        h("button",{onclick:()=>logoutAsk()}, "🚪 ", t("logout")),
+        h("button",{class:"del-acc",onclick:()=>deleteAccountAsk()}, "🗑 ", t("delAcc")))));
   $("app").append(verLine());
   const r = await call("me");
   if (!r.ok){ statusBox.replaceChildren(h("div",{class:"err",text:errText(r)})); return; }
