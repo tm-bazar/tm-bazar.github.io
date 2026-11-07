@@ -696,6 +696,8 @@ ru: {
   register:"Регистрация", login:"Войти", phone:"Номер телефона", name:"Имя или название магазина", namePh:"Например: Aýna Moda",
   city:"Велаят", pin4:"PIN (4 цифры)", pinNew:"Придумайте PIN (4 цифры)", pinHint:"Им вы будете входить. Не говорите его никому.",
   createAcc:"Создать аккаунт",
+  getCode:"Получить код", smsCode:"Код из SMS", codeSent:"Код отправлен на +993 {phone}", resendIn:"Повторно через {s} с",
+  e_code:"Неверный код из SMS.", e_wait:"Подождите минуту и запросите код снова.", e_sms:"Не удалось отправить SMS. Попробуйте позже.", e_code_tries:"Слишком много попыток. Запросите новый код.",
   agree:"Я прочитал(а) и понимаю: {app} не несёт ответственности за сделку между покупателем и продавцом.",
   rule1:"{app} — доска объявлений. Мы не продаём товары, не принимаем оплату и не доставляем.",
   rule2:"Сделку вы заключаете напрямую с продавцом. За товар, его качество и доставку отвечает продавец.",
@@ -796,6 +798,8 @@ tm: {
   register:"Hasaba durmak", login:"Girmek", phone:"Telefon belgisi", name:"Adyňyz ýa-da dükanyň ady", namePh:"Mysal: Aýna Moda",
   city:"Welaýat", pin4:"PIN (4 san)", pinNew:"PIN oýlap tapyň (4 san)", pinHint:"Onuň bilen girersiňiz. Hiç kime aýtmaň.",
   createAcc:"Hasap döretmek",
+  getCode:"Kod almak", smsCode:"SMS kody", codeSent:"Kod +993 {phone} belgä iberildi", resendIn:"{s} sek soň gaýtadan",
+  e_code:"SMS kody nädogry.", e_wait:"Bir minut garaşyň we kody täzeden soraň.", e_sms:"SMS ugradyp bolmady. Soňrak synanyşyň.", e_code_tries:"Synanyşyk köp boldy. Täze kod soraň.",
   agree:"Okadym we düşündim: {app} alyjy bilen satyjynyň arasyndaky söwda üçin jogap bermeýär.",
   rule1:"{app} — bildiriş tagtasy. Biz haryt satmaýarys, töleg kabul etmeýäris we eltip bermeýäris.",
   rule2:"Söwdany gönüden-göni satyjy bilen edýärsiňiz. Haryt, onuň hili we eltip bermek üçin satyjy jogap berýär.",
@@ -896,6 +900,8 @@ en: {
   register:"Sign up", login:"Sign in", phone:"Phone number", name:"Your name or shop name", namePh:"e.g. Aýna Moda",
   city:"Region", pin4:"PIN (4 digits)", pinNew:"Choose a PIN (4 digits)", pinHint:"You'll use it to sign in. Don't share it.",
   createAcc:"Create account",
+  getCode:"Get code", smsCode:"SMS code", codeSent:"Code sent to +993 {phone}", resendIn:"Resend in {s} s",
+  e_code:"Wrong SMS code.", e_wait:"Wait a minute and request the code again.", e_sms:"Could not send SMS. Try again later.", e_code_tries:"Too many attempts. Request a new code.",
   agree:"I have read and understand: {app} is not responsible for deals between buyers and sellers.",
   rule1:"{app} is a listings board. We don't sell items, take payments or deliver.",
   rule2:"You deal directly with the seller. The seller is responsible for the item, its quality and delivery.",
@@ -1766,6 +1772,7 @@ const Mock = (() => {
     },
     uploadLogo(d){ const u = userByToken(d.token); if (!u) return {ok:false,error:"auth"}; u.logo = d.data ? "data:image/jpeg;base64,"+d.data : ""; return {ok:true, logo:u.logo}; },
     report(d){ const me = userByToken(d.token); db.reports.push({id:"R"+next("R"), product:d.id, user:me?me.id:"", reason:d.reason, text:d.text||"", at:now(), status:"new"}); return {ok:true}; },
+    sendCode(d){ return {ok:true}; },
     register(d){
       if (!d.name) return {ok:false,error:"fields"};
       if (!/^(6[1-5]|71)\d{6}$/.test(d.phone)) return {ok:false,error:"phone"};
@@ -1903,7 +1910,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "35";   // номер версии — виден внизу профиля
+const APP_VER = "36";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2584,11 +2591,33 @@ function authSheet(reasonKey, startMode, startRole){
         const agree = h("input",{type:"checkbox"});
         submit = h("button",{class:"btn block",text:t("createAcc"),disabled:true});
         agree.onchange = () => submit.disabled = !agree.checked;
+        const codeIn = h("input",{class:"inp",type:"text",inputmode:"numeric",maxlength:"4",placeholder:"••••",autocomplete:"one-time-code",style:{flex:"1"}});
+        const codeBtn = h("button",{type:"button",class:"btn ghost",text:t("getCode"),style:{whiteSpace:"nowrap"}});
+        const codeHint = h("div",{class:"hint"});
+        let codeTimer = null;
+        codeBtn.onclick = async () => {
+          const phone = digits(phoneIn.value);
+          if (!validPhone(phone)) return err.textContent = t("e_phone");
+          err.textContent = ""; codeBtn.disabled = true;
+          const r = await call("sendCode", {phone, token: null});
+          if (!r.ok){ codeBtn.disabled = false; return err.textContent = errText(r); }
+          codeHint.textContent = t("codeSent",{phone}); codeIn.focus();
+          let left = 60; clearInterval(codeTimer);
+          codeBtn.textContent = t("resendIn",{s:left});
+          codeTimer = setInterval(() => {
+            left--;
+            if (left <= 0 || !codeBtn.isConnected){ clearInterval(codeTimer); codeBtn.disabled = false; codeBtn.textContent = t("getCode"); }
+            else codeBtn.textContent = t("resendIn",{s:left});
+          }, 1000);
+        };
+        const codeField = h("label",{class:"field"}, h("span",{text:t("smsCode")}),
+          h("div",{style:{display:"flex",gap:"8px",alignItems:"center"}}, codeIn, codeBtn), codeHint);
         body.replaceChildren(seg,
           h("div",{class:"field"}, h("span",{text:t("whoAreYou")}), roleBox),
           h("label",{class:"field"}, nameLbl, nameIn),
           logoField,
           phoneField,
+          codeField,
           h("label",{class:"field"}, h("span",{text:t("city")}), citySel),
           h("label",{class:"field"}, h("span",{text:t("pinNew")}), pinIn, h("div",{class:"hint",text:t("pinHint")})),
           h("label",{class:"check",style:{marginBottom:"14px"}}, imo, h("span",{text:t("hasImo")})),
@@ -2601,8 +2630,9 @@ function authSheet(reasonKey, startMode, startRole){
           if (!validPhone(phone)) return err.textContent = t("e_phone");
           if (!citySel.value){ citySel.focus(); return err.textContent = t("e_city"); }
           if (!/^\d{4}$/.test(pinIn.value)) return err.textContent = t("e_pin");
+          if (!/^\d{4}$/.test(codeIn.value.trim())) return err.textContent = t("e_code");
           submit.disabled = true;
-          const r = await call("register", {name, phone, city: citySel.value, imo: imo.checked, pin: pinIn.value, lang: S.lang, token: null,
+          const r = await call("register", {name, phone, code: codeIn.value.trim(), city: citySel.value, imo: imo.checked, pin: pinIn.value, lang: S.lang, token: null,
             stype: role === "buyer" ? "" : role});
           submit.disabled = false;
           if (!r.ok) return err.textContent = errText(r);
