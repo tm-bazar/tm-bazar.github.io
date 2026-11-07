@@ -771,6 +771,17 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .own-vip .ov-hint{font-size:13px;color:var(--vipFg);line-height:1.4}
 .iv-prod{display:flex;gap:10px;align-items:center;background:var(--soft,#f3f3f5);border-radius:12px;padding:8px;margin:0 0 10px}
 .iv-prod img{width:52px;height:52px;border-radius:10px;object-fit:cover}
+/* v47: «Мой магазин» */
+.my-shop-big{display:flex!important;align-items:center;gap:12px;color:var(--fg)}
+.my-shop-big .ms-ic{width:46px;height:46px;border-radius:12px;background:var(--redBg);display:grid;place-items:center;font-size:24px;flex:none}
+.my-shop-big .ms-in{flex:1;min-width:0;display:flex;flex-direction:column}
+.my-shop-big b{font-size:16px}
+.my-shop-big small{color:var(--mut);font-size:12.5px}
+.my-shop-big .ar{color:var(--mut2);font-size:22px}
+.vip-ask.on{background:var(--vip);color:#3a2a00}
+.ms-tools{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.ms-tools .search{flex:1;min-width:0;margin:0}
+.ms-tools .btn.sm{flex:none;display:inline-flex;gap:4px;align-items:center}
 
 </style>
 </head>
@@ -801,6 +812,7 @@ ru: {
   topEmpty:"Здесь будет ваша переписка с администратором.", admCredit:"Начислить монеты (админ)",
   vipItemHint:"Нажмите «⭐ VIP» на товаре, чтобы сделать VIP только его — {p} за 7 дней. Весь магазин VIP — в Профиле.", vipShopAllOn:"весь магазин уже VIP",
   vipItemAbout:"Объявление станет жёлтым и будет выше остальных {d} дней.",
+  myShopSub:"Все ваши товары: изменить, снять, удалить, VIP, срок", asBuyer:"Как видят",
   allShops:"Все магазины", vipShops:"VIP-магазины", shopsEmpty:"Пока нет магазинов", nShopGoods:"{n} тов.",
   vipHowT:"Как попасть в VIP?", vipHowS:"Ваши объявления выше всех", vipNone:"Здесь будут VIP-магазины",
   vipTitle:"VIP-объявление", vipUntil:"VIP до {d}", makeVip:"Сделать VIP",
@@ -932,6 +944,7 @@ tm: {
   topEmpty:"Bu ýerde administrator bilen hat alyşmaňyz bolar.", admCredit:"Teňňe goşmak (admin)",
   vipItemHint:"Diňe bir harydy VIP etmek üçin onuň «⭐ VIP» düwmesine basyň — 7 gün üçin {p}. Bütin dükany VIP etmek — Profilde.", vipShopAllOn:"bütin dükan eýýäm VIP",
   vipItemAbout:"Bildiriş {d} gün sary bolar we beýlekilerden ýokarda durar.",
+  myShopSub:"Ähli harytlaryňyz: üýtgetmek, aýyrmak, pozmak, VIP, möhlet", asBuyer:"Görnüşi",
   allShops:"Ähli dükanlar", vipShops:"VIP dükanlar", shopsEmpty:"Häzirlikçe dükan ýok", nShopGoods:"{n} haryt",
   vipHowT:"Nädip VIP bolmaly?", vipHowS:"Bildirişleriňiz hemmeden ýokarda", vipNone:"Bu ýerde VIP dükanlar bolar",
   vipTitle:"VIP bildiriş", vipUntil:"VIP {d} çenli", makeVip:"VIP etmek",
@@ -1063,6 +1076,7 @@ en: {
   topEmpty:"Your conversation with the administrator will appear here.", admCredit:"Add coins (admin)",
   vipItemHint:"Tap “⭐ VIP” on an item to make only it VIP — {p} for 7 days. VIP for the whole shop is in Profile.", vipShopAllOn:"the whole shop is already VIP",
   vipItemAbout:"The listing turns yellow and stays above others for {d} days.",
+  myShopSub:"All your items: edit, remove, delete, VIP, expiry", asBuyer:"Preview",
   allShops:"All shops", vipShops:"VIP shops", shopsEmpty:"No shops yet", nShopGoods:"{n} items",
   vipHowT:"How to get VIP?", vipHowS:"Your listings on top", vipNone:"VIP shops will appear here",
   vipTitle:"VIP listing", vipUntil:"VIP until {d}", makeVip:"Make VIP",
@@ -2197,7 +2211,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "46";   // номер версии — виден внизу профиля
+const APP_VER = "47";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2557,7 +2571,8 @@ const ROUTES = [
   [/^\/shops$/, () => viewShops(false)],
   [/^\/shops\/vip$/, () => viewShops(true)],
   [/^\/p\/(\w+)$/, m => viewProduct(m[1])],
-  [/^\/u\/(\w+)$/, m => viewShop(m[1])],
+  [/^\/u\/(\w+)$/, m => S.user && S.token && S.user.id === m[1] && !S.adminToken ? viewMyShop(m[1]) : viewShop(m[1])],
+  [/^\/u\/(\w+)\/view$/, m => viewShop(m[1])],
   [/^\/photo$/, () => viewPhoto()],
   [/^\/fav$/, () => viewFav()],
   [/^\/chats$/, () => viewChats()],
@@ -3704,7 +3719,7 @@ function viewShop(uid){
   const admBar = S.adminToken ? h("div",{class:"own-vip adm-bar"},
     h("button",{class:"btn block vip-shop-btn",onclick:()=>adminThreadSheet(uid)}, "🪙 ", t("admCredit"))) : null;
   page(bar, h("div",{class:"wrap"}, admBar, own, head, body));
-  if (S.user && S.user.id === uid) call("me").then(r => { if (r.ok && r.balance != null){ S.balance = +r.balance || 0; S.vipPrices = r.vipPrices || {}; S.shopVip = r.shopVip || ""; setExpDays(r.expDays); drawOwn(); } });
+  // свой магазин управляется на странице «Мой магазин»; здесь — вид как у покупателя
   const draw = () => { drawHead(); drawList(); };
   draw(); loadCatalog().then(draw);
 }
@@ -4198,7 +4213,8 @@ async function viewMe(){
       h("div",{class:"box"},
         h("button",{class:"add-big",onclick:()=>picker.click()}, h("span",{style:{fontSize:"34px",color:"var(--red)"},text:"📷"}),
           t("addProduct"), h("span",{text:t("addProductSub")})), picker),
-      h("div",{class:"box"}, h("h3",null, t("myGoods"), " ", count), list),
+      h("a",{class:"box my-shop-big",href:"#/u/"+u.id}, h("span",{class:"ms-ic",text:"🏪"}),
+        h("span",{class:"ms-in"}, h("b",null, t("myShop"), " ", count), h("small",{text:t("myShopSub")})), h("span",{class:"ar",text:"›"})),
       h("div",{class:"box menu"},
         h("a",{href:"#/chats"}, "💬 ", t("tChats"), h("span",{class:"ar",text:"›"})),
         h("a",{href:"#/fav"}, "💛 ", t("favs"), h("span",{class:"ar",text:"›"})),
@@ -4208,7 +4224,7 @@ async function viewMe(){
         h("button",{onclick:()=>logout()}, "🚪 ", t("logout")))));
   $("app").append(verLine());
   const r = await call("me");
-  if (!r.ok){ list.replaceChildren(h("div",{class:"err",text:errText(r)})); return; }
+  if (!r.ok){ statusBox.replaceChildren(h("div",{class:"err",text:errText(r)})); return; }
   S.user = r.user; lsSet("user", r.user); setExpDays(r.expDays);
   if (r.balance != null){
     S.balance = +r.balance || 0; S.vipPrices = r.vipPrices || {}; S.shopVip = r.shopVip || ""; S.supportUnread = +r.supportUnread || 0; updateBadge();
@@ -4217,7 +4233,6 @@ async function viewMe(){
       h("div",{style:{flex:1,minWidth:0}}, h("small",{text:t("balance")}), h("b",{id:"bal-sum",text:coins(S.balance)}), h("span",{text:t("coinRate")})),
       h("button",{class:"btn sm",onclick:()=>topUpSheet()}, t("topUp"), S.supportUnread ? h("span",{class:"sup-dot",text:String(S.supportUnread)}) : null)),
       r.products.length ? h("div",{class:"box shop-vip-box"+(S.shopVip ? " on" : "")},
-        h("a",{class:"my-shop",href:"#/u/"+r.user.id}, "🏪 ", t("myShop"), h("span",{class:"ar",text:"›"})),
         h("button",{class:"btn block vip-shop-btn",onclick:()=>shopVipSheet(() => { drawBal(); })},
           "⭐ ", S.shopVip ? t("vipShopOn",{d:dayName(S.shopVip)}) : t("makeShopVip"))) : null);
     drawBal();
@@ -4226,19 +4241,58 @@ async function viewMe(){
   if (r.user.seller === "pending") statusBox.querySelector(".box").append(h("button",{class:"link",style:{marginTop:"10px"},text:t("contactAdmin"),onclick:()=>adminContactSheet()}));
   if (r.user.seller === "blocked") statusBox.replaceChildren(h("div",{class:"box"}, h("div",{class:"warn",style:{background:"#fde8e8",color:"#9b1c1c"}}, h("span",{text:"⛔"}), h("span",{text:t("blockedNote")}))));
   count.textContent = r.products.length ? "("+r.products.length+")" : "";
-  if (!r.products.length){ list.replaceChildren(h("p",{class:"hint",style:{margin:0},text:t("noGoods")})); return; }
-  // скоро удалятся — наверх списка и предупреждение
+  // скоро удалятся — предупреждение со ссылкой в магазин
   const soon = r.products.filter(expSoon);
-  const prods = soon.concat(r.products.filter(p => !expSoon(p)));
-  if (soon.length) statusBox.append(h("div",{class:"box",id:"exp-warn"}, h("div",{class:"warn",style:{background:"#fde8e8",color:"#9b1c1c"}},
+  if (soon.length) statusBox.append(h("a",{class:"box",id:"exp-warn",href:"#/u/"+r.user.id,style:{display:"block"}}, h("div",{class:"warn",style:{background:"#fde8e8",color:"#9b1c1c"}},
     h("span",{text:"⏳"}), h("span",{text:t("expSoon",{n:soon.length})}))));
-  const rows = prods.map(p => myRow(p, r.user));
-  list.replaceChildren(S.expDays ? h("p",{class:"hint",style:{margin:"0 0 4px"},text:t("expRule")}) : null, ...rows);
-  // обратный отсчёт — обновляем раз в минуту
-  if (S.expDays) S.timers.push(setInterval(() => rows.forEach(x => x._tick && x._tick()), 60000));
   updateBadge();
 }
-function myRow(p, u){
+// свой магазин: все свои товары (и снятые), у каждого ✎ ✕ 🗑, VIP за монеты и «удалится через…»
+async function viewMyShop(uid){
+  setTab("me");
+  const u = S.user || {};
+  const list = h("div",{class:"rows"}, h("div",{class:"empty",style:{padding:"20px"}}, h("div",{class:"spin"})));
+  const top = h("div"), warn = h("div");
+  const q = h("input",{type:"search",placeholder:t("searchShop"),"aria-label":t("searchShop")});
+  const picker = h("input",{type:"file",accept:"image/*",multiple:true,hidden:true});
+  picker.onchange = () => { S.pendingFiles = [...picker.files]; picker.value = ""; go("/sell"); };
+  page(topBar("🏪 "+t("myShop"), {right: h("a",{class:"btn sm ghost",href:"#/u/"+uid+"/view",text:"👀 "+t("asBuyer")})}),
+    h("div",{class:"wrap"},
+      h("div",{class:"shop-head"}, h("div",{class:"seller"}, avaEl(u.name, u.logo, "big"),
+        h("div",{style:{minWidth:0}}, h("div",{class:"nm",text:u.name}), stypeBadge(u.stype), h("div",{class:"sub",text:"📍 "+(u.city||"")})))),
+      top, warn,
+      h("div",{class:"box"},
+        h("div",{class:"ms-tools"},
+          h("div",{class:"search",style:{border:"1px solid var(--line)"}}, h("span",{html:IC.search}), q),
+          h("button",{class:"btn sm",onclick:()=>picker.click()}, icon("plus"), t("tAdd")), picker),
+        list)));
+  const r = await call("me");
+  if (location.hash !== "#/u/"+uid) return;
+  if (!r.ok){ list.replaceChildren(h("div",{class:"err",text:errText(r)})); return; }
+  S.user = r.user; lsSet("user", r.user); setExpDays(r.expDays);
+  if (r.balance != null){ S.balance = +r.balance || 0; S.vipPrices = r.vipPrices || {}; S.shopVip = r.shopVip || ""; }
+  const drawTop = () => top.replaceChildren(h("div",{class:"own-vip"},
+    h("div",{class:"ov-bal"}, "🪙 ", h("span",{id:"bal-sum",text:coins(S.balance)}), h("button",{class:"link",text:t("topUp"),onclick:()=>topUpSheet()})),
+    h("div",{class:"ov-hint",text: S.shopVip ? "⭐ "+t("vipUntil",{d:dayName(S.shopVip)})+" — "+t("vipShopAllOn") : t("vipItemHint",{p:coins((S.vipPrices||{}).item || 10)})}),
+    null));
+  drawTop();
+  if (!r.products.length){ list.replaceChildren(h("p",{class:"hint",style:{margin:0},text:t("noGoods")})); return; }
+  const soon = r.products.filter(expSoon);
+  if (soon.length) warn.replaceChildren(h("div",{class:"box",id:"exp-warn"}, h("div",{class:"warn",style:{background:"#fde8e8",color:"#9b1c1c"}},
+    h("span",{text:"⏳"}), h("span",{text:t("expSoon",{n:soon.length})}))));
+  const prods = soon.concat(r.products.filter(p => !expSoon(p)));
+  const rows = prods.map(p => { const x = myRow(p, r.user, drawTop); x._p = p; return x; });
+  const draw = () => {
+    const v = q.value.trim().toLowerCase();
+    const vis = rows.filter(x => !v || looseHas((x._p.title+" "+catName(x._p.cat)).toLowerCase(), v));
+    list.replaceChildren(...(vis.length ? vis : [h("p",{class:"hint",style:{margin:0},text:t("nothingQ",{q:q.value.trim()})})]));
+  };
+  q.oninput = draw; draw();
+  // обратный отсчёт — раз в минуту
+  S.timers.push(setInterval(() => rows.forEach(x => x._tick && x._tick()), 60000));
+  updateBadge();
+}
+function myRow(p, u, onBal){
   const stChip = () => {
     const live = p.status === "active" && u.seller === "active";
     const [cls, key] = p.status === "banned" ? ["bad","st_short_banned"] : p.status === "sold" ? ["off","st_short_sold"] :
@@ -4264,7 +4318,11 @@ function myRow(p, u){
       acts.append(h("button",{class:"btn sm soft",text:t("backSale"),onclick:()=>setStatus("active")}),
         h("button",{class:"ebtn del","aria-label":t("delete"),title:t("delete"),html:IC.trash,onclick:()=>del()}));
     }
-    const vip = isVip(p) ? h("span",{class:"vip-pill",text:"⭐ "+t("vipUntil",{d:dayName(p.vip)})}) : null;
+    const vipOn = isVip(p), shopOn = S.shopVip && new Date(S.shopVip) > Date.now();
+    const vip = p.status !== "active" ? (vipOn ? h("span",{class:"vip-pill",text:"⭐ "+t("vipUntil",{d:dayName(p.vip)})}) : null) :
+      shopOn ? h("span",{class:"vip-pill",text:"⭐ "+t("vipUntil",{d:dayName(p.vip || S.shopVip)})}) :
+      h("button",{class:"vip-ask"+(vipOn ? " on" : ""),onclick:()=>itemVipSheet(p, afterVip)},
+        vipOn ? "⭐ "+t("vipUntil",{d:dayName(p.vip)})+" · ＋" : "⭐ "+t("makeVip")+" · "+coins((S.vipPrices||{}).item || 10));
     const more = null;
     row.replaceChildren(
       h("div",{class:"my-top"},
@@ -4275,7 +4333,7 @@ function myRow(p, u){
       vip || expAt(p) ? h("div",{class:"my-bot"}, vip, more, timer) : null);
     row._tick();
   };
-  function afterVip(){ row.className = "row my" + (isVip(p) ? " vip" : ""); draw(); if ($("bal-sum")) $("bal-sum").textContent = coins(S.balance); }
+  function afterVip(){ row.className = "row my" + (isVip(p) ? " vip" : ""); draw(); if ($("bal-sum")) $("bal-sum").textContent = coins(S.balance); onBal && onBal(); }
   async function renew(){
     const r = await call("renewProduct", {id: p.id});
     if (!r.ok) return toast(errText(r));
