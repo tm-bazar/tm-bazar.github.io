@@ -2347,7 +2347,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "67";   // номер версии — виден внизу профиля
+const APP_VER = "68";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -5186,7 +5186,7 @@ async function compress(file, max, mark){
         const m = Math.min(c.width, c.height), lw = Math.max(56, Math.round(m * 0.17)), lh = Math.round(lw * lg.naturalHeight / lg.naturalWidth),
           pad = Math.max(8, Math.round(m * 0.025));
         g.save(); g.globalAlpha = 0.92; g.shadowColor = "rgba(0,0,0,.25)"; g.shadowBlur = Math.round(lw * 0.06);
-        g.drawImage(lg, c.width - lw - pad, c.height - lh - pad, lw, lh); g.restore();
+        g.drawImage(lg, pad, pad, lw, lh); g.restore();
         dataUrl = c.toDataURL("image/jpeg", 0.82);
       }
     }
