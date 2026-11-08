@@ -2345,7 +2345,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "64";   // номер версии — виден внизу профиля
+const APP_VER = "65";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -5566,27 +5566,13 @@ async function intro(){
   await iWait(900);
   const show = el => { stage.querySelectorAll(".i-slide.on").forEach(x => { x.classList.remove("on"); x.classList.add("gone"); setTimeout(() => x.remove(), 500); });
     stage.append(el); requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("on"))); };
-  // язык — только при первом запуске
-  if (!lsGet("langChosen", false)){
-    await new Promise(r => {
-      const pick = l => { iAudio(); lsSet("langChosen", true); setLang(l); r(); };
-      show(h("div",{class:"i-slide"}, h("div",{class:"i-ask",text:INTRO_ASK}),
-        h("div",{class:"i-langs"}, ...[["tm","Türkmençe"],["ru","Русский"],["en","English"]].map(([l, n]) =>
-          h("button",{text:n,onclick:()=>pick(l)})))));
-    });
-  }
-  else {
-    // звук на телефоне включается только после касания: если он ещё не разрешён — просим нажать
-    const ac = iAudio(); await iWait(250);
-    if (!ac || ac.state !== "running"){
-      await new Promise(r => {
-        const go_ = () => { iAudio(); box.removeEventListener("click", go_); r(); };
-        box.addEventListener("click", go_);
-        show(h("div",{class:"i-slide"}, h("button",{class:"i-tap",text:"👆 "+(INTRO_TAP[S.lang] || INTRO_TAP.ru)})));
-      });
-      await iWait(150);
-    }
-  }
+  // язык — при каждом запуске (касание по кнопке включает звук)
+  await new Promise(r => {
+    const pick = l => { iAudio(); lsSet("langChosen", true); if (l !== S.lang) setLang(l); r(); };
+    show(h("div",{class:"i-slide"}, h("div",{class:"i-ask",text:INTRO_ASK}),
+      h("div",{class:"i-langs"}, ...[["tm","Türkmençe"],["ru","Русский"],["en","English"]].map(([l, n]) =>
+        h("button",{text:n,onclick:()=>pick(l)})))));
+  });
   box.classList.add("small");
   // 1-й слайд: текст по буквам со звуком
   const txt = INTRO_TXT[S.lang] || INTRO_TXT.ru, out = h("span"), cur = h("i",{class:"cur"});
