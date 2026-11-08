@@ -2347,7 +2347,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "68";   // номер версии — виден внизу профиля
+const APP_VER = "69";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2922,6 +2922,7 @@ const CAT_PHOTO = {shoes:1, electronics:1, realty:1, home:1, auto:1, personal:1,
 const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"].map(k => ["auto:"+k, 1]).concat(["flat","house","land","commercial","garage"].map(k => ["realty:"+k, 1])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
+  if (key === "cat:all") return "icons/logo.webp"; // «Все товары» — всегда логотип
   if (key.startsWith("cat:") && CAT_PHOTO[key.slice(4)]) return "cats/" + key.slice(4) + ".jpg";
   if (key.startsWith("sub:") && SUB_PHOTO[key.slice(4)]) return "subs/" + key.slice(4).replace(":", "-") + ".jpg";
   if (key.startsWith("brand:") && BRAND_LOGO[key.slice(6)]) return "brands/" + BRAND_LOGO[key.slice(6)] + ".webp";
@@ -2934,7 +2935,7 @@ function tilePhoto(key){
 }
 function tileImg(key, fallback){
   const src = tilePhoto(key);
-  return src ? h("b",{class:"ci ph"+(/^(cats|subs|brands)\//.test(src) ? " fit" : "")}, h("img",{src,alt:"",loading:"lazy"})) : fallback();
+  return src ? h("b",{class:"ci ph"+(/^(cats|subs|brands|icons)\//.test(src) ? " fit" : "")}, h("img",{src,alt:"",loading:"lazy"})) : fallback();
 }
 function catTile(id){ return tileImg("cat:"+id, () => catIcon(id)); }
 // плитка с фото и подписью (разделы, марки)
