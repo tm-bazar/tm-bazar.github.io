@@ -834,6 +834,34 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .del-list{margin:6px 0 0;padding-left:18px;line-height:1.5}
 .no-sub{display:block;width:100%;text-align:left;background:#fde8e8;color:#9b1c1c;border-radius:10px;padding:8px 10px;font-size:12.5px;font-weight:600;line-height:1.35}
 
+
+/* ===== ЗАСТАВКА (v63) ===== */
+#intro{position:fixed;inset:0;z-index:9999;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px 16px calc(24px + env(safe-area-inset-bottom));transition:opacity .45s ease;overflow:hidden;-webkit-user-select:none;user-select:none}
+#intro.out{opacity:0;pointer-events:none}
+#intro .i-logo{width:min(56vw,230px);height:auto;opacity:0;transform:scale(.82);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.9,.3,1.25),width .5s ease}
+#intro.on .i-logo{opacity:1;transform:none}
+#intro.small .i-logo{width:min(36vw,150px)}
+#intro .i-stage{position:relative;width:100%;max-width:420px;height:190px;margin-top:22px}
+#intro .i-slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  opacity:0;transform:translateX(40px);transition:opacity .4s ease,transform .45s ease;pointer-events:none}
+#intro .i-slide.on{opacity:1;transform:none;pointer-events:auto}
+#intro .i-slide.gone{opacity:0;transform:translateX(-40px)}
+#intro .i-langs{display:grid;gap:10px;width:min(80vw,280px)}
+#intro .i-langs button{padding:14px;border-radius:14px;border:1.5px solid #e7e7ea;background:#fff;font:600 17px/1.2 inherit;color:#1d1d1f}
+#intro .i-langs button:active{background:#fff1ee;border-color:#e8341c}
+#intro .i-ask{font-size:14px;color:#6e6e73;text-align:center;line-height:1.4}
+#intro .i-type{font-size:24px;font-weight:800;color:#a3161b;text-align:center;line-height:1.3;min-height:2.6em;padding:0 8px}
+#intro .i-type .cur{display:inline-block;width:2px;height:1em;background:#a3161b;margin-left:2px;vertical-align:-.12em;animation:iblink .7s steps(1) infinite}
+@keyframes iblink{50%{opacity:0}}
+#intro .i-ring{width:110px;height:110px}
+#intro .i-ring .arc{transform-origin:55px 55px;animation:ispin .7s linear infinite}
+#intro .i-ring.done .arc{animation:none;stroke:#2e9e44;stroke-dasharray:none;transition:stroke .3s}
+#intro .i-ring .chk{stroke-dasharray:70;stroke-dashoffset:70}
+#intro .i-ring.done .chk{transition:stroke-dashoffset .35s cubic-bezier(.3,1.4,.5,1);stroke-dashoffset:0}
+#intro .i-ring.done{animation:ipop .4s ease}
+@keyframes ispin{to{transform:rotate(360deg)}}
+@keyframes ipop{50%{transform:scale(1.12)}}
 </style>
 </head>
 <body>
@@ -2315,7 +2343,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "62";   // номер версии — виден внизу профиля
+const APP_VER = "63";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -5492,7 +5520,78 @@ async function viewAdmin(){
   root.replaceChildren(tabBar, search, body);
 }
 
+
+/* ===== ЗАСТАВКА (v63): логотип → выбор языка (1-й раз) → текст по буквам → галочка → приложение ===== */
+const INTRO_TXT = {ru:"Все продавцы — в одном месте", tm:"Ähli satyjylar — bir ýerde", en:"All sellers in one place"};
+const INTRO_ASK = "Dili saýlaň · Выберите язык · Choose language";
+let iAc = null;
+function iAudio(){ try{ if (!iAc) iAc = new (window.AudioContext || window.webkitAudioContext)(); if (iAc.state === "suspended") iAc.resume(); }catch(e){} return iAc; }
+// щелчок клавиши
+function iClick(){
+  const ac = iAudio(); if (!ac || ac.state !== "running") return;
+  try{
+    const n = Math.floor(ac.sampleRate * .03), b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3);
+    const src = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
+    src.buffer = b; f.type = "bandpass"; f.frequency.value = 2200 + Math.random() * 1200; f.Q.value = 1.2; g.gain.value = .35;
+    src.connect(f).connect(g).connect(ac.destination); src.start();
+  }catch(e){}
+}
+// «тинг»
+function iTing(){
+  const ac = iAudio(); if (!ac || ac.state !== "running") return;
+  try{
+    const t0 = ac.currentTime;
+    [[1760,.3],[2640,.12],[3520,.06]].forEach(([fr, v]) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = "sine"; o.frequency.value = fr;
+      g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(v, t0 + .005); g.gain.exponentialRampToValueAtTime(.0001, t0 + 1.4);
+      o.connect(g).connect(ac.destination); o.start(t0); o.stop(t0 + 1.5);
+    });
+  }catch(e){}
+}
+const iWait = ms => new Promise(r => setTimeout(r, ms));
+async function intro(){
+  if (curPath().startsWith("/admin")) return;
+  const box = h("div",{id:"intro"}), logo = h("img",{class:"i-logo",src:"icons/logo.webp",alt:"TM Bazar"}),
+    stage = h("div",{class:"i-stage"});
+  box.append(logo, stage); document.body.append(box);
+  // любое касание включает звук
+  box.addEventListener("pointerdown", iAudio, {passive:true});
+  await new Promise(r => { if (logo.complete) r(); else { logo.onload = r; logo.onerror = r; } setTimeout(r, 1500); });
+  requestAnimationFrame(() => box.classList.add("on"));
+  await iWait(900);
+  const show = el => { stage.querySelectorAll(".i-slide.on").forEach(x => { x.classList.remove("on"); x.classList.add("gone"); setTimeout(() => x.remove(), 500); });
+    stage.append(el); requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("on"))); };
+  // язык — только при первом запуске
+  if (!lsGet("langChosen", false)){
+    await new Promise(r => {
+      const pick = l => { iAudio(); lsSet("langChosen", true); setLang(l); r(); };
+      show(h("div",{class:"i-slide"}, h("div",{class:"i-ask",text:INTRO_ASK}),
+        h("div",{class:"i-langs"}, ...[["tm","Türkmençe"],["ru","Русский"],["en","English"]].map(([l, n]) =>
+          h("button",{text:n,onclick:()=>pick(l)})))));
+    });
+  }
+  box.classList.add("small");
+  // 1-й слайд: текст по буквам со звуком
+  const txt = INTRO_TXT[S.lang] || INTRO_TXT.ru, out = h("span"), cur = h("i",{class:"cur"});
+  show(h("div",{class:"i-slide"}, h("div",{class:"i-type"}, out, cur)));
+  await iWait(500);
+  for (const ch of txt){ out.textContent += ch; if (ch.trim()) iClick(); await iWait(ch === " " ? 70 : 85); }
+  await iWait(900); cur.remove();
+  // 2-й слайд: крутится и ставится зелёная галочка
+  const ring = h("div",{class:"i-ring",html:'<svg viewBox="0 0 110 110" width="110" height="110">'+
+    '<circle cx="55" cy="55" r="48" fill="#fff" stroke="#eee" stroke-width="6"/>'+
+    '<circle class="arc" cx="55" cy="55" r="48" fill="none" stroke="#e8341c" stroke-width="6" stroke-linecap="round" stroke-dasharray="80 222"/>'+
+    '<path class="chk" d="M34 57 L49 71 L77 40" fill="none" stroke="#2e9e44" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>'});
+  show(h("div",{class:"i-slide"}, ring));
+  await iWait(1500);
+  ring.classList.add("done"); iTing();
+  await iWait(1100);
+  box.classList.add("out"); setTimeout(() => box.remove(), 500);
+}
 start();
+intro();
 </script>
 </body>
 </html>
