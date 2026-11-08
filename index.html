@@ -2372,7 +2372,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "74";   // номер версии — виден внизу профиля
+const APP_VER = "75";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3330,8 +3330,8 @@ function heartBtn(id, cls){
 }
 // v74: на фото логотип продавца (слева сверху), VIP (справа сверху) и «Видео» (слева снизу); остальное — под фото
 function phMarks(p){
-  return [p.sellerLogo ? h("img",{class:"ph-logo",src:p.sellerLogo,alt:p.sellerName||"",loading:"lazy",decoding:"async"}) : null,
-    isVip(p) ? h("span",{class:"ph-vip",text:"VIP"}) : null,
+  // v75: логотип продавца больше не накладываем — он теперь на самом фото справа внизу, а слева сверху на фото — логотип TM Bazar
+  return [isVip(p) ? h("span",{class:"ph-vip",text:"VIP"}) : null,
     p.hasVideo ? h("span",{class:"ph-vid",text:"▶ "+t("video")}) : null];
 }
 function infoChips(p){
@@ -5188,6 +5188,38 @@ function loadImg(src, cors){
 // логотип-водяной знак для фото объявлений (v67)
 let markImgP = null;
 function markImg(){ if (!markImgP) markImgP = loadImg("icons/logo.webp").catch(() => { markImgP = null; return null; }); return markImgP; }
+// v75: логотип продавца для правого нижнего угла фото; если картинку нельзя нарисовать (чужой сервер без CORS) — null
+const sellerMarkP = {};
+function sellerMarkImg(src){
+  if (!src) return Promise.resolve(null);
+  if (!sellerMarkP[src]) sellerMarkP[src] = loadImg(src, !src.startsWith("data:")).then(img => {
+    try{ const t = document.createElement("canvas"); t.width = t.height = 1; const g = t.getContext("2d"); g.drawImage(img, 0, 0, 1, 1); g.getImageData(0, 0, 1, 1); return img; }
+    catch(e){ return null; }
+  }).catch(() => null);
+  return sellerMarkP[src];
+}
+function rrect(g, x, y, w, h, r){ g.beginPath(); g.moveTo(x+r, y); g.arcTo(x+w, y, x+w, y+h, r); g.arcTo(x+w, y+h, x, y+h, r); g.arcTo(x, y+h, x, y, r); g.arcTo(x, y, x+w, y, r); g.closePath(); }
+// правый нижний угол: логотип продавца, а если его нет — название магазина
+async function drawSellerMark(g, W, H){
+  const u = S.user; if (!u) return;
+  const m = Math.min(W, H), pad = Math.max(8, Math.round(m * 0.025));
+  const lg = await sellerMarkImg(u.logo);
+  g.save(); g.shadowColor = "rgba(0,0,0,.25)"; g.shadowBlur = Math.max(3, Math.round(m * 0.01));
+  if (lg){
+    const sz = Math.max(48, Math.round(m * 0.14)), x = W - pad - sz, y = H - pad - sz, r = Math.round(sz * 0.2);
+    g.globalAlpha = 0.95; g.fillStyle = "#fff"; rrect(g, x, y, sz, sz, r); g.fill();
+    g.shadowColor = "transparent"; g.save(); rrect(g, x, y, sz, sz, r); g.clip();
+    const k = Math.max(sz / lg.naturalWidth, sz / lg.naturalHeight), iw = lg.naturalWidth * k, ih = lg.naturalHeight * k;
+    g.drawImage(lg, x + (sz - iw) / 2, y + (sz - ih) / 2, iw, ih); g.restore();
+  } else if (u.name){
+    const fs = Math.max(14, Math.round(m * 0.035)), name = u.name.length > 28 ? u.name.slice(0, 27) + "…" : u.name;
+    g.font = "700 " + fs + "px system-ui, -apple-system, Roboto, Arial, sans-serif";
+    const tw = g.measureText(name).width, bw = tw + fs * 1.1, bh = fs * 1.7, x = W - pad - bw, y = H - pad - bh;
+    g.globalAlpha = 0.9; g.fillStyle = "#fff"; rrect(g, x, y, bw, bh, bh / 2); g.fill();
+    g.shadowColor = "transparent"; g.globalAlpha = 1; g.fillStyle = "#1c1c1c"; g.textBaseline = "middle"; g.fillText(name, x + fs * 0.55, y + bh / 2);
+  }
+  g.restore();
+}
 async function compress(file, max, mark){
   const url = URL.createObjectURL(file);
   try{
@@ -5207,8 +5239,9 @@ async function compress(file, max, mark){
           pad = Math.max(8, Math.round(m * 0.025));
         g.save(); g.globalAlpha = 0.92; g.shadowColor = "rgba(0,0,0,.25)"; g.shadowBlur = Math.round(lw * 0.06);
         g.drawImage(lg, pad, pad, lw, lh); g.restore();
-        dataUrl = c.toDataURL("image/jpeg", 0.82);
       }
+      await drawSellerMark(g, c.width, c.height);
+      dataUrl = c.toDataURL("image/jpeg", 0.82);
     }
     return {dataUrl, b64: dataUrl.split(",")[1], img: small};
   } finally { setTimeout(() => URL.revokeObjectURL(url), 2000); }
