@@ -675,6 +675,9 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .lph .ph-vip{right:5px;top:5px}
 .bc-gal img.ph-logo{flex:none;aspect-ratio:auto;width:36px;height:36px;border-radius:9px;left:8px;top:8px}
 .bc-gal .ph-vip{right:8px;top:8px;font-size:12px;padding:3px 8px}
+.ph-vid{position:absolute;left:6px;bottom:6px;z-index:2;background:rgba(0,0,0,.72);color:#fff;font-size:10.5px;font-weight:700;border-radius:5px;padding:2px 6px}
+.lph .ph-vid{left:5px;bottom:5px}
+.bc-gal .ph-vid{left:8px;bottom:8px;font-size:12px;padding:3px 8px}
 .ichs{display:flex;flex-wrap:wrap;gap:4px}
 .ich{font-size:10.5px;font-weight:700;line-height:1.2;border-radius:5px;padding:2px 6px;background:var(--soft);color:var(--mut)}
 .ich.red{background:var(--redBg);color:var(--red)}
@@ -2369,7 +2372,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "73";   // номер версии — виден внизу профиля
+const APP_VER = "74";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3325,16 +3328,16 @@ function heartBtn(id, cls){
   };
   return b;
 }
-// v73: на фото только логотип продавца (слева сверху) и VIP (справа сверху); остальное — под фото
+// v74: на фото логотип продавца (слева сверху), VIP (справа сверху) и «Видео» (слева снизу); остальное — под фото
 function phMarks(p){
   return [p.sellerLogo ? h("img",{class:"ph-logo",src:p.sellerLogo,alt:p.sellerName||"",loading:"lazy",decoding:"async"}) : null,
-    isVip(p) ? h("span",{class:"ph-vip",text:"VIP"}) : null];
+    isVip(p) ? h("span",{class:"ph-vip",text:"VIP"}) : null,
+    p.hasVideo ? h("span",{class:"ph-vid",text:"▶ "+t("video")}) : null];
 }
 function infoChips(p){
   const a = p.attrs || {}, c = [];
   if (a.exchange === "yes") c.push(h("span",{class:"ich red",text:t("o_f_exchange")}));
   if (p.cond === "used" && !NO_COND[p.cat]) c.push(h("span",{class:"ich amber",text:t("used")}));
-  if (p.hasVideo) c.push(h("span",{class:"ich dark",text:"▶ "+t("video")}));
   if (p.variants > 1) c.push(h("span",{class:"ich",text:"🎨 "+t("nVariants",{n:p.variants})}));
   return c.length ? h("div",{class:"ichs"}, ...c) : null;
 }
