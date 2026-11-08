@@ -1432,7 +1432,8 @@ const FIELDS = {
     {k:"brand", type:"sel", raw:true, filter:"main", labelKey:"brandFor", opts:CAR_BRANDS.concat(["other"]), when:(s) => s === "parts" || s === "tires" || s === "caracc" || s === "oils"},
     {k:"tiresize", type:"text", max:20, when:(s) => s === "tires"},
     {k:"brandt", type:"text", max:30, when:(s) => s === "moto" || s === "water"},
-    {k:"model", type:"text", max:40, filter:"more", list:(s, a) => CAR_MODELS[a.brand] || [], when:(s) => !!VEHICLE_SUBS[s] || s === "parts"},
+    {k:"model", type:"text", max:40, req:true, filter:"more", list:(s, a) => [...new Set([...modelsOf(s, a.brand), ...(CAR_MODELS[a.brand] || [])])], when:(s) => !!VEHICLE_SUBS[s]},
+    {k:"model", type:"text", max:40, filter:"more", list:(s, a) => CAR_MODELS[a.brand] || [], when:(s) => s === "parts"},
     {k:"year", type:"year", filter:"range", when:(s) => !!VEHICLE_SUBS[s] || s === "moto" || s === "water"},
     {k:"km", type:"num", unit:"km", when:(s) => !!VEHICLE_SUBS[s] || s === "moto"},
     {k:"body", type:"sel", filter:"main", opts:["suv","sedan","crossover","hatchback","wagon","minivan","pickup","coupe","convertible"], when:(s) => s === "cars" || s === "imported"},
@@ -1666,6 +1667,7 @@ const ATTRT = {
   anyMake:["Все марки","Ähli markalar","All makes"],
   searchModel:["Поиск модели","Model gözle","Search model"], anyModel:["Все модели","Ähli modeller","All models"],
   popularModels:["Популярные модели","Meşhur modeller","Popular models"], allModels:["Все модели А–Я","Ähli modeller A–Ý","All models A–Z"], makeBtn:["Марка","Marka","Make"],
+  useModel:["Указать: «{m}»","«{m}» diýip ýazmak","Use “{m}”"], typeModel:["Напишите модель","Modeli ýazyň","Type the model"],
   modelPh:["Начните писать или выберите","Ýazyp başlaň ýa-da saýlaň","Start typing or pick"],
   allSubs:["Все","Ählisi","All"], specs:["Характеристики","Häsiýetnamasy","Specifications"], details:["Подробности","Jikme-jiklikler","Details"],
   e_noSub:["Выберите раздел: {s}","Bölümi saýlaň: {s}","Choose a section: {s}"], e_req:["Заполните: {f}","Dolduryň: {f}","Please fill in: {f}"],
@@ -2312,7 +2314,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "60";   // номер версии — виден внизу профиля
+const APP_VER = "61";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -4877,7 +4879,7 @@ async function viewSell(editId){
     const parts = [];
     if (prod.cat) parts.push(h("button",{class:"crumb",onclick:()=>{ prod.cat = ""; prod.sub = ""; prod.attrs = {}; render(); }}, catName(prod.cat)));
     if (prod.sub) parts.push(h("button",{class:"crumb",onclick:()=>{ prod.sub = ""; prod.attrs = {}; render(); }}, subName(prod.sub)));
-    reqFields().forEach(f => { if (prod.attrs[f.k]) parts.push(h("button",{class:"crumb",onclick:()=>{ prod.attrs[f.k] = ""; render(); }}, optLabel(f, prod.attrs[f.k]))); });
+    reqFields().forEach(f => { if (prod.attrs[f.k]) parts.push(h("button",{class:"crumb",onclick:()=>{ prod.attrs[f.k] = ""; if (f.k === "brand") prod.attrs.model = ""; render(); }}, optLabel(f, prod.attrs[f.k]))); });
     return parts.length ? h("div",{class:"crumbs"}, ...parts, h("small",{class:"swipe",text:t("w_change")})) : null;
   };
 
@@ -4914,8 +4916,13 @@ async function viewSell(editId){
     ];
   }
   function step2(){
+    let modelQ = null; // строка поиска модели: написанное можно принять кнопкой «Продолжить»
     nextBtn.textContent = t("w_continue");
     nextBtn.onclick = () => {
+      if (modelQ && modelQ.value.trim() && !prod.attrs.model){
+        const f = reqFields().find(x => x.k === "model");
+        if (f) prod.attrs.model = canonName(f.list(prod.sub, prod.attrs), modelQ.value.trim(), prod.attrs.brand);
+      }
       if (!prod.cat) return fail(t("e_noCat"));
       if (SUBS[prod.cat] && !prod.sub) return fail(t("w_pickSub"));
       const miss = reqFields().find(f => !prod.attrs[f.k]);
@@ -4933,6 +4940,33 @@ async function viewSell(editId){
         ...SUBS[prod.cat].map(k => rowItem(tileImg("sub:"+prod.cat+":"+k, () => catIcon(prod.cat)), subName(k), "", ()=>{ prod.sub = k; prod.attrs = {}; next(); })))];
     }
     const miss = reqFields().find(f => !prod.attrs[f.k]);
+    if (miss && miss.k === "model"){
+      // модель машины — обязательна, выбирается сразу после марки
+      if (!MODELS) loadModels().then(d => { if (d && step === 2) render(); });
+      const all = [...new Set(miss.list(prod.sub, prod.attrs))].sort(modelSort);
+      const popIn = ((POP_MODELS || CAR_MODELS)[prod.attrs.brand] || []).filter(m => all.includes(m));
+      const pick = m => { prod.attrs.model = m; next(); };
+      const q = modelQ = h("input",{class:"inp mk-q",type:"search",maxlength:String(miss.max||40),placeholder:all.length ? "🔍  "+t("searchModel") : "✏️  "+t("typeModel")});
+      const list = h("div");
+      const row = m => h("button",{type:"button",class:"mk-row md-row",onclick:()=>pick(m)}, h("span",{class:"mk-name",text:m}), h("span",{class:"ar",text:"›"}));
+      const draw = () => {
+        const raw = q.value.trim(), v = raw.toLowerCase(), parts = [];
+        if (v){
+          const hits = all.filter(m => looseHas(m.toLowerCase(), v));
+          parts.push(...hits.map(row));
+          if (!hits.some(m => m.toLowerCase() === v))
+            parts.push(h("button",{type:"button",class:"mk-row md-row",onclick:()=>pick(canonName(all, raw, prod.attrs.brand))},
+              h("span",{class:"mk-name",text:"✏️ "+t("useModel",{m: raw})}), h("span",{class:"ar",text:"›"})));
+        } else {
+          if (popIn.length && all.length > popIn.length) parts.push(h("div",{class:"mk-h",text:t("popularModels")}), ...popIn.map(row), h("div",{class:"mk-h",text:t("allModels")}));
+          parts.push(...all.map(row));
+        }
+        list.replaceChildren(...parts);
+      };
+      q.oninput = draw; draw();
+      if (!all.length) setTimeout(() => q.focus(), 50);
+      return [h("div",{class:"box"}, crumb(), h("h3",null, fieldLabel(miss), reqStar()), h("div",{class:"mk"}, q, list))];
+    }
     if (miss){
       const opts = optsOf(miss, prod.sub, prod.attrs);
       const isBrand = miss.k === "brand";
