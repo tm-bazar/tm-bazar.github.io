@@ -671,7 +671,8 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .row.my .acts{gap:5px}
 .row.my .acts .ebtn,.row.my .acts .xbtn{width:34px;height:34px}
 .exp{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--mut);font-weight:600}
-.exp.soon{color:#c62828}
+.exp.soon{color:#c62828;background:#fde8e8;border:1px solid #f5b5b5;border-radius:10px;padding:6px 8px;font-weight:700}
+.exp .btn.renew{background:#2e7d32;color:#fff}
 .exp .btn.sm{padding:6px 12px;font-size:12.5px}
 @media (max-width:420px){ .row.my .my-bot{padding-left:0} }
 /* v39: главная — маленькие категории над VIP-магазинами */
@@ -884,8 +885,8 @@ ru: {
   vipHowTo:"Чтобы подключить VIP, напишите или позвоните администратору и назовите номер объявления:",
   vipSeller:"Продавцам: VIP можно подключить к своему объявлению в разделе «Профиль» → «Мои товары».",
   expLeft:"Удалится через {d} дн {h} ч", expLeftH:"Удалится через {h} ч {m} мин", expGone:"Срок истёк, удаляется",
-  renew:"Продлить на 30 дней", renewOk:"Продлено на 30 дней", expSoon:"{n} объявл. удалятся в ближайшие 3 дня. Нажмите «Продлить», чтобы они остались.",
-  expRule:"Объявление живёт 30 дней. За 3 дня до конца появится кнопка «Продлить». Если не продлить — оно удалится само.",
+  renew:"Продлить на 30 дней", renewOk:"Продлено на 30 дней", expSoon:"{n} объявл. удалятся в ближайшие 5 дней. Нажмите «Продлить», чтобы они остались.",
+  expRule:"Объявление живёт 30 дней. За 5 дней до конца появится кнопка «Продлить». Если не продлить — оно удалится само.",
   tAdd:"Добавить", addListing:"Добавить объявление",
   location:"Где находится товар", placeOpt:"Город / этрап (необязательно)", placePh:"Например: Baýramaly, 30-njy mkr", video:"Видео", watchVideo:"Смотреть видео в {svc}", videoOpt:"Видео в TikTok или Instagram (необязательно)", videoHint:"Вставьте ссылку на ваше видео с этим товаром. Покупатель нажмёт — и откроется TikTok или Instagram.", e_video:"Ссылка должна быть на TikTok, Instagram или YouTube.",
   reviewsWord:"отзывов",
@@ -1030,8 +1031,8 @@ tm: {
   vipHowTo:"VIP birikdirmek üçin administratora ýazyň ýa-da jaň ediň we bildirişiň belgisini aýdyň:",
   vipSeller:"Satyjylar üçin: VIP-i «Profil» → «Meniň harytlarym» bölüminde öz bildirişiňize birikdirip bilersiňiz.",
   expLeft:"{d} gün {h} sagatdan pozular", expLeftH:"{h} sagat {m} minutdan pozular", expGone:"Möhleti gutardy, pozulýar",
-  renew:"30 güne uzaltmak", renewOk:"30 güne uzaldyldy", expSoon:"{n} bildiriş 3 günüň içinde pozular. Galmagy üçin «Uzaltmak» düwmesine basyň.",
-  expRule:"Bildiriş 30 gün durýar. Möhletiň gutarmagyna 3 gün galanda «Uzaltmak» düwmesi çykar. Uzaldylmasa, özi pozular.",
+  renew:"30 güne uzaltmak", renewOk:"30 güne uzaldyldy", expSoon:"{n} bildiriş 5 günüň içinde pozular. Galmagy üçin «Uzaltmak» düwmesine basyň.",
+  expRule:"Bildiriş 30 gün durýar. Möhletiň gutarmagyna 5 gün galanda «Uzaltmak» düwmesi çykar. Uzaldylmasa, özi pozular.",
   tAdd:"Goşmak", addListing:"Bildiriş goşmak",
   location:"Haryt nirede", placeOpt:"Şäher / etrap (hökman däl)", placePh:"Mysal: Baýramaly, 30-njy mkr", video:"Wideo", watchVideo:"{svc}-da wideo görmek", videoOpt:"TikTok ýa-da Instagram wideo (hökman däl)", videoHint:"Bu haryt bilen wideoňyzyň salgysyny goýuň. Alyjy basar — TikTok ýa-da Instagram açylar.", e_video:"Salgy TikTok, Instagram ýa-da YouTube bolmaly.",
   reviewsWord:"teswir",
@@ -1176,8 +1177,8 @@ en: {
   vipHowTo:"To get VIP, message or call the administrator and give the listing number:",
   vipSeller:"Sellers: you can add VIP to your listing in Profile → My products.",
   expLeft:"Deleted in {d} d {h} h", expLeftH:"Deleted in {h} h {m} min", expGone:"Expired, being deleted",
-  renew:"Renew for 30 days", renewOk:"Renewed for 30 days", expSoon:"{n} listing(s) will be deleted within 3 days. Tap “Renew” to keep them.",
-  expRule:"A listing lives 30 days. 3 days before the end a “Renew” button appears. If not renewed, it is deleted automatically.",
+  renew:"Renew for 30 days", renewOk:"Renewed for 30 days", expSoon:"{n} listing(s) will be deleted within 5 days. Tap “Renew” to keep them.",
+  expRule:"A listing lives 30 days. 5 days before the end a “Renew” button appears. If not renewed, it is deleted automatically.",
   tAdd:"Add", addListing:"Post an ad",
   location:"Item location", placeOpt:"Town / district (optional)", placePh:"e.g. Baýramaly, 30th microdistrict", video:"Video", watchVideo:"Watch video on {svc}", videoOpt:"TikTok or Instagram video (optional)", videoHint:"Paste a link to your video of this item. Buyers tap it and TikTok or Instagram opens.", e_video:"The link must be TikTok, Instagram or YouTube.",
   reviewsWord:"reviews",
@@ -2314,7 +2315,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "61";   // номер версии — виден внизу профиля
+const APP_VER = "62";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2536,7 +2537,7 @@ function setExpDays(n){ n = +n || 0; if (n !== S.expDays){ S.expDays = n; lsSet(
 function isVip(p){ return !!(p && p.vip && new Date(p.vip) > Date.now()); }
 // когда объявление удалится (мс); 0 — неизвестно
 function expAt(p){ if (!S.expDays || !p) return 0; const x = new Date(p.exp || 0).getTime(); return isNaN(x) ? 0 : x; }
-function expSoon(p){ const x = expAt(p); return !!x && x - Date.now() < 3 * 864e5; }
+function expSoon(p){ const x = expAt(p); return !!x && x - Date.now() < 5 * 864e5; }
 function expText(p){
   const ms = expAt(p) - Date.now();
   if (ms <= 0) return t("expGone");
@@ -4548,13 +4549,12 @@ function myRow(p, u, onBal){
     const soon = expSoon(p);
     timer.hidden = false; timer.className = "exp" + (soon ? " soon" : "");
     timer.replaceChildren(h("span",{text:"⏳ "+expText(p)}),
-      soon ? h("button",{class:"btn sm",text:t("renew"),onclick:renew}) : null);
+      soon ? h("button",{class:"btn sm renew","aria-label":t("renew"),title:t("renew"),text:"✓ "+t("renew"),onclick:renew}) : null);
   };
   const draw = () => {
     const acts = h("div",{class:"acts"});
     if (p.status === "active"){
       acts.append(h("button",{class:"ebtn","aria-label":t("edit"),title:t("edit"),html:IC.edit,onclick:()=>go("/edit/"+p.id)}),
-        h("button",{class:"xbtn","aria-label":t("removeSale"),title:t("removeSale"),text:"✕",onclick:()=>setStatus("sold")}),
         h("button",{class:"ebtn del","aria-label":t("delete"),title:t("delete"),html:IC.trash,onclick:()=>del()}));
     } else if (p.status !== "banned"){
       acts.append(h("button",{class:"btn sm soft",text:t("backSale"),onclick:()=>setStatus("active")}),
