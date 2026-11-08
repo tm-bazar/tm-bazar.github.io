@@ -290,6 +290,33 @@ textarea.inp{height:auto;min-height:96px;padding:12px 14px;resize:vertical;line-
 .ps-hero .btn.ghost2{background:rgba(255,255,255,.18);color:#fff}
 .ps-q{display:flex;gap:12px;align-items:center;background:#fff;padding:12px;margin:10px;border-radius:var(--r);box-shadow:var(--sh)}
 .ps-q img{width:84px;height:84px;object-fit:cover;border-radius:12px}
+/* сканер как в Taobao */
+.scan{position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;color:#fff}
+.scan video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scan .sc-frame{position:absolute;left:50%;top:44%;width:min(78vw,78vh,420px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:18px;box-shadow:0 0 0 200vmax rgba(0,0,0,.45);overflow:hidden}
+.scan .sc-frame b{position:absolute;width:34px;height:34px;border:4px solid #ff5000}
+.scan .c1{left:0;top:0;border-right:0!important;border-bottom:0!important;border-top-left-radius:18px}
+.scan .c2{right:0;top:0;border-left:0!important;border-bottom:0!important;border-top-right-radius:18px}
+.scan .c3{left:0;bottom:0;border-right:0!important;border-top:0!important;border-bottom-left-radius:18px}
+.scan .c4{right:0;bottom:0;border-left:0!important;border-top:0!important;border-bottom-right-radius:18px}
+.scan .sc-line{position:absolute;left:0;right:0;height:38%;top:-38%;background:linear-gradient(180deg,rgba(255,80,0,0),rgba(255,80,0,.28) 85%,rgba(255,140,60,.95) 100%);border-bottom:2px solid #ff8a3c;animation:scline 1.8s cubic-bezier(.45,.05,.55,.95) infinite}
+@keyframes scline{0%{top:-38%}100%{top:100%}}
+.scan .sc-dots i{position:absolute;width:6px;height:6px;margin:-3px;border-radius:50%;background:#fff;box-shadow:0 0 10px 3px rgba(255,140,60,.9);opacity:0;animation:scdot 1.6s ease-in-out infinite}
+@keyframes scdot{0%,100%{opacity:0;transform:scale(.3)}50%{opacity:1;transform:scale(1)}}
+.scan.hit .sc-frame{animation:schit .45s ease-out}
+.scan.hit .sc-frame b{border-color:#2ecc71}
+@keyframes schit{0%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.06)}100%{transform:translate(-50%,-50%) scale(1)}}
+.scan .sc-x{position:absolute;top:calc(14px + env(safe-area-inset-top));left:14px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.45);color:#fff;font-size:20px}
+.scan .sc-hint{position:absolute;left:0;right:0;top:calc(44% + min(39vw,39vh,210px) + 18px);text-align:center;font-weight:600;font-size:15px;text-shadow:0 1px 4px #000}
+.scan .sc-st{position:absolute;left:0;right:0;top:calc(44% + min(39vw,39vh,210px) + 44px);text-align:center;font-size:13px;opacity:.85}
+.scan .sc-no{position:absolute;left:16px;right:16px;bottom:calc(120px + env(safe-area-inset-bottom));background:rgba(20,20,20,.88);border-radius:16px;padding:16px;text-align:center}
+.scan .sc-no p{margin:6px 0 12px;font-size:13px;opacity:.85}
+.scan .sc-no .btn{background:#ff5000;color:#fff}
+.scan .sc-bot{position:absolute;left:0;right:0;bottom:calc(24px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:28px}
+.scan .sc-b{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:64px;padding:10px 12px;border:0;border-radius:16px;background:rgba(0,0,0,.45);color:#fff;font-size:22px}
+.scan .sc-b small{font-size:11px}
+.scan .sc-b.on{background:#ff5000}
+body.scan-open{overflow:hidden}
 
 /* ---------- админка ---------- */
 .adm{max-width:960px;margin:0 auto;padding:10px}
@@ -1041,9 +1068,11 @@ ru: {
   e_not_found:"Не найдено.", e_own:"Это ваш товар.", e_too_many:"Максимум 10 фото.", e_banned:"Товар снят администратором.",
   e_name:"Введите имя.", e_photo:"Не получилось открыть фото.", e_noPhoto:"Добавьте хотя бы одно фото.",
   e_noPrice:"Укажите цену.", e_noTitle:"Напишите название товара.", e_noCat:"Выберите категорию.",
-  psTitle:"Поиск по фото", psSub:"Сфотографируйте вещь или выберите фото — покажем похожие товары.",
+  psTitle:"Поиск по фото", psSub:"Наведите камеру на вещь — найдём этот же товар.", psScan:"Сканировать камерой",
+  scanPrep:"Включаем камеру…", scanGo:"Сканирую…", scanHint:"Наведите камеру на товар", scanErr:"Нет доступа к камере. Разрешите камеру или сделайте фото.",
+  scanNoSub:"Такого товара пока нет в продаже. Наведите ровнее или попробуйте ещё раз.", scanAgain:"Сканировать снова",
   psCam:"Сфотографировать", psGal:"Из галереи", psLooking:"Смотрим на фото…", psCompare:"Ищем похожие…",
-  psYour:"Ваше фото", psFound:"Похожих товаров: {n}", psNone:"Похожего не нашли", psNoneSub:"Попробуйте другое фото или поиск по словам.",
+  psYour:"Ваше фото", psFound:"Найден этот товар: {n}", psNone:"Такого товара нет", psNoneSub:"Этого товара пока нет в продаже. Попробуйте другое фото или поиск по словам.",
   psSmart:"Умный поиск (нейросеть)", psBasic:"Поиск по цвету и форме",
   chatsLogin:"Войдите, чтобы переписываться", chatsLoginSub:"Здесь будут ваши разговоры с продавцами и покупателями.",
   chatsEmpty:"Пока нет сообщений", chatsEmptySub:"Нажмите «Написать» на странице товара.", admRow:"Администрация TM Bazar", admRowSub:"Новости и ответы администратора", admNew:"📢 Новое сообщение от администрации", admOpen:"Открыть", notifOn:"🔔 Включить уведомления", notifDone:"Уведомления включены", notifNo:"Уведомления запрещены в настройках браузера",
@@ -1187,9 +1216,11 @@ tm: {
   e_not_found:"Tapylmady.", e_own:"Bu siziň harydyňyz.", e_too_many:"Iň köp 10 surat.", e_banned:"Haryt administrator tarapyndan aýryldy.",
   e_name:"Adyňyzy ýazyň.", e_photo:"Suraty açyp bolmady.", e_noPhoto:"Iň bolmanda bir surat goşuň.",
   e_noPrice:"Bahasyny ýazyň.", e_noTitle:"Harydyň adyny ýazyň.", e_noCat:"Bölüm saýlaň.",
-  psTitle:"Surat bilen gözleg", psSub:"Zadyň suratyny düşüriň ýa-da surat saýlaň — meňzeş harytlary görkezeris.",
+  psTitle:"Surat bilen gözleg", psSub:"Kamerany zada tutuň — şol harydy taparys.", psScan:"Kamera bilen skanirlemek",
+  scanPrep:"Kamera açylýar…", scanGo:"Skanirleýärin…", scanHint:"Kamerany haryda tutuň", scanErr:"Kamera rugsat ýok. Kamera rugsat beriň ýa-da surata düşüriň.",
+  scanNoSub:"Bu haryt häzir satuwda ýok. Göni tutuň ýa-da täzeden synanyşyň.", scanAgain:"Täzeden skanirlemek",
   psCam:"Surata düşürmek", psGal:"Galereýadan", psLooking:"Surata seredýäris…", psCompare:"Meňzeşlerini gözleýäris…",
-  psYour:"Siziň suratyňyz", psFound:"Meňzeş harytlar: {n}", psNone:"Meňzeş tapylmady", psNoneSub:"Başga surat ýa-da söz bilen gözläp görüň.",
+  psYour:"Siziň suratyňyz", psFound:"Şu haryt tapyldy: {n}", psNone:"Beýle haryt ýok", psNoneSub:"Bu haryt häzir satuwda ýok. Başga surat ýa-da söz bilen gözläp görüň.",
   psSmart:"Akylly gözleg (neýron ulgam)", psBasic:"Reňk we şekil boýunça gözleg",
   chatsLogin:"Hat alyşmak üçin giriň", chatsLoginSub:"Bu ýerde satyjylar we alyjylar bilen gürrüňleriňiz bolar.",
   chatsEmpty:"Häzirlikçe hat ýok", chatsEmptySub:"Haryt sahypasynda «Ýazmak» basyň.", admRow:"TM Bazar administrasiýasy", admRowSub:"Administratoryň habarlary we jogaplary", admNew:"📢 Administrasiýadan täze hat", admOpen:"Açmak", notifOn:"🔔 Bildirişleri açmak", notifDone:"Bildirişler açyldy", notifNo:"Bildirişler brauzeriň sazlamalarynda gadagan",
@@ -1333,9 +1364,11 @@ en: {
   e_not_found:"Not found.", e_own:"This is your item.", e_too_many:"Maximum 10 photos.", e_banned:"Removed by the administrator.",
   e_name:"Enter your name.", e_photo:"Couldn't open the photo.", e_noPhoto:"Add at least one photo.",
   e_noPrice:"Enter a price.", e_noTitle:"Enter the item name.", e_noCat:"Choose a category.",
-  psTitle:"Search by photo", psSub:"Take or choose a photo and we'll show similar items.",
+  psTitle:"Search by photo", psSub:"Point the camera at an item — we'll find that same item.", psScan:"Scan with camera",
+  scanPrep:"Starting camera…", scanGo:"Scanning…", scanHint:"Point the camera at the item", scanErr:"No camera access. Allow the camera or take a photo.",
+  scanNoSub:"This item isn't on sale yet. Hold steady or try again.", scanAgain:"Scan again",
   psCam:"Take a photo", psGal:"From gallery", psLooking:"Looking at the photo…", psCompare:"Finding similar items…",
-  psYour:"Your photo", psFound:"Similar items: {n}", psNone:"Nothing similar found", psNoneSub:"Try another photo or search by words.",
+  psYour:"Your photo", psFound:"Found this item: {n}", psNone:"No such item", psNoneSub:"This item isn't on sale yet. Try another photo or search by words.",
   psSmart:"Smart search (neural network)", psBasic:"Search by colour and shape",
   chatsLogin:"Sign in to send messages", chatsLoginSub:"Your conversations with sellers and buyers will appear here.",
   chatsEmpty:"No messages yet", chatsEmptySub:"Tap “Message” on a product page.", admRow:"TM Bazar administration", admRowSub:"News and replies from the administrator", admNew:"📢 New message from the administration", admOpen:"Open", notifOn:"🔔 Turn on notifications", notifDone:"Notifications are on", notifNo:"Notifications are blocked in browser settings",
@@ -2397,7 +2430,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "79";   // номер версии — виден внизу профиля
+const APP_VER = "80";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2819,6 +2852,7 @@ const ROUTES = [
 function route(){
   if (updateReady && curPath() === "/") return maybeReload();
   stopTimers();
+  Scan.close();
   S.cardExtra = null;   // кнопка «VIP» на карточках — только в своём магазине
   closeSheet();
   const path = decodeURI(location.hash.slice(1)) || "/";
@@ -4398,24 +4432,169 @@ function reviewSheet(p, mine, done){
   });
 }
 
-/* ===== ПОИСК ПО ФОТО ===== */
+/* ===== ПОИСК ПО ФОТО =====
+   v80: как в Taobao — камера открывается сразу, кадры сканируются сами (без кнопки «снять»),
+   при находке — звук «пик» и вибрация. Показываем ТОЛЬКО тот же товар; если его нет — «не нашли»,
+   другие (просто похожие) товары не подсовываем. */
+const SAME = {smart: 0.74, basic: 0.9, gap: 0.035};   // пороги «это тот же товар»
+function sameScore(q, v){
+  const m = Vision.cos(q.m, v.m), s = Vision.cos(q.s, v.s);
+  if (m != null) return {sc: s != null ? m*0.85 + s*0.15 : m, thr: SAME.smart}; // нейросеть + цвет (чтобы красная ≠ синяя)
+  return {sc: s == null ? -1 : s, thr: SAME.basic};
+}
+function findSame(q, vecs){
+  const ranked = [];
+  for (const v of vecs){
+    const {sc, thr} = sameScore(q, v);
+    let d = sc - thr;
+    const p = byId(v.id);
+    if (!p) continue;
+    if (q.cat && p.cat && p.cat !== q.cat) d -= 0.05;   // нейросеть говорит «другая категория» — строже
+    if (d >= 0) ranked.push({id: v.id, d, sc});
+  }
+  ranked.sort((a, b) => b.d - a.d);
+  if (!ranked.length) return [];
+  const top = ranked[0].d;
+  return ranked.filter(x => x.d >= top - SAME.gap).slice(0, 6);   // тот же товар (может быть у нескольких продавцов)
+}
+
+const Scan = {
+  el: null, stream: null, timer: 0, run: false, ac: null,
+  beep(){
+    try{
+      const ac = this.ac || (this.ac = new (window.AudioContext || window.webkitAudioContext)());
+      ac.resume && ac.resume();
+      const t0 = ac.currentTime;
+      [[1318, 0], [1976, 0.09]].forEach(([f, at]) => {
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.type = "sine"; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t0 + at);
+        g.gain.exponentialRampToValueAtTime(0.35, t0 + at + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + at + 0.16);
+        o.connect(g).connect(ac.destination); o.start(t0 + at); o.stop(t0 + at + 0.18);
+      });
+    }catch(e){}
+    try{ navigator.vibrate && navigator.vibrate(70); }catch(e){}
+  },
+  close(){
+    this.run = false; clearTimeout(this.timer);
+    if (this.stream){ this.stream.getTracks().forEach(t => t.stop()); this.stream = null; }
+    if (this.el){ this.el.remove(); this.el = null; }
+    document.body.classList.remove("scan-open");
+  },
+  async open(out){
+    this.close();
+    // звук нужно «разбудить» во время нажатия — иначе браузер его не пустит
+    try{ if (!this.ac) this.ac = new (window.AudioContext || window.webkitAudioContext)(); this.ac.resume(); }catch(e){}
+    const video = h("video",{playsinline:true, muted:true, autoplay:true});
+    video.muted = true;
+    const status = h("div",{class:"sc-st",text:t("scanPrep")});
+    const dots = h("div",{class:"sc-dots"});
+    for (let i = 0; i < 16; i++) dots.append(h("i",{style:{left:(8+Math.random()*84)+"%", top:(8+Math.random()*84)+"%", animationDelay:(Math.random()*1.6).toFixed(2)+"s"}}));
+    const frame = h("div",{class:"sc-frame"}, h("b",{class:"c1"}), h("b",{class:"c2"}), h("b",{class:"c3"}), h("b",{class:"c4"}), h("div",{class:"sc-line"}), dots);
+    const gal = h("input",{type:"file",accept:"image/*",hidden:true});
+    const shot = h("input",{type:"file",accept:"image/*",capture:"environment",hidden:true});
+    const pick = inp => () => { const f = inp.files && inp.files[0]; inp.value = ""; if (f){ this.close(); runPhotoSearch(f, out); } };
+    gal.onchange = pick(gal); shot.onchange = pick(shot);
+    const torch = h("button",{class:"sc-b",hidden:true,text:"🔦"});
+    const again = h("div",{class:"sc-no",hidden:true});
+    this.el = h("div",{class:"scan"},
+      video, h("div",{class:"sc-mask"}), frame,
+      h("button",{class:"sc-x","aria-label":t("back"),text:"✕",onclick:()=>this.close()}),
+      h("div",{class:"sc-hint",text:t("scanHint")}), status, again,
+      h("div",{class:"sc-bot"},
+        h("button",{class:"sc-b",onclick:()=>gal.click()}, h("span",{html:IC.img}), h("small",{text:t("psGal")})),
+        torch), gal, shot);
+    document.body.append(this.el); document.body.classList.add("scan-open");
+    const me = this.el;
+
+    // камера
+    try{
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error("no camera api");
+      this.stream = await navigator.mediaDevices.getUserMedia({audio:false, video:{facingMode:{ideal:"environment"}, width:{ideal:1280}, height:{ideal:720}}});
+      if (this.el !== me){ this.stream.getTracks().forEach(t => t.stop()); this.stream = null; return; }
+      video.srcObject = this.stream; await video.play().catch(() => {});
+      const tr = this.stream.getVideoTracks()[0], cap = tr.getCapabilities ? tr.getCapabilities() : {};
+      if (cap.torch){ let on = false; torch.hidden = false; torch.onclick = () => { on = !on; tr.applyConstraints({advanced:[{torch:on}]}).catch(()=>{}); torch.classList.toggle("on", on); }; }
+    }catch(e){
+      console.warn("камера:", e);
+      if (this.el !== me) return;
+      status.textContent = t("scanErr");
+      again.hidden = false;
+      again.replaceChildren(h("button",{class:"btn",onclick:()=>shot.click()}, icon("cam"), t("psCam")));
+      return;
+    }
+
+    // нейросеть и товары
+    let vecs = [];
+    try{ [vecs] = await Promise.all([loadCatalog().then(loadVectors), Vision.loadML()]); }catch(e){}
+    if (this.el !== me) return;
+    status.textContent = t("scanGo");
+
+    const cv = document.createElement("canvas"); cv.width = cv.height = 320;
+    const g = cv.getContext("2d", {willReadFrequently: true});
+    let lastId = "", hits = 0, t0 = Date.now();
+    this.run = true;
+    const tick = async () => {
+      if (!this.run || this.el !== me) return;
+      if (video.readyState >= 2 && video.videoWidth){
+        const vw = video.videoWidth, vh = video.videoHeight, sq = Math.min(vw, vh) * 0.78;
+        g.drawImage(video, (vw - sq) / 2, (vh - sq) / 2, sq, sq, 0, 0, 320, 320);
+        let q = null;
+        try{ q = await Vision.describe(cv, 20000); }catch(e){}
+        if (!this.run || this.el !== me) return;
+        const found = q ? findSame(q, vecs) : [];
+        if (found.length){
+          if (found[0].id === lastId) hits++; else { lastId = found[0].id; hits = 1; }
+          // уверенно (сильно выше порога) — сразу; иначе ждём подтверждения на 2-м кадре
+          if (hits >= 2 || found[0].d >= 0.1){
+            this.run = false;
+            this.beep();
+            me.classList.add("hit");
+            const url = cv.toDataURL("image/jpeg", 0.85);
+            S.photoSearch = {url, list: found.map(x => x.id), cat: q.cat, smart: !!q.m};
+            await sleep(450);
+            this.close();
+            if (location.hash === "#/photo") showPhotoResults(out, S.photoSearch);
+            return;
+          }
+        } else { hits = 0; lastId = ""; }
+        if (Date.now() - t0 > 15000){
+          // долго не нашли — пауза и подсказка, другие товары НЕ показываем
+          this.run = false;
+          status.textContent = "";
+          again.hidden = false;
+          again.replaceChildren(h("b",{text:t("psNone")}), h("p",{text:t("scanNoSub")}),
+            h("button",{class:"btn",text:t("scanAgain"),onclick:()=>{ again.hidden = true; status.textContent = t("scanGo"); t0 = Date.now(); hits = 0; lastId = ""; this.run = true; tick(); }}));
+          return;
+        }
+      }
+      this.timer = setTimeout(tick, 350);
+    };
+    tick();
+  }
+};
+
 function viewPhoto(){
   setTab("cam");
-  const cam = h("input",{type:"file",accept:"image/*",capture:"environment",hidden:true});
   const gal = h("input",{type:"file",accept:"image/*",hidden:true});
   const out = h("div");
-  const onPick = inp => () => { const f = inp.files && inp.files[0]; inp.value = ""; if (f) runPhotoSearch(f, out); };
-  cam.onchange = onPick(cam); gal.onchange = onPick(gal);
+  gal.onchange = () => { const f = gal.files && gal.files[0]; gal.value = ""; if (f) runPhotoSearch(f, out); };
   page(h("div",{class:"ps-hero"},
       h("div",{style:{fontSize:"44px"},text:"📷"}),
       h("h1",{text:t("psTitle")}), h("p",{text:t("psSub")}),
       h("div",{class:"btns"},
-        h("button",{class:"btn",onclick:()=>cam.click()}, icon("cam"), t("psCam")),
-        h("button",{class:"btn ghost2",onclick:()=>gal.click()}, icon("img"), t("psGal"))), cam, gal),
+        h("button",{class:"btn",onclick:()=>Scan.open(out)}, icon("cam"), t("psScan")),
+        h("button",{class:"btn ghost2",onclick:()=>gal.click()}, icon("img"), t("psGal"))), gal),
     h("div",{class:"wrap"}, out));
   if (S.photoSearch) showPhotoResults(out, S.photoSearch);
   Vision.loadML(); // заранее начинаем грузить нейросеть
+  loadCatalog().then(loadVectors).catch(() => {});
+  if (S.scanNow){ S.scanNow = false; Scan.open(out); }   // нажали на значок камеры — сразу сканер
 }
+// любой переход по значку камеры открывает сканер сразу
+document.addEventListener("click", e => { const a = e.target.closest && e.target.closest('a[href="#/photo"]'); if (a) S.scanNow = true; }, true);
+
 async function runPhotoSearch(file, out){
   const url = URL.createObjectURL(file);
   const status = h("div",{class:"kv",text:t("psLooking")});
@@ -4426,13 +4605,9 @@ async function runPhotoSearch(file, out){
     const [, q] = await Promise.all([loadCatalog(), Vision.describe(img, 15000)]);
     status.textContent = t("psCompare");
     const vecs = await loadVectors();
-    const ranked = vecs.map(v => [Vision.score(q, v), v.id]).sort((a,b) => b[0]-a[0]);
-    // показываем самые похожие: близкие к лучшему результату (минимум 6)
-    const top = ranked.length ? ranked[0][0] : 0, margin = q.m ? 0.22 : 0.09;
-    let best = ranked.filter(x => x[0] >= top - margin).slice(0, 40);
-    if (best.length < 6) best = ranked.slice(0, 6);
-    const list = best.map(x => byId(x[1])).filter(Boolean);
-    S.photoSearch = {url, list: list.map(p => p.id), cat: q.cat, smart: !!q.m};
+    const found = findSame(q, vecs);
+    if (found.length) Scan.beep();
+    S.photoSearch = {url, list: found.map(x => x.id), cat: q.cat, smart: !!q.m};
   }catch(e){ console.error(e); S.photoSearch = {url, list: [], cat: null, error: true}; }
   if (location.hash === "#/photo") showPhotoResults(out, S.photoSearch);
 }
@@ -4440,10 +4615,10 @@ function showPhotoResults(out, ps){
   const list = ps.list.map(byId).filter(Boolean);
   out.replaceChildren(
     h("div",{class:"ps-q"}, h("img",{src:ps.url,alt:""}),
-      h("div",null, h("b",{text:t("psFound",{n:list.length})}),
-        ps.cat ? h("div",{style:{marginTop:"6px"}}, h("a",{class:"chip on",href:"#/c/"+ps.cat,text:catOf(ps.cat).e+" "+catName(ps.cat)})) : null,
+      h("div",null, h("b",{text:list.length ? t("psFound",{n:list.length}) : t("psNone")}),
         h("div",{class:"kv",style:{marginTop:"6px"},text:ps.smart ? t("psSmart") : t("psBasic")}))),
-    h("div",{class:"sec"}, feed(list, emptyBox("🖼️", t("psNone"), t("psNoneSub")))));
+    h("div",{class:"sec"}, list.length ? feed(list) : emptyBox("🖼️", t("psNone"), t("psNoneSub"),
+      h("button",{class:"btn",onclick:()=>Scan.open(out)}, icon("cam"), t("scanAgain")))));
 }
 
 /* ===== ЧАТЫ ===== */
