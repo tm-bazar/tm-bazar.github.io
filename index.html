@@ -196,6 +196,13 @@ textarea.inp{height:auto;min-height:96px;padding:12px 14px;resize:vertical;line-
 @keyframes fade{from{opacity:0}to{opacity:1}}
 .toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translateX(-50%);background:#222;color:#fff;border-radius:12px;padding:11px 16px;font-size:14px;z-index:90;display:flex;gap:14px;align-items:center;max-width:calc(100% - 24px);box-shadow:0 6px 20px rgba(0,0,0,.25);animation:fade .15s}
 .toast button{color:#ffb39f;font-weight:700}
+.sup-banner{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 10px);transform:translateX(-50%);z-index:85;width:calc(100% - 20px);max-width:500px;background:#fff;color:#111;border-radius:16px;padding:12px 12px 12px 14px;display:flex;gap:10px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);border-left:5px solid #e53935;animation:fade .2s}
+.sup-banner .sb-ic{font-size:26px}
+.sup-banner .sb-in{flex:1;min-width:0;display:flex;flex-direction:column}
+.sup-banner .sb-in small{color:#777;font-size:12px}
+.adm-row{background:#fff7e6}
+.adm-row.new{background:#ffeaea}
+.adm-ava{background:#ffe0b2!important;font-size:22px}
 .busy{position:fixed;inset:0;z-index:95;background:rgba(255,255,255,.75);display:grid;place-items:center;text-align:center;font-weight:600}
 .spin{width:36px;height:36px;border-radius:50%;border:4px solid var(--redBg);border-top-color:var(--red);animation:sp 0.8s linear infinite;margin:0 auto 12px}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -1039,7 +1046,7 @@ ru: {
   psYour:"Ваше фото", psFound:"Похожих товаров: {n}", psNone:"Похожего не нашли", psNoneSub:"Попробуйте другое фото или поиск по словам.",
   psSmart:"Умный поиск (нейросеть)", psBasic:"Поиск по цвету и форме",
   chatsLogin:"Войдите, чтобы переписываться", chatsLoginSub:"Здесь будут ваши разговоры с продавцами и покупателями.",
-  chatsEmpty:"Пока нет сообщений", chatsEmptySub:"Нажмите «Написать» на странице товара.",
+  chatsEmpty:"Пока нет сообщений", chatsEmptySub:"Нажмите «Написать» на странице товара.", admRow:"Администрация TM Bazar", admRowSub:"Новости и ответы администратора", admNew:"📢 Новое сообщение от администрации", admOpen:"Открыть", notifOn:"🔔 Включить уведомления", notifDone:"Уведомления включены", notifNo:"Уведомления запрещены в настройках браузера",
   buyer:"покупатель", seller:"продавец", you:"Вы", msgPh:"Сообщение…", send:"Отправить", photo:"Фото",
   q1:"Здравствуйте! Товар в наличии?", q2:"Какая последняя цена?", q3:"Где можно посмотреть и забрать?", q4:"Можно ещё фото?",
   guest:"Гость", guestSub:"Войдите, чтобы писать продавцам и продавать",
@@ -1185,7 +1192,7 @@ tm: {
   psYour:"Siziň suratyňyz", psFound:"Meňzeş harytlar: {n}", psNone:"Meňzeş tapylmady", psNoneSub:"Başga surat ýa-da söz bilen gözläp görüň.",
   psSmart:"Akylly gözleg (neýron ulgam)", psBasic:"Reňk we şekil boýunça gözleg",
   chatsLogin:"Hat alyşmak üçin giriň", chatsLoginSub:"Bu ýerde satyjylar we alyjylar bilen gürrüňleriňiz bolar.",
-  chatsEmpty:"Häzirlikçe hat ýok", chatsEmptySub:"Haryt sahypasynda «Ýazmak» basyň.",
+  chatsEmpty:"Häzirlikçe hat ýok", chatsEmptySub:"Haryt sahypasynda «Ýazmak» basyň.", admRow:"TM Bazar administrasiýasy", admRowSub:"Administratoryň habarlary we jogaplary", admNew:"📢 Administrasiýadan täze hat", admOpen:"Açmak", notifOn:"🔔 Bildirişleri açmak", notifDone:"Bildirişler açyldy", notifNo:"Bildirişler brauzeriň sazlamalarynda gadagan",
   buyer:"alyjy", seller:"satyjy", you:"Siz", msgPh:"Hat…", send:"Ibermek", photo:"Surat",
   q1:"Salam! Haryt barmy?", q2:"Iň soňky bahasy näçe?", q3:"Nirede görüp, alyp bolar?", q4:"Ýene surat iberip bilersiňizmi?",
   guest:"Myhman", guestSub:"Satyjylara ýazmak we satmak üçin giriň",
@@ -1331,7 +1338,7 @@ en: {
   psYour:"Your photo", psFound:"Similar items: {n}", psNone:"Nothing similar found", psNoneSub:"Try another photo or search by words.",
   psSmart:"Smart search (neural network)", psBasic:"Search by colour and shape",
   chatsLogin:"Sign in to send messages", chatsLoginSub:"Your conversations with sellers and buyers will appear here.",
-  chatsEmpty:"No messages yet", chatsEmptySub:"Tap “Message” on a product page.",
+  chatsEmpty:"No messages yet", chatsEmptySub:"Tap “Message” on a product page.", admRow:"TM Bazar administration", admRowSub:"News and replies from the administrator", admNew:"📢 New message from the administration", admOpen:"Open", notifOn:"🔔 Turn on notifications", notifDone:"Notifications are on", notifNo:"Notifications are blocked in browser settings",
   buyer:"buyer", seller:"seller", you:"You", msgPh:"Message…", send:"Send", photo:"Photo",
   q1:"Hello! Is this still available?", q2:"What's your best price?", q3:"Where can I see and pick it up?", q4:"Could you send more photos?",
   guest:"Guest", guestSub:"Sign in to message sellers and to sell",
@@ -2360,7 +2367,8 @@ const Mock = (() => {
     }
     if (d.action === "me" || d.action === "adminData"){ r.products.forEach(deco); r.expDays = 30; r.vipPrices = mPrices(); }
     if (!db.bal){ db.bal = {}; db.users.forEach(u => { if (u.seller === "active") db.bal[u.id] = 50; }); }
-    if (d.action === "me"){ r.balance = db.bal[r.user.id] || 0; r.shopVip = (db.vipShop || {})[r.user.id] || ""; }
+    if (d.action === "me"){ r.balance = db.bal[r.user.id] || 0; r.shopVip = (db.vipShop || {})[r.user.id] || "";
+      r.supportUnread = (db.sup || []).filter(m => m.user === r.user.id && m.from === "admin" && !m.readU).length; }
     if (d.action === "adminData"){ r.mallSug = db.mallSug || []; if (db.malls) r.malls = db.malls; }
     if (d.action === "saveProduct" && r.ok && d.product && d.product.attrs && d.product.attrs.mall){
       const known = ((db.malls || MALLS_DEFAULT)[d.product.city] || []);
@@ -2389,7 +2397,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "78";   // номер версии — виден внизу профиля
+const APP_VER = "79";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2848,7 +2856,8 @@ function renderTabbar(){
 }
 function updateBadge(){
   const b = $("badge"); if (!b) return;
-  b.hidden = !S.unread; b.textContent = S.unread > 9 ? "9+" : S.unread;
+  const n = (S.unread || 0) + (S.token ? S.supportUnread || 0 : 0);   // + непрочитанные от администрации
+  b.hidden = !n; b.textContent = n > 9 ? "9+" : n;
   // красная точка на «Профиль»: свои объявления скоро удалятся
   const m = $("badge-me");
   if (m) m.hidden = !(S.user && (S.supportUnread || S.catalog.some(p => p.user === S.user.id && expSoon(p))));
@@ -2862,7 +2871,51 @@ function startPoll(){
     const r = await call("poll", {since: S.pollAt});
     if (r.ok && !r.same){ S.unread = r.unread || 0; S.pollAt = r.at || ""; updateBadge(); }
   };
-  tick(); pollTimer = setInterval(tick, 30000);
+  tick(); pollTimer = setInterval(() => { tick(); checkSupport(); }, 30000);
+  checkSupport(true);
+}
+// v79: сообщения от администрации (ответы и рассылка «всем») — проверяем раз в 3 минуты,
+// при открытии приложения и при возврате в него
+let supCheckAt = 0;
+async function checkSupport(force){
+  if (!S.token) return;
+  const bg = document.hidden;
+  if (bg && !(window.Notification && Notification.permission === "granted")) return;
+  if (!force && Date.now() - supCheckAt < 180000) return;
+  supCheckAt = Date.now();
+  const r = await call("me");
+  if (!r.ok || r.supportUnread == null || !S.token) return;
+  const n = +r.supportUnread || 0, was = S.supAnnounced || 0;
+  S.supportUnread = n; updateBadge();
+  if (n > was && location.hash !== "#/support") announceSupport(n);
+  S.supAnnounced = n;
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden && Date.now() - supCheckAt > 60000) checkSupport(true); });
+window.addEventListener("hashchange", () => { if (location.hash === "#/support") document.querySelectorAll(".sup-banner").forEach(x => x.remove()); });
+function announceSupport(n){
+  document.querySelectorAll(".sup-banner").forEach(x => x.remove());
+  if (!document.hidden){
+    const el = h("div",{class:"sup-banner",role:"alert"},
+      h("span",{class:"sb-ic",text:"📢"}),
+      h("div",{class:"sb-in"}, h("b",{text:t("admNew").replace(/^📢\s*/, "")}), h("small",{text:t("admRow") + (n > 1 ? " · " + n : "")})),
+      h("button",{class:"btn sm",text:t("admOpen"),onclick:()=>{ el.remove(); go("/support"); }}),
+      h("button",{class:"xbtn","aria-label":"✕",text:"✕",onclick:()=>el.remove()}));
+    document.body.append(el);
+    setTimeout(() => el.remove(), 15000);
+  }
+  // уведомление телефона (если пользователь разрешил)
+  try{
+    if (window.Notification && Notification.permission === "granted" && navigator.serviceWorker)
+      navigator.serviceWorker.ready.then(reg => reg.showNotification(APP_NAME, {body: t("admNew").replace(/^📢\s*/, "📢 "),
+        tag: "tmb-support", renotify: true, icon: "icons/icon-192.png", badge: "icons/favicon.png", data: {url: "#/support"}})).catch(() => {});
+  }catch(e){}
+}
+async function askNotify(btn){
+  try{
+    const p = await Notification.requestPermission();
+    if (p === "granted"){ toast(t("notifDone")); if (btn) btn.remove(); }
+    else toast(t("notifNo"));
+  }catch(e){ toast(t("notifNo")); }
 }
 
 /* ===== ОКНА (шторки) ===== */
@@ -4404,12 +4457,21 @@ async function viewChats(){
     return;
   }
   box.append(h("div",{class:"empty"}, h("div",{class:"spin"})));
+  // закреплённый чат «Администрация TM Bazar» — сюда приходят рассылки и ответы администратора
+  const admRow = () => h("a",{class:"row adm-row"+(S.supportUnread ? " new" : ""),href:"#/support"},
+    h("div",{class:"ava adm-ava",text:"📢"}),
+    h("div",{class:"in"},
+      h("div",{class:"t",text:t("admRow")}),
+      h("div",{class:"s",style:{fontWeight:S.supportUnread?"700":"400",color:S.supportUnread?"var(--fg)":null},
+        text:S.supportUnread ? t("admNew") : t("admRowSub")})),
+    S.supportUnread ? h("span",{class:"sup-dot red",text:String(S.supportUnread)}) : h("span",{class:"ar",text:"›"}));
+  let first = true;
   const load = async () => {
-    const r = await call("chats");
-    if (!r.ok) return box.replaceChildren(emptyBox("⚠️", errText(r)));
+    const [r] = await Promise.all([call("chats"), first ? checkSupport(true) : null]); first = false;
+    if (!r.ok) return box.replaceChildren(admRow(), emptyBox("⚠️", errText(r)));
     S.unread = r.chats.filter(c => c.unread).length; updateBadge();
-    if (!r.chats.length) return box.replaceChildren(emptyBox("💬", t("chatsEmpty"), t("chatsEmptySub"), h("a",{class:"btn soft",href:"#/",text:t("toShop")})));
-    box.replaceChildren(...r.chats.map(c => h("a",{class:"row",href:"#/chat/"+c.id},
+    if (!r.chats.length) return box.replaceChildren(admRow(), emptyBox("💬", t("chatsEmpty"), t("chatsEmptySub"), h("a",{class:"btn soft",href:"#/",text:t("toShop")})));
+    box.replaceChildren(admRow(), ...r.chats.map(c => h("a",{class:"row",href:"#/chat/"+c.id},
       h("div",{class:"ava",text:initials(c.other)}),
       h("div",{class:"in"},
         h("div",{class:"t"}, c.other, h("span",{style:{color:"var(--mut2)",fontWeight:"400"},text:" · "+(c.role==="seller"?t("buyer"):t("seller"))})),
@@ -4822,7 +4884,9 @@ async function viewTopUp(chat){
   if (chat){ txt.placeholder = t("chatPh"); send.textContent = t("chatSend"); }
   page(topBar(chat ? "💬 "+t("chatAdmin") : "🪙 "+t("topUp")),
     h("div",{class:"wrap"},
-      chat ? h("div",{class:"box sup-how"}, h("p",{style:{margin:0},text:t("chatAdminSub")})) :
+      chat ? h("div",{class:"box sup-how"}, h("p",{style:{margin:0},text:t("chatAdminSub")}),
+        window.Notification && Notification.permission === "default" ?
+          h("button",{class:"btn sm soft",style:{marginTop:"10px"},text:t("notifOn"),onclick:e => askNotify(e.currentTarget)}) : null) :
       h("div",{class:"box bal-box"}, h("div",{class:"coin",text:"🪙"}),
         h("div",{style:{flex:1,minWidth:0}}, h("small",{text:t("balance")}), bal, h("span",{text:t("coinRate")}))),
       chat ? null : h("div",{class:"box sup-how"}, h("h3",{text:t("topHowT")}),
@@ -4846,7 +4910,7 @@ async function viewTopUp(chat){
       if (r.error === "server"){ msgs.replaceChildren(h("div",{class:"box"}, h("p",{text:t("topUpHow")}), ...adminContactBtns())); return; }
       msgs.replaceChildren(h("div",{class:"err",text:errText(r)})); return;
     }
-    S.balance = +r.balance || 0; bal.textContent = coins(S.balance); S.supportUnread = 0; updateBadge();
+    S.balance = +r.balance || 0; bal.textContent = coins(S.balance); S.supportUnread = 0; S.supAnnounced = 0; updateBadge();
     if (r.messages.length === n) return;
     n = r.messages.length;
     msgs.replaceChildren(...(n ? supBubbles(r.messages, "user") : [h("p",{class:"hint",style:{textAlign:"center"},text:t("topEmpty")})]));
@@ -5343,6 +5407,77 @@ function start(){
 
 /* ===== АДМИНКА (адрес: сайт/#/admin) ===== */
 
+// v79: рассылка всем зарегистрированным (покупателям и/или продавцам).
+// Сообщение кладётся в чат «Администрация TM Bazar» каждого пользователя — тем же способом, что и обычный ответ админа,
+// поэтому сервер менять не нужно. Пользователь видит его в «Чатах», красную цифру на вкладке и всплывающее окно.
+async function adminBroadcastSheet(users){
+  const groups = {
+    all:     ["Все",        u => true],
+    sellers: ["Продавцы",   u => !!u.seller],
+    buyers:  ["Покупатели", u => !u.seller]
+  };
+  let who = "all";
+  const alive = users.filter(u => u.status !== "blocked");
+  const list = () => alive.filter(groups[who][1]);
+  await sheet((box, close) => {
+    const txt = h("textarea",{class:"inp",rows:"5",placeholder:"Текст сообщения.\nМожно сразу на двух языках: сначала по-туркменски, ниже по-русски."});
+    const cnt = h("p",{class:"hint",style:{margin:"6px 0 10px"}});
+    const chips = h("div",{class:"quick sup-chips"});
+    const send = h("button",{class:"btn block"});
+    const draw = () => {
+      chips.replaceChildren(...Object.keys(groups).map(k => h("button",{type:"button",class:who === k ? "on" : null,
+        text:groups[k][0] + " (" + alive.filter(groups[k][1]).length + ")",onclick:()=>{ who = k; draw(); }})));
+      const n = list().length;
+      cnt.textContent = "Получат: " + n + " чел." + (users.length - alive.length ? " Заблокированным не отправляется (" + (users.length - alive.length) + ")." : "");
+      send.textContent = "📢 Отправить " + n + " чел.";
+    };
+    draw();
+    send.onclick = async () => {
+      const text = txt.value.trim();
+      if (!text) return toast("Напишите сообщение");
+      const to = list();
+      if (!to.length) return toast("Некому отправлять");
+      const yes = await new Promise(res => {
+        const bg = h("div",{class:"sheet-bg",style:{zIndex:"70"}});
+        const done = v => { bg.remove(); res(v); };
+        bg.append(h("div",{class:"sheet"},
+          h("h2",{text:"Отправить " + to.length + " чел.?"}),
+          h("div",{class:"box",style:{whiteSpace:"pre-wrap",margin:"0 0 12px"},text:"📢 " + text}),
+          h("p",{class:"hint",text:"Отменить после отправки нельзя."}),
+          h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}},
+            h("button",{class:"btn ghost",text:"Нет",onclick:()=>done(false)}),
+            h("button",{class:"btn",text:"Да, отправить",onclick:()=>done(true)}))));
+        bg.onclick = e => { if (e.target === bg) done(false); };
+        document.body.append(bg);
+      });
+      if (!yes) return;
+      send.disabled = true;
+      const b = busy("Отправка…");
+      let i = 0, ok = 0; const failed = [];
+      const worker = async () => {
+        while (i < to.length){
+          const u = to[i++];
+          let r = await call("adminSupportSend", {user: u.id, amount: 0, text: "📢 " + text});
+          if (!r.ok && r.error === "net") r = await call("adminSupportSend", {user: u.id, amount: 0, text: "📢 " + text});   // ещё раз при сбое сети
+          if (r.ok) ok++; else failed.push(u);
+          if (r.error === "auth" || r.error === "server") { i = to.length; }
+          b.set("Отправлено " + ok + " из " + to.length, (ok + failed.length) / to.length);
+        }
+      };
+      await Promise.all([1,2,3,4].map(worker));
+      b.done(); send.disabled = false;
+      if (!failed.length){ toast("✅ Отправлено: " + ok); close(true); return; }
+      toast("Отправлено " + ok + ", не удалось " + failed.length + (ok ? "" : ". Проверьте вход в админку и сервер."));
+      cnt.textContent = "Не дошло: " + failed.slice(0, 8).map(u => u.name || u.phone).join(", ") + (failed.length > 8 ? "…" : "") + ". Нажмите ещё раз, чтобы отправить только им.";
+      who = "retry"; groups.retry = ["Не дошло", u => failed.includes(u)]; draw();
+    };
+    box.append(h("h2",{text:"📢 Сообщение всем"}),
+      h("p",{class:"hint",style:{margin:"0 0 10px"},text:"Придёт каждому в чат «Администрация TM Bazar»: красная цифра на вкладке «Чаты» и всплывающее окно в приложении (у кого включены уведомления — ещё и на телефоне)."}),
+      h("label",{class:"lbl",text:"Кому"}), chips,
+      h("label",{class:"lbl",text:"Сообщение"}), txt, cnt, send);
+  });
+}
+
 // переписка с продавцом о пополнении + начислить монеты в один клик
 async function adminThreadSheet(uid, onChange){
   let changed = false;
@@ -5650,13 +5785,15 @@ async function viewAdmin(){
         h("p",{class:"hint",style:{margin:"0 0 10px"},text:"Продавец выбирает свой ТЦ или рынок при подаче объявления, покупатель на главной может искать товары по ТЦ."}),
         ...CITIES.map(cityBox)];
     }
-    if (tab === "topup") rows = !threads ? [h("div",{class:"err",text:"Обновите Vip.gs на сервере (версия 45), чтобы видеть заявки."})] :
-      threads.filter(x => match(x.name+x.phone+x.user)).map(x => h("button",{type:"button",class:"row sup-row"+(x.unread?" new":""),onclick:()=>adminThreadSheet(x.user, () => viewAdmin())},
+    if (tab === "topup") rows = !threads ? [h("div",{class:"err",text:"Обновите Vip.gs на сервере (версия 45), чтобы видеть заявки."})] : [
+      h("button",{type:"button",class:"btn block",style:{marginBottom:"10px"},text:"📢 Написать всем (" + users.filter(u => u.status !== "blocked").length + ")",
+        onclick:()=>adminBroadcastSheet(users).then(() => viewAdmin())}),
+      ...[...threads].sort((a, b) => (b.unread ? 1 : 0) - (a.unread ? 1 : 0) || ((b.last && b.last.at || "") > (a.last && a.last.at || "") ? 1 : -1)).filter(x => match(x.name+x.phone+x.user)).map(x => h("button",{type:"button",class:"row sup-row"+(x.unread?" new":""),onclick:()=>adminThreadSheet(x.user, () => viewAdmin())},
         h("div",{class:"coin sm",text:"🪙"}),
         h("div",{class:"in"}, h("div",{class:"t"}, x.name, x.unread ? h("span",{class:"sup-dot",text:String(x.unread)}) : null),
           h("div",{class:"s"}, phoneFmt(x.phone), "· баланс: "+coins(x.balance), x.amount ? h("span",{class:"vip-pill",text:"просит "+coins(x.amount)}) : null),
           h("div",{class:"kv",text:(x.last.from === "admin" ? "Вы: " : "") + (x.last.photo && !x.last.text ? "📷 Скриншот" : (x.last.photo ? "📷 " : "") + (x.last.text || (x.last.amount ? coins(x.last.amount) : "")))})),
-        h("span",{class:"ar",text:"›"})));
+        h("span",{class:"ar",text:"›"})))];
     const note = tab === "pending" ? h("p",{class:"hint",style:{margin:"0 0 10px"},text: r.approval ?
       "Товары этих продавцов не видны покупателям, пока вы не нажмёте «Одобрить». Перед одобрением позвоните продавцу и посмотрите его товары." :
       "Одобрение выключено (SELLER_APPROVAL = false): товары видны сразу."}) : null;

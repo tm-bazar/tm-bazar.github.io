@@ -1,7 +1,7 @@
 // TM Bazar — работа как приложение на телефоне.
 // Страница всегда берётся свежей из сети (с проверкой обновления), а без интернета — из сохранённой копии.
 // Запросы к серверу (товары, чат, вход) не кешируются.
-const CACHE = "tm-bazar-v78";
+const CACHE = "tm-bazar-v79";
 const SHELL = ["./", "index.html", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/favicon.png", "icons/logo.webp", "icons/cart.png"];
 
@@ -26,4 +26,13 @@ self.addEventListener("fetch", e => {
       })
       .catch(() => caches.match(req).then(r => r || caches.match("index.html")))
   );
+});
+// v79: нажали на уведомление «новое сообщение от администрации» — открываем чат с администрацией
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  const url = new URL("./" + ((e.notification.data && e.notification.data.url) || "#/support"), self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({type: "window", includeUncontrolled: true}).then(list => {
+    for (const c of list) if ("focus" in c) { c.navigate ? c.navigate(url).catch(() => {}) : null; return c.focus(); }
+    return self.clients.openWindow(url);
+  }));
 });
