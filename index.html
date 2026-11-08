@@ -1034,7 +1034,7 @@ ru: {
   fav:"Избранное", favs:"Избранное", favAdded:"Добавлено в избранное", favEmpty:"Здесь пока пусто",
   favEmptySub:"Нажмите ♡ на товаре, чтобы сохранить его.", toShop:"За покупками",
   shop:"Магазин", nGoods:"{n} товаров", toShopBtn:"Магазин ›",
-  desc:"Описание", similar:"Похожие товары", write:"Написать", call:"Позвонить", edit:"Изменить",
+  desc:"Описание", similar:"Похожие товары", forYou:"Для вас", write:"Написать", call:"Позвонить", edit:"Изменить",
   gone:"Товар не найден", goneSub:"Возможно, его уже продали или убрали.",
   safeNote:"{app} — только площадка объявлений. Не переводите предоплату; платите при встрече, проверив товар.",
   report:"Пожаловаться", reportPh:"Что случилось? (необязательно)", reportOk:"Спасибо! Мы проверим.",
@@ -1182,7 +1182,7 @@ tm: {
   fav:"Halanlar", favs:"Halanlarym", favAdded:"Halanlara goşuldy", favEmpty:"Bu ýer häzirlikçe boş",
   favEmptySub:"Harydy saklamak üçin ♡ basyň.", toShop:"Söwda etmäge",
   shop:"Dükan", nGoods:"{n} haryt", toShopBtn:"Dükan ›",
-  desc:"Beýany", similar:"Meňzeş harytlar", write:"Ýazmak", call:"Jaň etmek", edit:"Üýtgetmek",
+  desc:"Beýany", similar:"Meňzeş harytlar", forYou:"Siziň üçin", write:"Ýazmak", call:"Jaň etmek", edit:"Üýtgetmek",
   gone:"Haryt tapylmady", goneSub:"Ol eýýäm satylan ýa-da aýrylan bolmagy mümkin.",
   safeNote:"{app} — diňe bildiriş meýdançasy. Öňünden pul geçirmäň; harydy barlap, duşuşanyňyzda töläň.",
   report:"Arz etmek", reportPh:"Näme boldy? (hökman däl)", reportOk:"Sag boluň! Barlarys.",
@@ -1330,7 +1330,7 @@ en: {
   fav:"Saved", favs:"Saved items", favAdded:"Saved", favEmpty:"Nothing saved yet",
   favEmptySub:"Tap ♡ on a product to save it.", toShop:"Start shopping",
   shop:"Shop", nGoods:"{n} items", toShopBtn:"Shop ›",
-  desc:"Description", similar:"Similar items", write:"Message", call:"Call", edit:"Edit",
+  desc:"Description", similar:"Similar items", forYou:"For you", write:"Message", call:"Call", edit:"Edit",
   gone:"Product not found", goneSub:"It may have been sold or removed.",
   safeNote:"{app} is only a listings board. Don't pay in advance; pay when you meet and have checked the item.",
   report:"Report", reportPh:"What happened? (optional)", reportOk:"Thank you! We'll check it.",
@@ -2430,7 +2430,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "82";   // номер версии — виден внизу профиля
+const APP_VER = "83";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3432,7 +3432,8 @@ function heartBtn(id, cls){
   const b = h("button",{class:(cls||"heart")+(S.favs.has(id)?" on":""),"aria-label":t("fav"),html:IC.heart});
   b.onclick = e => {
     e.preventDefault(); e.stopPropagation();
-    if (S.favs.has(id)) S.favs.delete(id); else { S.favs.add(id); toast(t("favAdded")); }
+    if (S.favs.has(id)){ S.favs.delete(id); Interest.add(byId(id), "unfav"); }
+    else { S.favs.add(id); toast(t("favAdded")); Interest.add(byId(id), "fav"); }
     lsSet("favs", [...S.favs]);
     b.classList.toggle("on", S.favs.has(id));
   };
@@ -3571,13 +3572,73 @@ function sortList(list){
   if (S.sort === "rec" || S.sort === "new") l = l.filter(isVip).concat(l.filter(p => !isVip(p)));
   return l;
 }
-// «Рекомендуем»: свежие товары + чуть перемешаны, чтобы лента была живой (каждый день по-новому)
+/* ===== ИНТЕРЕСЫ ПОКУПАТЕЛЯ (v83) =====
+   Запоминаем, что человек смотрит, лайкает, ищет и сканирует, и поднимаем такие товары в ленте.
+   Хранится в этом телефоне (bz_interest). Старые интересы за 2 недели теряют половину веса. */
+const Interest = {
+  d: null,
+  W: {view: 1, fav: 3, unfav: -2, contact: 5, photo: 4, search: 1.5},
+  G: ["c","s","b","u","p"],          // категория, подкатегория, марка/бренд, продавец, цена
+  load(){
+    if (this.d) return this.d;
+    const d = lsGet("interest", null);
+    this.d = d && d.c ? d : {c:{}, s:{}, b:{}, u:{}, p:{}, at: Date.now()};
+    for (const g of this.G) this.d[g] = this.d[g] || {};
+    return this.d;
+  },
+  save(){ this.cache = null; lsSet("interest", this.d); },
+  decay(){
+    const d = this.load(), days = (Date.now() - (d.at || Date.now())) / 864e5;
+    if (days < 0.25) return;
+    const k = Math.pow(0.5, days / 14);
+    for (const g of this.G) for (const key in d[g]){ d[g][key] *= k; if (d[g][key] < 0.05) delete d[g][key]; }
+    d.at = Date.now();
+  },
+  keys(p){
+    const at = p.attrs || {}, k = {c: p.cat, s: p.sub, b: at.brand ? String(at.brand).toLowerCase() : null, u: p.user};
+    if (+p.price > 0) k.p = p.cat + ":" + Math.round(Math.log2(+p.price));
+    return k;
+  },
+  add(p, kind, mul){
+    if (!p || !p.cat || (S.user && p.user === S.user.id)) return;   // свои объявления не считаем
+    this.decay();
+    const d = this.load(), w = (this.W[kind] || 1) * (mul == null ? 1 : mul), k = this.keys(p);
+    const part = {c: 1, s: 1, b: 0.8, u: 0.4, p: 0.5};
+    for (const g of this.G) if (k[g]) d[g][k[g]] = Math.max(0, Math.min(60, (d[g][k[g]] || 0) + w * part[g]));
+    this.save();
+  },
+  // первые товары из списка (результаты поиска или сканера) — сильнее первые
+  addList(items, kind, n){
+    items.filter(Boolean).slice(0, n || 4).forEach((p, i) => this.add(p, kind, 1 / (i + 1)));
+  },
+  addCat(cat, w){
+    if (!cat || !CATS.some(c => c.id === cat)) return;
+    this.decay(); const d = this.load(); d.c[cat] = Math.min(60, (d.c[cat] || 0) + w); this.save();
+  },
+  has(){ const d = this.load(); return Object.values(d.c).some(v => v >= 1); },
+  // 0…10: насколько товар похож на то, что человек любит
+  score(p){
+    const d = this.load();
+    if (!this.cache){
+      const mx = {}; for (const g of this.G) mx[g] = Math.max(1, ...Object.values(d[g]));
+      this.cache = mx;
+    }
+    const mx = this.cache, k = this.keys(p);
+    const part = {c: 4, s: 3, b: 1.5, u: 0.5, p: 1};
+    let x = 0; for (const g of this.G) if (k[g] && d[g][k[g]]) x += d[g][k[g]] / mx[g] * part[g];
+    return x;
+  },
+  reset(){ this.d = null; lsSet("interest", null); this.cache = null; }
+};
+// «Рекомендуем»: то, что интересно этому покупателю + свежие товары, чуть перемешаны (каждый день по-новому)
 function recommend(list){
   const seed = Math.floor(Date.now() / 864e5);
+  const mine = Interest.has();
   const score = p => {
     const ageDays = (Date.now() - new Date(p.at)) / 864e5;
     let x = 0; for (const ch of p.id + seed) x = (x * 31 + ch.charCodeAt(0)) % 9973;
-    return -ageDays * 0.35 + (x / 9973) * 4 + (S.favs.has(p.id) ? 1 : 0) + (p.photoCount > 2 ? 0.5 : 0);
+    return -ageDays * 0.35 + (x / 9973) * 4 + (S.favs.has(p.id) ? 1 : 0) + (p.photoCount > 2 ? 0.5 : 0)
+      + (mine ? Interest.score(p) * 0.9 : 0);
   };
   return list.map(p => [score(p), p]).sort((a,b) => b[0] - a[0]).map(x => x[1]);
 }
@@ -3623,7 +3684,8 @@ function viewHome(q){
     if (S.city) list = list.filter(p => p.city === S.city);
     if (S.mall) list = list.filter(p => (p.attrs || {}).mall === S.mall);
     const sorted = sortList(list);
-    if (!q){ stripBox.replaceChildren(homeCatStrip(draw)); catsBox.replaceChildren(homeShops(S.homeCat)); }
+    if (!q){ stripBox.replaceChildren(homeCatStrip(draw)); catsBox.replaceChildren(homeShops(S.homeCat), forYouStrip(list)); }
+    else if (words.join(" ") !== S.lastQ && S.catalog.length){ S.lastQ = words.join(" "); Interest.addList(list, "search", 4); }
     placeBox.replaceChildren(placePick(draw));
     listBox.replaceChildren(
       h("div",{class:"sec"},
@@ -3637,6 +3699,18 @@ function viewHome(q){
     h("div",{class:"wrap"}, catsBox, listBox));
   draw();
   loadCatalog().then(draw);
+}
+// главная: «Для вас» — товары по интересам покупателя (что смотрел, лайкал, искал, сканировал)
+function forYouStrip(list){
+  if (S.homeCat || !Interest.has()) return null;
+  const top = list.filter(p => !(S.user && p.user === S.user.id))
+    .map(p => [Interest.score(p) - (Date.now() - new Date(p.at)) / 864e5 * 0.05, p])
+    .filter(x => x[0] > 1.5).sort((a,b) => (isVip(b[1]) - isVip(a[1])) || (b[0] - a[0])).slice(0, 15).map(x => x[1]);   // VIP — первыми
+  if (top.length < 3) return null;
+  return h("div",{class:"sec foryou"}, h("div",{class:"sub-h",text:"✨ "+t("forYou")}),
+    h("div",{class:"hscroll"}, ...top.map(x => h("a",{class:"mini-card",href:"#/p/"+x.id},
+      h("img",{src:x.thumb,alt:x.title,loading:"lazy"}),
+      h("div",{class:"tt",text:x.title}), priceEl(x.price, null, null, x.cat)))));
 }
 // главная: велаят и торговый центр / рынок (ТЦ — из выбранного велаята или все)
 function placePick(onChange){
@@ -4254,6 +4328,10 @@ function renderProduct(root, p){
   dock.querySelector(".mini").append(h("span",{text:t("fav")}));
   root.append(dock);
 
+  if (!p.loading){
+    const seen = S.seenAt || (S.seenAt = {});
+    if (!seen[p.id] || Date.now() - seen[p.id] > 30*60000){ seen[p.id] = Date.now(); Interest.add(p, "view"); }
+  }
   if (!p.loading) loadCatalog().then(() => { showSimilar(p, similar); if (s) drawShopStrip(p, shopStrip); });
 }
 // «Ещё в этом магазине» — горизонтальная лента товаров продавца
@@ -4283,6 +4361,7 @@ async function contact(kind, p){
   if (!await needAuth("authWhy")) return;
   if (!await needRules()) return;
   if (S.user && S.user.id === p.user) return toast(t("e_own"));
+  Interest.add(p, "contact");
   if (kind === "chat"){
     const b = busy();
     const r = await call("openChat", {product: p.id});
@@ -4584,6 +4663,7 @@ const Scan = {
       this.beep();
       me.classList.add("hit");
       S.photoSearch = {url: shotUrl, list: res.list, same: res.same, cat: c, smart};
+      photoInterest(S.photoSearch);
       await sleep(300);
       this.close();
       if (location.hash === "#/photo") showPhotoResults(out, S.photoSearch);
@@ -4643,8 +4723,13 @@ async function runPhotoSearch(file, out){
     const res = findSame(q, vecs);
     Scan.beep();
     S.photoSearch = {url, list: res.list, same: res.same, cat: q.cat, smart: !!q.m};
+    photoInterest(S.photoSearch);
   }catch(e){ console.error(e); S.photoSearch = {url, list: [], cat: null, error: true}; }
   if (location.hash === "#/photo") showPhotoResults(out, S.photoSearch);
+}
+// сканировал товар — запоминаем, что он ищет (категорию и самые похожие товары)
+function photoInterest(ps){
+  try{ Interest.addCat(ps.cat, Interest.W.photo); Interest.addList((ps.list || []).map(byId), "photo", 3); }catch(e){}
 }
 function showPhotoResults(out, ps){
   const list = ps.list.map(byId).filter(Boolean);
