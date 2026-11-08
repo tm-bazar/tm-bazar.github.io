@@ -484,6 +484,10 @@ b.ci.txt{font-weight:800;font-size:13px;letter-spacing:-.2px;padding:4px;text-al
 .lrow .price{font-size:18px;flex:1}
 .lheart{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--mut);flex:none;background:#fff}
 .lheart.on{color:var(--red)}
+.lrow{gap:6px}.lrow .price{min-width:0}
+.lshare svg{width:16px;height:16px}
+.card .mt{overflow:visible}.card .mt-loc{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis}.card .mt-ago{display:none}
+.mt-btns{margin-left:auto;display:flex;gap:4px;flex:none}.mt-btns .lheart{width:28px;height:28px}.mt-btns .card-vip{position:static}
 .lheart.on svg{fill:currentColor}
 .lheart svg{width:16px;height:16px}
 .ltt{font-size:14px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -2374,7 +2378,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "76";   // номер версии — виден внизу профиля
+const APP_VER = "77";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3321,6 +3325,11 @@ async function needRules(){
 }
 
 /* ===== КАРТОЧКА ТОВАРА В ЛЕНТЕ ===== */
+// v77: кнопка «поделиться» на карточках в ленте
+function shareBtn(p){
+  return h("button",{type:"button",class:"lheart lshare","aria-label":t("share"),title:t("share"),html:IC.share,
+    onclick:e=>{ e.preventDefault(); e.stopPropagation(); shareProduct(p); }});
+}
 function heartBtn(id, cls){
   const b = h("button",{class:(cls||"heart")+(S.favs.has(id)?" on":""),"aria-label":t("fav"),html:IC.heart});
   b.onclick = e => {
@@ -3348,20 +3357,21 @@ function card(p, extra){
   return h("a",{class:"card"+(isVip(p)?" vip":""),href:"#/p/"+p.id},
     h("div",{class:"ph"}, p.thumb ? h("img",{src:p.thumb,alt:p.title,loading:"lazy",decoding:"async"}) : null, ...phMarks(p)),
     h("div",{class:"bd"},
-      h("div",{class:"lrow"}, priceEl(p.price, null, priceSuffix(p), p.cat), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")),
+      priceEl(p.price, null, priceSuffix(p), p.cat),
       h("div",{class:"tt",text:p.title}),
       infoChips(p),
       cardLine(p) ? h("div",{class:"car-line",text:cardLine(p)}) : null,
       h("div",{class:"mt"}, extra || null,
         p.rating ? h("span",{class:"rt"}, "★ "+p.rating.toFixed(1), h("small",{text:" ("+p.reviews+")"})) : null,
-        h("span",{class:"mt-loc",text:"📍"+placeText(p)}), h("span",{text:"· "+ago(p.at)}))));
+        h("span",{class:"mt-loc",text:"📍"+placeText(p)}), h("span",{class:"mt-ago",text:"· "+ago(p.at)}),
+        h("span",{class:"mt-btns"}, shareBtn(p), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")))));
 }
 // карточка-строка (как в Aýterek): фото слева, справа цена, название, характеристики
 function listCard(p){
   return h("a",{class:"lcard"+(isVip(p)?" vip":""),href:"#/p/"+p.id},
     h("div",{class:"lph"}, p.thumb ? h("img",{src:p.thumb,alt:p.title,loading:"lazy",decoding:"async"}) : null, ...phMarks(p)),
     h("div",{class:"lbd"},
-      h("div",{class:"lrow"}, priceEl(p.price, null, priceSuffix(p), p.cat), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")),
+      h("div",{class:"lrow"}, priceEl(p.price, null, priceSuffix(p), p.cat), shareBtn(p), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")),
       h("div",{class:"ltt",text:p.title}),
       infoChips(p),
       cardLine(p) ? h("div",{class:"car-line",text:cardLine(p)}) : null,
@@ -3394,7 +3404,7 @@ function bigCard(p){
   const el = h("div",{class:"bcard"+(isVip(p)?" vip":"")},
     h("div",{class:"bc-gal"}, track, ...phMarks(p)),
     h("a",{class:"bc-bd",href:"#/p/"+p.id},
-      h("div",{class:"lrow"}, priceEl(p.price, null, priceSuffix(p), p.cat), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")),
+      h("div",{class:"lrow"}, priceEl(p.price, null, priceSuffix(p), p.cat), shareBtn(p), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")),
       h("div",{class:"bc-tt",text:p.title}),
       infoChips(p),
       cardLine(p) ? h("div",{class:"car-line",text:cardLine(p)}) : null,
