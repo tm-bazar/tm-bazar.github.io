@@ -2347,7 +2347,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "66";   // номер версии — виден внизу профиля
+const APP_VER = "67";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -4838,7 +4838,7 @@ async function viewSell(editId){
   async function addFiles(files){
     if (files.length > MAX_PHOTOS - shots.length) toast(t("e_too_many"));
     files = [...files].slice(0, MAX_PHOTOS - shots.length);
-    for (const f of files){ try{ shots.push(Object.assign({file:f}, await compress(f, 1280))); }catch(e){ toast(t("e_photo")); } }
+    for (const f of files){ try{ shots.push(Object.assign({file:f}, await compress(f, 1280, true))); }catch(e){ toast(t("e_photo")); } }
     drawShots(); analyzeMain();
   }
   async function analyzeMain(){
@@ -5165,7 +5165,10 @@ function loadImg(src, cors){
     img.onload = () => res(img); img.onerror = rej; img.src = src;
   });
 }
-async function compress(file, max){
+// логотип-водяной знак для фото объявлений (v67)
+let markImgP = null;
+function markImg(){ if (!markImgP) markImgP = loadImg("icons/logo.webp").catch(() => { markImgP = null; return null; }); return markImgP; }
+async function compress(file, max, mark){
   const url = URL.createObjectURL(file);
   try{
     const img = await loadImg(url);
@@ -5174,8 +5177,19 @@ async function compress(file, max){
     c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
     const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0,0,c.width,c.height);
     g.drawImage(img, 0, 0, c.width, c.height);
-    const dataUrl = c.toDataURL("image/jpeg", 0.82);
+    let dataUrl = c.toDataURL("image/jpeg", 0.82);
+    // для распознавания по фото — чистая картинка, без логотипа
     const small = await loadImg(dataUrl);
+    if (mark){
+      const lg = await markImg();
+      if (lg){
+        const m = Math.min(c.width, c.height), lw = Math.max(56, Math.round(m * 0.17)), lh = Math.round(lw * lg.naturalHeight / lg.naturalWidth),
+          pad = Math.max(8, Math.round(m * 0.025));
+        g.save(); g.globalAlpha = 0.92; g.shadowColor = "rgba(0,0,0,.25)"; g.shadowBlur = Math.round(lw * 0.06);
+        g.drawImage(lg, c.width - lw - pad, c.height - lh - pad, lw, lh); g.restore();
+        dataUrl = c.toDataURL("image/jpeg", 0.82);
+      }
+    }
     return {dataUrl, b64: dataUrl.split(",")[1], img: small};
   } finally { setTimeout(() => URL.revokeObjectURL(url), 2000); }
 }
