@@ -369,8 +369,12 @@ img.ava{object-fit:cover;background:#fff;border:1px solid var(--line)}
 .vid-btn span{font-size:13px}
 
 /* категории: плавающая лента сверху */
-.browse-head{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.04);transition:transform .25s ease}
-.browse-head.hid{transform:translateY(-100%);box-shadow:none}
+.browse-head{position:relative;z-index:20;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.04)}
+/* v71: при прокрутке категории уезжают вместе со списком; при прокрутке вверх — только узкая строка */
+#bh-mini{position:fixed;top:0;left:0;right:0;z-index:25;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 10px rgba(0,0,0,.07);
+  display:flex;align-items:center;gap:4px;padding:6px 10px calc(6px);padding-top:calc(6px + env(safe-area-inset-top));transform:translateY(-110%);transition:transform .22s ease}
+#bh-mini.on{transform:none}
+#bh-mini .bh-title{font-size:17px}
 .bh-row{padding:8px 10px 0;min-height:44px}
 .browse-head.cmp .bh-row{padding-bottom:4px}
 .qchips{display:flex;gap:8px;overflow-x:auto;padding:6px 10px 10px;scrollbar-width:none}
@@ -2348,7 +2352,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "70";   // номер версии — виден внизу профиля
+const APP_VER = "71";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -5610,15 +5614,29 @@ async function intro(){
   box.classList.add("out"); setTimeout(() => box.remove(), 500);
 }
 
-/* v70: шапка категорий прячется при прокрутке вниз и появляется при прокрутке вверх */
+/* v71: шапка категорий уезжает вместе со списком; при прокрутке вверх появляется только узкая строка «назад · раздел · фильтры» */
 (function(){
-  let lastY = window.scrollY, acc = 0;
+  let lastY = window.scrollY, acc = 0, mini = null;
+  const hide = () => { if (mini) mini.classList.remove("on"); acc = 0; };
+  const show = hd => {
+    const row = hd.querySelector(".bh-row"); if (!row) return;
+    const back = row.querySelector(".icon-btn"), title = row.querySelector(".bh-title"), filt = row.querySelector(".top-filt");
+    if (!mini){ mini = h("div",{id:"bh-mini"}); document.body.append(mini); }
+    mini.replaceChildren(
+      back ? h("button",{class:"icon-btn","aria-label":t("back"),html:IC.back,onclick:()=>{ hide(); back.click(); }}) : null,
+      h("div",{class:"bh-title",text:title ? title.textContent : ""}),
+      filt ? h("button",{class:filt.className,html:filt.innerHTML,onclick:()=>filt.click()}) : null);
+    mini.classList.add("on");
+  };
+  window.addEventListener("hashchange", hide);
+  window.addEventListener("popstate", hide);
   window.addEventListener("scroll", () => {
     const hd = document.querySelector(".browse-head"), y = window.scrollY, dy = y - lastY; lastY = y;
-    if (!hd) return;
-    if (y < hd.offsetHeight){ hd.classList.remove("hid"); acc = 0; return; }
+    if (!hd || !hd.isConnected){ hide(); return; }
+    // пока сама шапка ещё видна — узкая строка не нужна
+    if (y < hd.offsetTop + hd.offsetHeight - 10){ hide(); return; }
     acc = (acc > 0) === (dy > 0) ? acc + dy : dy;
-    if (acc > 12) hd.classList.add("hid"); else if (acc < -12) hd.classList.remove("hid");
+    if (acc > 6) hide(); else if (acc < -25) show(hd);
   }, {passive:true});
 })();
 start();
