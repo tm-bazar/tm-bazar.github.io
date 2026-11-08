@@ -2352,7 +2352,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "71";   // номер версии — виден внизу профиля
+const APP_VER = "72";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3757,7 +3757,7 @@ function viewBrowse(catId, listMode){
     const rows = [];
     if (catId && SUBS[catId]){
       const list = base();
-      rows.push(h("div",{class:"pt-row big"+(SUBS[catId].length > 4 ? " two-rows" : ""),style:SUBS[catId].length > 4 ? {gridTemplateColumns:"repeat("+Math.ceil(SUBS[catId].length/2)+",108px)"} : null},
+      rows.push(h("div",{class:"pt-row big"},
         ...SUBS[catId].map(k => { const n = list.filter(p => p.sub === k).length;
           return photoTile("sub:"+catId+":"+k, subName(k), st.sub===k, ()=>{
             if (catId === "auto" && VEHICLE_SUBS[k]){ st.sub = k; st.f = {}; go("/brands/auto/"+k); return; }
@@ -3784,7 +3784,7 @@ function viewBrowse(catId, listMode){
         const list = applyF(base(), "brand"), counts = {};
         list.forEach(p => { const b = (p.attrs||{}).brand; if (b) counts[b] = (counts[b] || 0) + 1; });
         const brands = Object.keys(counts).sort((x, y) => counts[y] - counts[x]);
-        if (brands.length) rows.push(h("div",{class:"pt-row big brands"+(brands.length > 4 ? " two-rows" : ""),style:brands.length > 4 ? {gridTemplateColumns:"repeat("+Math.ceil(brands.length/2)+",108px)"} : null}, ...brands.map(b =>
+        if (brands.length) rows.push(h("div",{class:"pt-row big brands"}, ...brands.map(b =>
           photoTile("brand:"+b, brandName(b), st.f.brand===b, ()=>{ st.f.brand = st.f.brand===b ? "" : b; delete st.f.model; draw(); }, counts[b], catId))));
         return;
       }
