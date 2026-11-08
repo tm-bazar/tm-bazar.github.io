@@ -139,8 +139,10 @@ textarea.inp{height:auto;min-height:96px;padding:12px 14px;resize:vertical;line-
 .gal-track::-webkit-scrollbar{display:none}
 .gal-track img{flex:none;width:100%;aspect-ratio:1;object-fit:contain;background:#f6f6f6;scroll-snap-align:center}
 @media (min-width:720px){.gal-track img{max-height:560px}}
-.gal-n{position:absolute;right:12px;bottom:12px;background:rgba(0,0,0,.55);color:#fff;font-size:12.5px;border-radius:999px;padding:3px 10px}
+.gal-n{position:absolute;left:12px;bottom:12px;background:rgba(0,0,0,.55);color:#fff;font-size:12.5px;border-radius:999px;padding:3px 10px}
 .gal-back{position:absolute;left:10px;top:10px;background:rgba(0,0,0,.4);color:#fff}
+.gal-share{position:absolute;right:10px;top:10px;background:rgba(0,0,0,.4);color:#fff}
+.share-btn{display:inline-flex;align-items:center;gap:6px}
 .pd{background:#fff;padding:14px 16px 16px}
 .pd .price{font-size:30px}
 .pd h1{font-size:18px;margin:6px 0 10px;line-height:1.35;font-weight:600}
@@ -988,7 +990,7 @@ ru: {
   safeNote:"{app} — только площадка объявлений. Не переводите предоплату; платите при встрече, проверив товар.",
   report:"Пожаловаться", reportPh:"Что случилось? (необязательно)", reportOk:"Спасибо! Мы проверим.",
   rr_fraud:"Мошенничество", rr_banned:"Запрещённый товар", rr_wrong:"Неверная цена или описание", rr_other:"Другое",
-  callSub:"Номер продавца. Договоритесь о встрече и проверьте товар.", copy:"Скопировать номер", copied:"Скопировано ✓",
+  callSub:"Номер продавца. Договоритесь о встрече и проверьте товар.", copy:"Скопировать номер", copied:"Скопировано ✓", share:"Поделиться", linkCopied:"Ссылка скопирована ✓", shareText:"Посмотрите на TM Bazar",
   st_sold:"Продавец отметил: товара нет в наличии.", st_hidden:"Товар скрыт продавцом.", st_banned:"Товар снят администратором.", st_active:"",
   st_short_active:"В продаже", st_short_sold:"Нет в наличии", st_short_hidden:"Скрыт", st_short_banned:"Снят", st_short_wait:"На проверке",
   authTitle:"Вход по телефону", authWhy:"Чтобы связаться с продавцом, войдите", sellAuth:"Чтобы продавать, зарегистрируйтесь",
@@ -1134,7 +1136,7 @@ tm: {
   safeNote:"{app} — diňe bildiriş meýdançasy. Öňünden pul geçirmäň; harydy barlap, duşuşanyňyzda töläň.",
   report:"Arz etmek", reportPh:"Näme boldy? (hökman däl)", reportOk:"Sag boluň! Barlarys.",
   rr_fraud:"Galplyk", rr_banned:"Gadagan haryt", rr_wrong:"Nädogry baha ýa-da beýan", rr_other:"Başga",
-  callSub:"Satyjynyň belgisi. Duşuşyk belläň we harydy barlaň.", copy:"Belgini göçürmek", copied:"Göçürildi ✓",
+  callSub:"Satyjynyň belgisi. Duşuşyk belläň we harydy barlaň.", copy:"Belgini göçürmek", copied:"Göçürildi ✓", share:"Paýlaşmak", linkCopied:"Salgy göçürildi ✓", shareText:"TM Bazar-da serediň",
   st_sold:"Satyjy belledi: haryt ýok.", st_hidden:"Haryt satyjy tarapyndan gizlenen.", st_banned:"Haryt administrator tarapyndan aýryldy.", st_active:"",
   st_short_active:"Satuwda", st_short_sold:"Ýok", st_short_hidden:"Gizlin", st_short_banned:"Aýryldy", st_short_wait:"Barlagda",
   authTitle:"Telefon bilen giriş", authWhy:"Satyjy bilen habarlaşmak üçin giriň", sellAuth:"Satmak üçin hasaba duruň",
@@ -1280,7 +1282,7 @@ en: {
   safeNote:"{app} is only a listings board. Don't pay in advance; pay when you meet and have checked the item.",
   report:"Report", reportPh:"What happened? (optional)", reportOk:"Thank you! We'll check it.",
   rr_fraud:"Scam", rr_banned:"Prohibited item", rr_wrong:"Wrong price or description", rr_other:"Other",
-  callSub:"Seller's number. Arrange a meeting and check the item.", copy:"Copy number", copied:"Copied ✓",
+  callSub:"Seller's number. Arrange a meeting and check the item.", copy:"Copy number", copied:"Copied ✓", share:"Share", linkCopied:"Link copied ✓", shareText:"Check it out on TM Bazar",
   st_sold:"The seller marked this item as out of stock.", st_hidden:"Hidden by the seller.", st_banned:"Removed by the administrator.", st_active:"",
   st_short_active:"On sale", st_short_sold:"Out of stock", st_short_hidden:"Hidden", st_short_banned:"Removed", st_short_wait:"Under review",
   authTitle:"Sign in with your phone", authWhy:"Sign in to contact the seller", sellAuth:"Sign up to start selling",
@@ -2372,7 +2374,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "75";   // номер версии — виден внизу профиля
+const APP_VER = "76";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2454,6 +2456,7 @@ const IC = {
   store:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9M4 9h16v11H4zM4 9c0 2 3.5 2 4 0 .5 2 3.5 2 4 0 .5 2 3.5 2 4 0 .5 2 4 2 4 0"/></svg>',
   rows:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/></svg>',
   plus:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  share:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7.5 7.5L12 3l4.5 4.5"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>',
   imo:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3c5 0 9 3.6 9 8s-4 8-9 8c-1 0-2-.1-2.9-.4L4 20l1.4-3.8A7.6 7.6 0 013 11c0-4.4 4-8 9-8z"/><path d="M8.5 9.5v4M12 9.5v4M15.5 9.5v4" stroke-linecap="round"/></svg>'
 };
 const icon = (k, cls) => h("span",{class:cls||null,style:{display:"inline-grid"},html:IC[k]});
@@ -4002,6 +4005,29 @@ function viewFav(){
 }
 
 /* ===== СТРАНИЦА ТОВАРА ===== */
+// v76: поделиться объявлением — системное меню телефона (IMO, WhatsApp, Telegram…), с первым фото, если получится; иначе — копируем ссылку
+function productLink(id){ return location.origin + location.pathname.replace(/index\.html$/, "") + "#/p/" + id; }
+async function shareProduct(p){
+  const url = productLink(p.id);
+  const price = +p.price > 0 ? fmt(p.price) + " TMT" : "";
+  const text = [p.title, price, t("shareText")].filter(Boolean).join(" · ");
+  if (navigator.share){
+    let files = null;
+    try{
+      const ph = (p.photos && p.photos[0]) || null, src = ph ? (ph.url || ph.thumb) : p.thumb;
+      if (src && navigator.canShare){
+        const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 3000);
+        const b = await (await fetch(src, {signal: ctl.signal})).blob(); clearTimeout(tm);
+        const f = new File([b], "tmbazar-" + p.id + ".jpg", {type: b.type || "image/jpeg"});
+        if (navigator.canShare({files:[f]})) files = [f];
+      }
+    }catch(e){}
+    try{ await navigator.share(files ? {files, title:p.title, text: text + "\n" + url} : {title:p.title, text, url}); return; }
+    catch(e){ if (e && e.name === "AbortError") return; }
+  }
+  try{ await navigator.clipboard.writeText(text + "\n" + url); toast(t("linkCopied")); }
+  catch(e){ prompt(t("share"), url); }
+}
 async function viewProduct(id){
   setTab("", false);
   const short = byId(id);
@@ -4040,7 +4066,8 @@ function renderProduct(root, p){
     clearTimeout(scrollT); scrollT = setTimeout(() => { if (variants.some(v => v.i === idx)) drawVars(idx); }, 120);
   }, {passive:true});
   const gal = h("div",{class:"gal"}, track, photos.length > 1 ? n : null,
-    h("button",{class:"icon-btn gal-back","aria-label":t("back"),html:IC.back,onclick:()=>back()}));
+    h("button",{class:"icon-btn gal-back","aria-label":t("back"),html:IC.back,onclick:()=>back()}),
+    h("button",{class:"icon-btn gal-share","aria-label":t("share"),title:t("share"),html:IC.share,onclick:()=>shareProduct(p)}));
   const isOwner = S.user && p.user === S.user.id;
   const s = p.seller;
   const revBox = h("div",{class:"box",id:"rev"});
