@@ -850,6 +850,8 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 #intro .i-langs{display:grid;gap:10px;width:min(80vw,280px)}
 #intro .i-langs button{padding:14px;border-radius:14px;border:1.5px solid #e7e7ea;background:#fff;font:600 17px/1.2 inherit;color:#1d1d1f}
 #intro .i-langs button:active{background:#fff1ee;border-color:#e8341c}
+#intro .i-tap{padding:15px 26px;border-radius:30px;border:0;background:#e8341c;color:#fff;font:700 17px/1.2 inherit;box-shadow:0 6px 18px rgba(232,52,28,.3);animation:ipulse 1.4s ease-in-out infinite}
+@keyframes ipulse{50%{transform:scale(1.06)}}
 #intro .i-ask{font-size:14px;color:#6e6e73;text-align:center;line-height:1.4}
 #intro .i-type{font-size:24px;font-weight:800;color:#a3161b;text-align:center;line-height:1.3;min-height:2.6em;padding:0 8px}
 #intro .i-type .cur{display:inline-block;width:2px;height:1em;background:#a3161b;margin-left:2px;vertical-align:-.12em;animation:iblink .7s steps(1) infinite}
@@ -2343,7 +2345,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "63";   // номер версии — виден внизу профиля
+const APP_VER = "64";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -5524,6 +5526,7 @@ async function viewAdmin(){
 /* ===== ЗАСТАВКА (v63): логотип → выбор языка (1-й раз) → текст по буквам → галочка → приложение ===== */
 const INTRO_TXT = {ru:"Все продавцы — в одном месте", tm:"Ähli satyjylar — bir ýerde", en:"All sellers in one place"};
 const INTRO_ASK = "Dili saýlaň · Выберите язык · Choose language";
+const INTRO_TAP = {ru:"Нажмите, чтобы начать", tm:"Başlamak üçin basyň", en:"Tap to start"};
 let iAc = null;
 function iAudio(){ try{ if (!iAc) iAc = new (window.AudioContext || window.webkitAudioContext)(); if (iAc.state === "suspended") iAc.resume(); }catch(e){} return iAc; }
 // щелчок клавиши
@@ -5571,6 +5574,18 @@ async function intro(){
         h("div",{class:"i-langs"}, ...[["tm","Türkmençe"],["ru","Русский"],["en","English"]].map(([l, n]) =>
           h("button",{text:n,onclick:()=>pick(l)})))));
     });
+  }
+  else {
+    // звук на телефоне включается только после касания: если он ещё не разрешён — просим нажать
+    const ac = iAudio(); await iWait(250);
+    if (!ac || ac.state !== "running"){
+      await new Promise(r => {
+        const go_ = () => { iAudio(); box.removeEventListener("click", go_); r(); };
+        box.addEventListener("click", go_);
+        show(h("div",{class:"i-slide"}, h("button",{class:"i-tap",text:"👆 "+(INTRO_TAP[S.lang] || INTRO_TAP.ru)})));
+      });
+      await iWait(150);
+    }
   }
   box.classList.add("small");
   // 1-й слайд: текст по буквам со звуком
