@@ -1072,7 +1072,7 @@ ru: {
   scanPrep:"Включаем камеру…", scanGo:"Сканирую…", scanHint:"Наведите камеру на товар", scanErr:"Нет доступа к камере. Разрешите камеру или сделайте фото.",
   scanNoSub:"Такого товара пока нет в продаже. Наведите ровнее или попробуйте ещё раз.", scanAgain:"Сканировать снова",
   psCam:"Сфотографировать", psGal:"Из галереи", psLooking:"Смотрим на фото…", psCompare:"Ищем похожие…",
-  psYour:"Ваше фото", psFound:"Найден этот товар: {n}", psNone:"Такого товара нет", psNoneSub:"Этого товара пока нет в продаже. Попробуйте другое фото или поиск по словам.",
+  psYour:"Ваше фото", psFound:"Найден этот товар: {n}", psNone:"Такого товара нет", psSimilar:"Похожие товары", psSimSub:"Точно такого нет — вот самые похожие.", psNoneSub:"Этого товара пока нет в продаже. Попробуйте другое фото или поиск по словам.",
   psSmart:"Умный поиск (нейросеть)", psBasic:"Поиск по цвету и форме",
   chatsLogin:"Войдите, чтобы переписываться", chatsLoginSub:"Здесь будут ваши разговоры с продавцами и покупателями.",
   chatsEmpty:"Пока нет сообщений", chatsEmptySub:"Нажмите «Написать» на странице товара.", admRow:"Администрация TM Bazar", admRowSub:"Новости и ответы администратора", admNew:"📢 Новое сообщение от администрации", admOpen:"Открыть", notifOn:"🔔 Включить уведомления", notifDone:"Уведомления включены", notifNo:"Уведомления запрещены в настройках браузера",
@@ -1220,7 +1220,7 @@ tm: {
   scanPrep:"Kamera açylýar…", scanGo:"Skanirleýärin…", scanHint:"Kamerany haryda tutuň", scanErr:"Kamera rugsat ýok. Kamera rugsat beriň ýa-da surata düşüriň.",
   scanNoSub:"Bu haryt häzir satuwda ýok. Göni tutuň ýa-da täzeden synanyşyň.", scanAgain:"Täzeden skanirlemek",
   psCam:"Surata düşürmek", psGal:"Galereýadan", psLooking:"Surata seredýäris…", psCompare:"Meňzeşlerini gözleýäris…",
-  psYour:"Siziň suratyňyz", psFound:"Şu haryt tapyldy: {n}", psNone:"Beýle haryt ýok", psNoneSub:"Bu haryt häzir satuwda ýok. Başga surat ýa-da söz bilen gözläp görüň.",
+  psYour:"Siziň suratyňyz", psFound:"Şu haryt tapyldy: {n}", psNone:"Beýle haryt ýok", psSimilar:"Meňzeş harytlar", psSimSub:"Takyk şeýlesi ýok — iň meňzeşleri şular.", psNoneSub:"Bu haryt häzir satuwda ýok. Başga surat ýa-da söz bilen gözläp görüň.",
   psSmart:"Akylly gözleg (neýron ulgam)", psBasic:"Reňk we şekil boýunça gözleg",
   chatsLogin:"Hat alyşmak üçin giriň", chatsLoginSub:"Bu ýerde satyjylar we alyjylar bilen gürrüňleriňiz bolar.",
   chatsEmpty:"Häzirlikçe hat ýok", chatsEmptySub:"Haryt sahypasynda «Ýazmak» basyň.", admRow:"TM Bazar administrasiýasy", admRowSub:"Administratoryň habarlary we jogaplary", admNew:"📢 Administrasiýadan täze hat", admOpen:"Açmak", notifOn:"🔔 Bildirişleri açmak", notifDone:"Bildirişler açyldy", notifNo:"Bildirişler brauzeriň sazlamalarynda gadagan",
@@ -1368,7 +1368,7 @@ en: {
   scanPrep:"Starting camera…", scanGo:"Scanning…", scanHint:"Point the camera at the item", scanErr:"No camera access. Allow the camera or take a photo.",
   scanNoSub:"This item isn't on sale yet. Hold steady or try again.", scanAgain:"Scan again",
   psCam:"Take a photo", psGal:"From gallery", psLooking:"Looking at the photo…", psCompare:"Finding similar items…",
-  psYour:"Your photo", psFound:"Found this item: {n}", psNone:"No such item", psNoneSub:"This item isn't on sale yet. Try another photo or search by words.",
+  psYour:"Your photo", psFound:"Found this item: {n}", psNone:"No such item", psSimilar:"Similar items", psSimSub:"No exact match — here are the closest ones.", psNoneSub:"This item isn't on sale yet. Try another photo or search by words.",
   psSmart:"Smart search (neural network)", psBasic:"Search by colour and shape",
   chatsLogin:"Sign in to send messages", chatsLoginSub:"Your conversations with sellers and buyers will appear here.",
   chatsEmpty:"No messages yet", chatsEmptySub:"Tap “Message” on a product page.", admRow:"TM Bazar administration", admRowSub:"News and replies from the administrator", admNew:"📢 New message from the administration", admOpen:"Open", notifOn:"🔔 Turn on notifications", notifDone:"Notifications are on", notifNo:"Notifications are blocked in browser settings",
@@ -2430,7 +2430,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "80";   // номер версии — виден внизу профиля
+const APP_VER = "81";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -4436,27 +4436,38 @@ function reviewSheet(p, mine, done){
    v80: как в Taobao — камера открывается сразу, кадры сканируются сами (без кнопки «снять»),
    при находке — звук «пик» и вибрация. Показываем ТОЛЬКО тот же товар; если его нет — «не нашли»,
    другие (просто похожие) товары не подсовываем. */
-const SAME = {smart: 0.74, basic: 0.9, gap: 0.035};   // пороги «это тот же товар»
+// v81: сначала ищем ТОТ ЖЕ товар; если такого нет — показываем самые похожие (пусто не оставляем).
+// Камера снимает «живое» фото (фон, ковёр, свет), а у продавца фото на белом фоне — поэтому пороги мягче.
+const SAME = {smart: 0.62, basic: 0.86, gap: 0.04};
 function sameScore(q, v){
   const m = Vision.cos(q.m, v.m), s = Vision.cos(q.s, v.s);
-  if (m != null) return {sc: s != null ? m*0.85 + s*0.15 : m, thr: SAME.smart}; // нейросеть + цвет (чтобы красная ≠ синяя)
+  if (m != null) return {sc: s != null ? m*0.9 + s*0.1 : m, thr: SAME.smart};
   return {sc: s == null ? -1 : s, thr: SAME.basic};
 }
-function findSame(q, vecs){
-  const ranked = [];
+// оценка каждого товара для одного кадра → {id: d}; d = насколько выше порога «тот же»
+function scoreAll(q, vecs){
+  const r = {};
   for (const v of vecs){
-    const {sc, thr} = sameScore(q, v);
+    const p = byId(v.id); if (!p) continue;
+    const {sc, thr} = sameScore(q, v); if (sc < -0.5) continue;
     let d = sc - thr;
-    const p = byId(v.id);
-    if (!p) continue;
-    if (q.cat && p.cat && p.cat !== q.cat) d -= 0.05;   // нейросеть говорит «другая категория» — строже
-    if (d >= 0) ranked.push({id: v.id, d, sc});
+    if (q.cat && p.cat){ if (p.cat === q.cat) d += 0.03; else d -= 0.06; }   // нейросеть поняла категорию — свою категорию выше
+    r[v.id] = d;
   }
-  ranked.sort((a, b) => b.d - a.d);
-  if (!ranked.length) return [];
-  const top = ranked[0].d;
-  return ranked.filter(x => x.d >= top - SAME.gap).slice(0, 6);   // тот же товар (может быть у нескольких продавцов)
+  return r;
 }
+// итог: {same:true, list:[тот же]} или {same:false, list:[похожие]}
+function pickResults(agg, cat){
+  const ranked = Object.entries(agg).map(([id, d]) => ({id, d})).sort((x, y) => y.d - x.d);
+  if (ranked.length && ranked[0].d >= 0){
+    const top = ranked[0].d;
+    return {same: true, list: ranked.filter(x => x.d >= 0 && x.d >= top - SAME.gap).slice(0, 6).map(x => x.id)};
+  }
+  let list = ranked.slice(0, 24).map(x => x.id);
+  if (!list.length && cat) list = (S.catalog || []).filter(p => p.cat === cat).slice(0, 24).map(p => p.id); // векторов нет — хотя бы та же категория
+  return {same: false, list};
+}
+function findSame(q, vecs){ return pickResults(scoreAll(q, vecs), q.cat); }
 
 const Scan = {
   el: null, stream: null, timer: 0, run: false, ac: null,
@@ -4533,43 +4544,41 @@ const Scan = {
 
     const cv = document.createElement("canvas"); cv.width = cv.height = 320;
     const g = cv.getContext("2d", {willReadFrequently: true});
-    let lastId = "", hits = 0, t0 = Date.now();
+    // за 2–3 секунды собираем несколько кадров (два размера рамки), складываем оценки и останавливаемся
+    let t0 = Date.now(), frames = 0, agg = {}, cat = {}, smart = false, shotUrl = "";
+    const finish = async () => {
+      this.run = false;
+      const cs = Object.entries(cat).sort((x, y) => y[1] - x[1]); const c = cs.length ? cs[0][0] : null;
+      const res = pickResults(agg, c);
+      this.beep();
+      me.classList.add("hit");
+      S.photoSearch = {url: shotUrl, list: res.list, same: res.same, cat: c, smart};
+      await sleep(400);
+      this.close();
+      if (location.hash === "#/photo") showPhotoResults(out, S.photoSearch);
+    };
     this.run = true;
     const tick = async () => {
       if (!this.run || this.el !== me) return;
       if (video.readyState >= 2 && video.videoWidth){
-        const vw = video.videoWidth, vh = video.videoHeight, sq = Math.min(vw, vh) * 0.78;
+        const vw = video.videoWidth, vh = video.videoHeight, sq = Math.min(vw, vh) * (frames % 2 ? 0.56 : 0.78);
         g.drawImage(video, (vw - sq) / 2, (vh - sq) / 2, sq, sq, 0, 0, 320, 320);
         let q = null;
         try{ q = await Vision.describe(cv, 20000); }catch(e){}
         if (!this.run || this.el !== me) return;
-        const found = q ? findSame(q, vecs) : [];
-        if (found.length){
-          if (found[0].id === lastId) hits++; else { lastId = found[0].id; hits = 1; }
-          // уверенно (сильно выше порога) — сразу; иначе ждём подтверждения на 2-м кадре
-          if (hits >= 2 || found[0].d >= 0.1){
-            this.run = false;
-            this.beep();
-            me.classList.add("hit");
-            const url = cv.toDataURL("image/jpeg", 0.85);
-            S.photoSearch = {url, list: found.map(x => x.id), cat: q.cat, smart: !!q.m};
-            await sleep(450);
-            this.close();
-            if (location.hash === "#/photo") showPhotoResults(out, S.photoSearch);
-            return;
-          }
-        } else { hits = 0; lastId = ""; }
-        if (Date.now() - t0 > 15000){
-          // долго не нашли — пауза и подсказка, другие товары НЕ показываем
-          this.run = false;
-          status.textContent = "";
-          again.hidden = false;
-          again.replaceChildren(h("b",{text:t("psNone")}), h("p",{text:t("scanNoSub")}),
-            h("button",{class:"btn",text:t("scanAgain"),onclick:()=>{ again.hidden = true; status.textContent = t("scanGo"); t0 = Date.now(); hits = 0; lastId = ""; this.run = true; tick(); }}));
-          return;
+        if (q){
+          if (!frames) shotUrl = cv.toDataURL("image/jpeg", 0.85);
+          frames++; smart = smart || !!q.m;
+          if (q.cat) cat[q.cat] = (cat[q.cat] || 0) + 1;
+          const r = scoreAll(q, vecs);
+          let best = -9;
+          for (const id in r){ agg[id] = Math.max(agg[id] ?? -9, r[id]); best = Math.max(best, agg[id]); }
+          const el = Date.now() - t0;
+          // очень уверенно — сразу; иначе через ~2.5 с (минимум 3 кадра) показываем лучшее, что есть
+          if ((best >= 0.12 && frames >= 2) || (el >= 2500 && frames >= 3) || el >= 6000) return finish();
         }
       }
-      this.timer = setTimeout(tick, 350);
+      this.timer = setTimeout(tick, 120);
     };
     tick();
   }
@@ -4605,9 +4614,9 @@ async function runPhotoSearch(file, out){
     const [, q] = await Promise.all([loadCatalog(), Vision.describe(img, 15000)]);
     status.textContent = t("psCompare");
     const vecs = await loadVectors();
-    const found = findSame(q, vecs);
-    if (found.length) Scan.beep();
-    S.photoSearch = {url, list: found.map(x => x.id), cat: q.cat, smart: !!q.m};
+    const res = findSame(q, vecs);
+    Scan.beep();
+    S.photoSearch = {url, list: res.list, same: res.same, cat: q.cat, smart: !!q.m};
   }catch(e){ console.error(e); S.photoSearch = {url, list: [], cat: null, error: true}; }
   if (location.hash === "#/photo") showPhotoResults(out, S.photoSearch);
 }
@@ -4615,8 +4624,10 @@ function showPhotoResults(out, ps){
   const list = ps.list.map(byId).filter(Boolean);
   out.replaceChildren(
     h("div",{class:"ps-q"}, h("img",{src:ps.url,alt:""}),
-      h("div",null, h("b",{text:list.length ? t("psFound",{n:list.length}) : t("psNone")}),
-        h("div",{class:"kv",style:{marginTop:"6px"},text:ps.smart ? t("psSmart") : t("psBasic")}))),
+      h("div",null, h("b",{text:!list.length ? t("psNone") : ps.same ? t("psFound",{n:list.length}) : t("psSimilar")}),
+        !ps.same && list.length ? h("div",{class:"kv",style:{marginTop:"4px"},text:t("psSimSub")}) : null,
+        h("div",{class:"kv",style:{marginTop:"6px"},text:ps.smart ? t("psSmart") : t("psBasic")}),
+        h("button",{class:"btn soft",style:{marginTop:"8px",padding:"6px 12px",fontSize:"13px"},onclick:()=>Scan.open(out)}, icon("cam"), t("scanAgain")))),
     h("div",{class:"sec"}, list.length ? feed(list) : emptyBox("🖼️", t("psNone"), t("psNoneSub"),
       h("button",{class:"btn",onclick:()=>Scan.open(out)}, icon("cam"), t("scanAgain")))));
 }
