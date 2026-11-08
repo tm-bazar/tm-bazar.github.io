@@ -540,6 +540,8 @@ body{letter-spacing:-.1px}
 .top{background:#fff;color:var(--fg);border-bottom:1px solid var(--line);padding:10px 14px 12px}
 .brand{color:var(--fg)}
 .brand i{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff}
+.brand .brand-logo{width:34px;height:34px;object-fit:contain;flex:none}
+.brand{color:#a3161b}
 .top .langs,.me-head .langs{background:var(--soft)}
 .top .langs button,.me-head .langs button{color:var(--mut)}
 .top .langs button.on,.me-head .langs button.on{background:#1d1d1f;color:#fff}
@@ -2345,7 +2347,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "65";   // номер версии — виден внизу профиля
+const APP_VER = "66";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3479,7 +3481,7 @@ function viewHome(q){
   const listBox = h("div"), catsBox = h("div"), stripBox = h("div"), placeBox = h("div",{class:"wrap"});
   // сверху: маленькие категории → поиск → велаят и торговый центр
   const head = h("div",{class:"top"}, h("div",{class:"wrap"},
-    h("div",{class:"top-row"}, h("a",{class:"brand",href:"#/"}, h("i",{text:"🛍"}), APP_NAME), langSwitch())),
+    h("div",{class:"top-row"}, h("a",{class:"brand",href:"#/"}, h("img",{class:"brand-logo",src:"icons/cart.png",alt:""}), APP_NAME), langSwitch())),
     q ? null : stripBox,
     h("div",{class:"wrap"}, searchBox(q)),
     placeBox);
