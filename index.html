@@ -369,7 +369,8 @@ img.ava{object-fit:cover;background:#fff;border:1px solid var(--line)}
 .vid-btn span{font-size:13px}
 
 /* категории: плавающая лента сверху */
-.browse-head{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.browse-head{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.04);transition:transform .25s ease}
+.browse-head.hid{transform:translateY(-100%);box-shadow:none}
 .bh-row{padding:8px 10px 0;min-height:44px}
 .browse-head.cmp .bh-row{padding-bottom:4px}
 .qchips{display:flex;gap:8px;overflow-x:auto;padding:6px 10px 10px;scrollbar-width:none}
@@ -2347,7 +2348,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "69";   // номер версии — виден внизу профиля
+const APP_VER = "70";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -5608,6 +5609,18 @@ async function intro(){
   await iWait(1100);
   box.classList.add("out"); setTimeout(() => box.remove(), 500);
 }
+
+/* v70: шапка категорий прячется при прокрутке вниз и появляется при прокрутке вверх */
+(function(){
+  let lastY = window.scrollY, acc = 0;
+  window.addEventListener("scroll", () => {
+    const hd = document.querySelector(".browse-head"), y = window.scrollY, dy = y - lastY; lastY = y;
+    if (!hd) return;
+    if (y < hd.offsetHeight){ hd.classList.remove("hid"); acc = 0; return; }
+    acc = (acc > 0) === (dy > 0) ? acc + dy : dy;
+    if (acc > 12) hd.classList.add("hid"); else if (acc < -12) hd.classList.remove("hid");
+  }, {passive:true});
+})();
 start();
 intro();
 </script>
