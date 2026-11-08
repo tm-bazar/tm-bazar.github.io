@@ -667,6 +667,23 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .card.vip,.lcard.vip,.bcard.vip{background:var(--vipBg);border:1.5px solid var(--vipLine)}
 .card.vip .bd,.bcard.vip .bc-bd{background:var(--vipBg)}
 .lb.vip{background:var(--vip);color:#3a2a00}
+/* v73: на фото — только логотип продавца (слева сверху) и VIP (справа сверху); Обмен, Б/У, видео — под фото */
+.ph-logo{position:absolute;left:6px;top:6px;z-index:2;width:30px;height:30px;border-radius:8px;object-fit:cover;background:#fff;border:1px solid rgba(0,0,0,.08);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.ph-vip{position:absolute;right:6px;top:6px;z-index:2;background:var(--vip);color:#3a2a00;font-size:10.5px;font-weight:800;border-radius:5px;padding:2px 6px;letter-spacing:.3px}
+.card .ph .ph-logo{width:30px;height:30px}
+.lph .ph-logo,.lph img.ph-logo{width:26px;height:26px;border-radius:7px;left:5px;top:5px}
+.lph .ph-vip{right:5px;top:5px}
+.bc-gal img.ph-logo{flex:none;aspect-ratio:auto;width:36px;height:36px;border-radius:9px;left:8px;top:8px}
+.bc-gal .ph-vip{right:8px;top:8px;font-size:12px;padding:3px 8px}
+.ichs{display:flex;flex-wrap:wrap;gap:4px}
+.ich{font-size:10.5px;font-weight:700;line-height:1.2;border-radius:5px;padding:2px 6px;background:var(--soft);color:var(--mut)}
+.ich.red{background:var(--redBg);color:var(--red)}
+.ich.amber{background:var(--amberBg);color:var(--amber)}
+.ich.dark{background:#111;color:#fff}
+.card .lrow .price{font-size:18px}
+.card .lrow .lheart,.bc-bd .lrow .lheart{width:28px;height:28px}
+.bc-bd .lrow .price{font-size:21px}
+.card .tt{min-height:0}
 .vip-pill{display:inline-flex;align-items:center;background:var(--vip);color:#3a2a00;font-weight:800;font-size:12px;border-radius:999px;padding:3px 9px}
 .vip-ask{background:var(--vipBg);color:var(--vipFg);border:1px solid var(--vipLine);font-weight:700;font-size:12px;border-radius:999px;padding:4px 10px}
 /* мои товары: карандаш, корзина и время до удаления */
@@ -2352,7 +2369,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "72";   // номер версии — виден внизу профиля
+const APP_VER = "73";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3308,18 +3325,26 @@ function heartBtn(id, cls){
   };
   return b;
 }
+// v73: на фото только логотип продавца (слева сверху) и VIP (справа сверху); остальное — под фото
+function phMarks(p){
+  return [p.sellerLogo ? h("img",{class:"ph-logo",src:p.sellerLogo,alt:p.sellerName||"",loading:"lazy",decoding:"async"}) : null,
+    isVip(p) ? h("span",{class:"ph-vip",text:"VIP"}) : null];
+}
+function infoChips(p){
+  const a = p.attrs || {}, c = [];
+  if (a.exchange === "yes") c.push(h("span",{class:"ich red",text:t("o_f_exchange")}));
+  if (p.cond === "used" && !NO_COND[p.cat]) c.push(h("span",{class:"ich amber",text:t("used")}));
+  if (p.hasVideo) c.push(h("span",{class:"ich dark",text:"▶ "+t("video")}));
+  if (p.variants > 1) c.push(h("span",{class:"ich",text:"🎨 "+t("nVariants",{n:p.variants})}));
+  return c.length ? h("div",{class:"ichs"}, ...c) : null;
+}
 function card(p, extra){
   return h("a",{class:"card"+(isVip(p)?" vip":""),href:"#/p/"+p.id},
-    h("div",{class:"ph"}, isVip(p) ? h("span",{class:"vip-tag",text:"VIP"}) : null,
-      p.thumb ? h("img",{src:p.thumb,alt:p.title,loading:"lazy",decoding:"async"}) : null,
-      (p.cond === "used" && !NO_COND[p.cat]) || p.hasVideo ? h("div",{class:"tag-tl"},
-        p.hasVideo ? h("span",{class:"tag vid",text:"▶ "+t("video")}) : null,
-        p.cond === "used" && !NO_COND[p.cat] ? h("span",{class:"tag used",text:t("used")}) : null) : null,
-      S.cardExtra ? S.cardExtra(p) : heartBtn(p.id),
-      p.variants > 1 ? h("span",{class:"cnt",text:"🎨 "+t("nVariants",{n:p.variants})}) : p.photoCount > 1 ? h("span",{class:"cnt",text:"1/"+p.photoCount}) : null),
+    h("div",{class:"ph"}, p.thumb ? h("img",{src:p.thumb,alt:p.title,loading:"lazy",decoding:"async"}) : null, ...phMarks(p)),
     h("div",{class:"bd"},
+      h("div",{class:"lrow"}, priceEl(p.price, null, priceSuffix(p), p.cat), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")),
       h("div",{class:"tt",text:p.title}),
-      priceEl(p.price, null, priceSuffix(p), p.cat),
+      infoChips(p),
       cardLine(p) ? h("div",{class:"car-line",text:cardLine(p)}) : null,
       h("div",{class:"mt"}, extra || null,
         p.rating ? h("span",{class:"rt"}, "★ "+p.rating.toFixed(1), h("small",{text:" ("+p.reviews+")"})) : null,
@@ -3327,19 +3352,12 @@ function card(p, extra){
 }
 // карточка-строка (как в Aýterek): фото слева, справа цена, название, характеристики
 function listCard(p){
-  const a = p.attrs || {};
-  const badges = [];
-  if (a.exchange === "yes") badges.push(h("span",{class:"lb red",text:t("o_f_exchange")}));
-  if (p.hasVideo) badges.push(h("span",{class:"lb dark",text:"▶ "+t("video")}));
-  if (p.cond === "used" && !NO_COND[p.cat]) badges.push(h("span",{class:"lb amber",text:t("used")}));
-  if (isVip(p)) badges.unshift(h("span",{class:"lb vip",text:"VIP"}));
   return h("a",{class:"lcard"+(isVip(p)?" vip":""),href:"#/p/"+p.id},
-    h("div",{class:"lph"}, p.thumb ? h("img",{src:p.thumb,alt:p.title,loading:"lazy",decoding:"async"}) : null,
-      badges.length ? h("div",{class:"lbs"}, ...badges) : null,
-      p.photoCount > 1 ? h("span",{class:"cnt",text:"1/"+p.photoCount}) : null),
+    h("div",{class:"lph"}, p.thumb ? h("img",{src:p.thumb,alt:p.title,loading:"lazy",decoding:"async"}) : null, ...phMarks(p)),
     h("div",{class:"lbd"},
       h("div",{class:"lrow"}, priceEl(p.price, null, priceSuffix(p), p.cat), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")),
       h("div",{class:"ltt",text:p.title}),
+      infoChips(p),
       cardLine(p) ? h("div",{class:"car-line",text:cardLine(p)}) : null,
       h("div",{class:"lmt"}, p.rating ? h("span",{class:"rt",text:"★ "+p.rating.toFixed(1)}) : null,
         h("span",{class:"mt-loc",text:"📍"+placeText(p)}), h("span",{text:ago(p.at)}))));
@@ -3361,25 +3379,18 @@ function bigCard(p){
   const open = () => go("/p/"+p.id);
   const first = p.thumb ? h("img",{src:p.thumb,alt:p.title,loading:"lazy",decoding:"async"}) : h("div",{class:"bc-empty"});
   const track = h("div",{class:"bc-track"+(p.photoCount > 1 ? " multi" : "")}, first);
-  const cnt = p.photoCount > 1 ? h("span",{class:"cnt",text:"1/"+p.photoCount}) : null;
   let moved = false;
   track.addEventListener("pointerdown", () => { moved = false; });
   track.addEventListener("scroll", () => {
     moved = true;
-    const w = track.firstElementChild ? track.firstElementChild.offsetWidth + 6 : 1;
-    if (cnt) cnt.textContent = Math.min(p.photoCount, Math.round(track.scrollLeft / w) + 1) + "/" + p.photoCount;
   }, {passive:true});
   track.addEventListener("click", () => { if (!moved) open(); });
-  const badges = [];
-  if (a.exchange === "yes") badges.push(h("span",{class:"lb red",text:t("o_f_exchange")}));
-  if (p.hasVideo) badges.push(h("span",{class:"lb dark",text:"▶ "+t("video")}));
-  if (p.cond === "used" && !NO_COND[p.cat]) badges.push(h("span",{class:"lb amber",text:t("used")}));
-  if (isVip(p)) badges.unshift(h("span",{class:"lb vip",text:"VIP"}));
   const el = h("div",{class:"bcard"+(isVip(p)?" vip":"")},
-    h("div",{class:"bc-gal"}, track, S.cardExtra ? S.cardExtra(p) : heartBtn(p.id), cnt, badges.length ? h("div",{class:"lbs"}, ...badges) : null),
+    h("div",{class:"bc-gal"}, track, ...phMarks(p)),
     h("a",{class:"bc-bd",href:"#/p/"+p.id},
-      priceEl(p.price, null, priceSuffix(p), p.cat),
+      h("div",{class:"lrow"}, priceEl(p.price, null, priceSuffix(p), p.cat), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")),
       h("div",{class:"bc-tt",text:p.title}),
+      infoChips(p),
       cardLine(p) ? h("div",{class:"car-line",text:cardLine(p)}) : null,
       h("div",{class:"lmt"}, h("span",{class:"mt-loc",text:"📍"+placeText(p)}), h("span",{text:ago(p.at)}))));
   if (p.photoCount > 1){
