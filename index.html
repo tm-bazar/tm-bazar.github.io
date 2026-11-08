@@ -1072,7 +1072,7 @@ ru: {
   scanPrep:"Включаем камеру…", scanGo:"Сканирую…", scanHint:"Наведите камеру на товар", scanErr:"Нет доступа к камере. Разрешите камеру или сделайте фото.",
   scanNoSub:"Такого товара пока нет в продаже. Наведите ровнее или попробуйте ещё раз.", scanAgain:"Сканировать снова",
   psCam:"Сфотографировать", psGal:"Из галереи", psLooking:"Смотрим на фото…", psCompare:"Ищем похожие…",
-  psYour:"Ваше фото", psFound:"Найден этот товар: {n}", psNone:"Такого товара нет", psSimilar:"Похожие товары", psSimSub:"Точно такого нет — вот самые похожие.", psNoneSub:"Этого товара пока нет в продаже. Попробуйте другое фото или поиск по словам.",
+  psYour:"Ваше фото", psFound:"Найден этот товар: {n}", psNone:"Такого товара нет", psSimilar:"Похожие товары", psSimSub:"Точно такого нет — вот самые похожие.", psNoneSub:"Точно такого и похожего товара нет. Попробуйте другое фото или поиск по словам.",
   psSmart:"Умный поиск (нейросеть)", psBasic:"Поиск по цвету и форме",
   chatsLogin:"Войдите, чтобы переписываться", chatsLoginSub:"Здесь будут ваши разговоры с продавцами и покупателями.",
   chatsEmpty:"Пока нет сообщений", chatsEmptySub:"Нажмите «Написать» на странице товара.", admRow:"Администрация TM Bazar", admRowSub:"Новости и ответы администратора", admNew:"📢 Новое сообщение от администрации", admOpen:"Открыть", notifOn:"🔔 Включить уведомления", notifDone:"Уведомления включены", notifNo:"Уведомления запрещены в настройках браузера",
@@ -1220,7 +1220,7 @@ tm: {
   scanPrep:"Kamera açylýar…", scanGo:"Skanirleýärin…", scanHint:"Kamerany haryda tutuň", scanErr:"Kamera rugsat ýok. Kamera rugsat beriň ýa-da surata düşüriň.",
   scanNoSub:"Bu haryt häzir satuwda ýok. Göni tutuň ýa-da täzeden synanyşyň.", scanAgain:"Täzeden skanirlemek",
   psCam:"Surata düşürmek", psGal:"Galereýadan", psLooking:"Surata seredýäris…", psCompare:"Meňzeşlerini gözleýäris…",
-  psYour:"Siziň suratyňyz", psFound:"Şu haryt tapyldy: {n}", psNone:"Beýle haryt ýok", psSimilar:"Meňzeş harytlar", psSimSub:"Takyk şeýlesi ýok — iň meňzeşleri şular.", psNoneSub:"Bu haryt häzir satuwda ýok. Başga surat ýa-da söz bilen gözläp görüň.",
+  psYour:"Siziň suratyňyz", psFound:"Şu haryt tapyldy: {n}", psNone:"Beýle haryt ýok", psSimilar:"Meňzeş harytlar", psSimSub:"Takyk şeýlesi ýok — iň meňzeşleri şular.", psNoneSub:"Takyk şeýle we meňzeş haryt ýok. Başga surat ýa-da söz bilen gözläp görüň.",
   psSmart:"Akylly gözleg (neýron ulgam)", psBasic:"Reňk we şekil boýunça gözleg",
   chatsLogin:"Hat alyşmak üçin giriň", chatsLoginSub:"Bu ýerde satyjylar we alyjylar bilen gürrüňleriňiz bolar.",
   chatsEmpty:"Häzirlikçe hat ýok", chatsEmptySub:"Haryt sahypasynda «Ýazmak» basyň.", admRow:"TM Bazar administrasiýasy", admRowSub:"Administratoryň habarlary we jogaplary", admNew:"📢 Administrasiýadan täze hat", admOpen:"Açmak", notifOn:"🔔 Bildirişleri açmak", notifDone:"Bildirişler açyldy", notifNo:"Bildirişler brauzeriň sazlamalarynda gadagan",
@@ -1368,7 +1368,7 @@ en: {
   scanPrep:"Starting camera…", scanGo:"Scanning…", scanHint:"Point the camera at the item", scanErr:"No camera access. Allow the camera or take a photo.",
   scanNoSub:"This item isn't on sale yet. Hold steady or try again.", scanAgain:"Scan again",
   psCam:"Take a photo", psGal:"From gallery", psLooking:"Looking at the photo…", psCompare:"Finding similar items…",
-  psYour:"Your photo", psFound:"Found this item: {n}", psNone:"No such item", psSimilar:"Similar items", psSimSub:"No exact match — here are the closest ones.", psNoneSub:"This item isn't on sale yet. Try another photo or search by words.",
+  psYour:"Your photo", psFound:"Found this item: {n}", psNone:"No such item", psSimilar:"Similar items", psSimSub:"No exact match — here are the closest ones.", psNoneSub:"No exact or similar item. Try another photo or search by words.",
   psSmart:"Smart search (neural network)", psBasic:"Search by colour and shape",
   chatsLogin:"Sign in to send messages", chatsLoginSub:"Your conversations with sellers and buyers will appear here.",
   chatsEmpty:"No messages yet", chatsEmptySub:"Tap “Message” on a product page.", admRow:"TM Bazar administration", admRowSub:"News and replies from the administrator", admNew:"📢 New message from the administration", admOpen:"Open", notifOn:"🔔 Turn on notifications", notifDone:"Notifications are on", notifNo:"Notifications are blocked in browser settings",
@@ -2430,7 +2430,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "81";   // номер версии — виден внизу профиля
+const APP_VER = "82";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -4438,7 +4438,7 @@ function reviewSheet(p, mine, done){
    другие (просто похожие) товары не подсовываем. */
 // v81: сначала ищем ТОТ ЖЕ товар; если такого нет — показываем самые похожие (пусто не оставляем).
 // Камера снимает «живое» фото (фон, ковёр, свет), а у продавца фото на белом фоне — поэтому пороги мягче.
-const SAME = {smart: 0.62, basic: 0.86, gap: 0.04};
+const SAME = {smart: 0.62, basic: 0.86, gap: 0.04, similar: -0.2};
 function sameScore(q, v){
   const m = Vision.cos(q.m, v.m), s = Vision.cos(q.s, v.s);
   if (m != null) return {sc: s != null ? m*0.9 + s*0.1 : m, thr: SAME.smart};
@@ -4463,7 +4463,7 @@ function pickResults(agg, cat){
     const top = ranked[0].d;
     return {same: true, list: ranked.filter(x => x.d >= 0 && x.d >= top - SAME.gap).slice(0, 6).map(x => x.id)};
   }
-  let list = ranked.slice(0, 24).map(x => x.id);
+  let list = ranked.filter(x => x.d >= SAME.similar).slice(0, 24).map(x => x.id);   // v82: совсем непохожие не показываем
   if (!list.length && cat) list = (S.catalog || []).filter(p => p.cat === cat).slice(0, 24).map(p => p.id); // векторов нет — хотя бы та же категория
   return {same: false, list};
 }
@@ -4536,49 +4536,75 @@ const Scan = {
       return;
     }
 
-    // нейросеть и товары
-    let vecs = [];
-    try{ [vecs] = await Promise.all([loadCatalog().then(loadVectors), Vision.loadML()]); }catch(e){}
-    if (this.el !== me) return;
+    // v82: жёсткий лимит — ответ максимум через 3 секунды, сеть и нейросеть не ждём.
+    // Товары и нейросеть грузятся в фоне; что успело — тем и сравниваем.
+    let vecs = null;
+    const vecsP = Vision.timeout(loadCatalog().then(loadVectors).catch(() => []), 4000).then(v => (vecs = v || []));
+    Vision.loadML();
     status.textContent = t("scanGo");
 
     const cv = document.createElement("canvas"); cv.width = cv.height = 320;
     const g = cv.getContext("2d", {willReadFrequently: true});
-    // за 2–3 секунды собираем несколько кадров (два размера рамки), складываем оценки и останавливаемся
-    let t0 = Date.now(), frames = 0, agg = {}, cat = {}, smart = false, shotUrl = "";
+    const t0 = Date.now(), LIMIT = 3000;
+    let frames = 0, agg = {}, cat = {}, smart = false, shotUrl = "", qs = [], scored = 0, done = false;
+    const grab = () => {
+      if (!(video.readyState >= 2 && video.videoWidth)) return false;
+      const vw = video.videoWidth, vh = video.videoHeight, sq = Math.min(vw, vh) * (frames % 2 ? 0.56 : 0.78);
+      g.drawImage(video, (vw - sq) / 2, (vh - sq) / 2, sq, sq, 0, 0, 320, 320);
+      return true;
+    };
+    const scoreNew = () => {
+      if (!vecs) return -9;
+      let best = -9;
+      for (; scored < qs.length; scored++){
+        const r = scoreAll(qs[scored], vecs);
+        for (const id in r) agg[id] = Math.max(agg[id] ?? -9, r[id]);
+      }
+      for (const id in agg) best = Math.max(best, agg[id]);
+      return best;
+    };
+    const addQ = q => {
+      if (!frames) shotUrl = cv.toDataURL("image/jpeg", 0.85);
+      frames++; smart = smart || !!q.m;
+      if (q.cat) cat[q.cat] = (cat[q.cat] || 0) + 1;
+      qs.push(q);
+    };
     const finish = async () => {
-      this.run = false;
+      if (done || this.el !== me) return; done = true;
+      this.run = false; clearTimeout(this.timer); clearTimeout(hard);
+      // ни одного кадра не успели — быстрый «простой» отпечаток текущего кадра (без нейросети)
+      if (!frames && grab()){
+        try{ const vs = "s1:" + Vision.encode(Vision.simple(cv)); addQ({s: Vision.decode(vs), m: null, cat: null}); }catch(e){}
+      }
+      if (!vecs) await Vision.timeout(vecsP, 800);   // совсем чуть-чуть, если товары ещё в пути
+      if (this.el !== me) return;
+      scoreNew();
       const cs = Object.entries(cat).sort((x, y) => y[1] - x[1]); const c = cs.length ? cs[0][0] : null;
       const res = pickResults(agg, c);
       this.beep();
       me.classList.add("hit");
       S.photoSearch = {url: shotUrl, list: res.list, same: res.same, cat: c, smart};
-      await sleep(400);
+      await sleep(300);
       this.close();
       if (location.hash === "#/photo") showPhotoResults(out, S.photoSearch);
     };
+    const hard = setTimeout(finish, LIMIT);   // через 3 с — в любом случае ответ
     this.run = true;
     const tick = async () => {
       if (!this.run || this.el !== me) return;
-      if (video.readyState >= 2 && video.videoWidth){
-        const vw = video.videoWidth, vh = video.videoHeight, sq = Math.min(vw, vh) * (frames % 2 ? 0.56 : 0.78);
-        g.drawImage(video, (vw - sq) / 2, (vh - sq) / 2, sq, sq, 0, 0, 320, 320);
+      if (grab()){
         let q = null;
-        try{ q = await Vision.describe(cv, 20000); }catch(e){}
+        // нейросеть ждём только до конца лимита; не успела — работает простой поиск
+        try{ q = await Vision.describe(cv, Math.max(30, LIMIT - 300 - (Date.now() - t0))); }catch(e){}
         if (!this.run || this.el !== me) return;
         if (q){
-          if (!frames) shotUrl = cv.toDataURL("image/jpeg", 0.85);
-          frames++; smart = smart || !!q.m;
-          if (q.cat) cat[q.cat] = (cat[q.cat] || 0) + 1;
-          const r = scoreAll(q, vecs);
-          let best = -9;
-          for (const id in r){ agg[id] = Math.max(agg[id] ?? -9, r[id]); best = Math.max(best, agg[id]); }
-          const el = Date.now() - t0;
-          // очень уверенно — сразу; иначе через ~2.5 с (минимум 3 кадра) показываем лучшее, что есть
-          if ((best >= 0.12 && frames >= 2) || (el >= 2500 && frames >= 3) || el >= 6000) return finish();
+          addQ(q);
+          const best = scoreNew(), el = Date.now() - t0;
+          // очень уверенно — сразу; иначе через ~2 с показываем лучшее, что есть
+          if ((best >= 0.12 && frames >= 2) || (el >= 2000 && frames >= 2 && vecs)) return finish();
         }
       }
-      this.timer = setTimeout(tick, 120);
+      this.timer = setTimeout(tick, 100);
     };
     tick();
   }
