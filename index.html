@@ -1495,7 +1495,7 @@ const SUBS = {
   electronics: ["mobiles","computers","tv","consoles","smartwatches","speakers","printers","cameras","phoneacc",
                 "security","ups","network","phoneparts","components"],
   realty:      ["flat","house","land","commercial","garage"],
-  home:        ["furniture","kitchenware","textile","carpets","decor","lighting","cleaning","garden","food","other"],
+  home:        ["furniture","kitchenware","textile","carpets","lighting","other"],
   auto:        ["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"],
   shoes:       ["womenshoes","menshoes","kidsshoes"],
   personal:    ["womenclothes","menclothes","bags","gold","silver","watches","bijou","cosmetics","perfume","accessories"],
@@ -2521,7 +2521,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "97";   // номер версии — виден внизу профиля
+const APP_VER = "98";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2694,6 +2694,7 @@ function migrateProduct(p){
   if ((p.cat === "personal" && (p.sub === "womenshoes" || p.sub === "menshoes")) || (p.cat === "kids" && p.sub === "kidsshoes")) p.cat = "shoes";
   else if ((p.cat === "electronics" || p.cat === "shoes") && OLD_SUB[p.sub]) p.sub = OLD_SUB[p.sub];
   else if (p.cat === "realty" && p.sub === "cottage") p.sub = "house";
+  if (p.cat === "home" && ["decor","cleaning","garden","food"].includes(p.sub)) p.sub = "other"; // v98: эти разделы убраны
   if (SUBS[p.cat] && p.sub && !SUBS[p.cat].includes(p.sub)) p.sub = "";
   return p;
 }
