@@ -1015,6 +1015,22 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .card .ph-chips .ich{box-shadow:0 1px 3px rgba(0,0,0,.18);background:#fff}
 .card .ph-chips .ich.red{color:var(--red)}
 .card .ph-chips .ich.amber{color:var(--amber)}
+
+/* v95: шрифт карточки — мельче и компактнее (как в Sanly Bazar) */
+.card .bd{padding:8px 9px 9px;gap:3px}
+.card .tt{font-size:13px;font-weight:600;line-height:1.28;letter-spacing:.1px;min-height:2.56em}
+.card .c-sub{font-size:11px;line-height:1.3}
+.card .c-pr .price{font-size:15px;font-weight:700;letter-spacing:0}
+.card .c-pr .price small{font-size:.7em}
+.card .c-pr .price.nego{font-size:13.5px}
+.card .c-pr .lheart{width:26px;height:26px}
+.card .c-pr .lheart svg{width:14px;height:14px}
+.card .cc-row{margin-top:6px;gap:5px}
+.card .cc-buy{height:32px;font-size:13px;font-weight:600;border-radius:10px}
+.card .cc-buy svg{width:16px;height:16px}
+.card .cc-cart{width:36px;height:32px;border-radius:10px}
+.card .cc-cart svg{width:17px;height:17px}
+.card .ph-chips .ich{font-size:10px;padding:2px 5px}
 </style>
 </head>
 <body>
@@ -2505,7 +2521,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "94";   // номер версии — виден внизу профиля
+const APP_VER = "95";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
