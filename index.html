@@ -1458,9 +1458,8 @@ en: {
    FIELDS — подробные поля: показываются продавцу, покупателю (характеристики) и в фильтрах.
    Типы полей: sel (один вариант), multi (несколько), num (число), text, year. */
 const SUBS = {
-  electronics: ["mobiles","laptops","computers","tablets","tv","players","consoles","smartwatches","headphones","speakers",
-                "office","printers","cameras","phoneacc","cases","security","ups","surge","network","powerbanks","landline",
-                "batteries","smartrings","chargers","phoneparts","components"],
+  electronics: ["mobiles","computers","tv","consoles","smartwatches","speakers","printers","cameras","phoneacc",
+                "security","ups","network","phoneparts","components"],
   realty:      ["flat","house","land","commercial","garage"],
   home:        ["furniture","kitchenware","textile","carpets","decor","lighting","cleaning","garden","food","other"],
   auto:        ["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"],
@@ -1587,16 +1586,16 @@ const FIELDS = {
     {k:"brand", type:"sel", raw:true, req:true, filter:"main", opts:PHONE_BRANDS.concat(["other"]), when:(s) => s === "mobiles" || s === "tablets" || s === "smartwatches"},
     {k:"brandt", type:"text", max:30, when:(s) => !(s === "mobiles" || s === "tablets" || s === "smartwatches")},
     {k:"model", type:"text", max:40, filter:"more", list:(s, a) => PHONE_MODELS[a.brand] || [], when:(s) => s === "mobiles" || s === "tablets" || s === "smartwatches"},
-    {k:"color", type:"sel", filter:"more", opts:COLORS, when:(s) => s === "mobiles" || s === "tablets" || s === "smartwatches" || s === "laptops" || s === "headphones"},
+    {k:"color", type:"sel", filter:"more", opts:COLORS, when:(s) => s === "mobiles" || s === "tablets" || s === "smartwatches" || s === "computers"},
     {k:"memory", type:"sel", raw:true, filter:"more", unit:"GB", opts:["8","16","32","64","128","256","512","1024"], when:(s) => s === "mobiles" || s === "tablets"},
-    {k:"ram", type:"sel", raw:true, filter:"more", unit:"GB", opts:["1","2","3","4","6","8","12","16","32","64"], when:(s) => s === "mobiles" || s === "tablets" || s === "laptops" || s === "computers"},
-    {k:"screensz", type:"sel", raw:true, filter:"more", opts:(s) => s === "tv" ? ["24–32″","40–43″","50–55″","65″","75″+"] : s === "laptops" ? ["13–14″","15–16″","17″+"] : s === "tablets" ? ["7–8″","10–11″","12–13″"] : ["до 5.5″","5.5–6.1″","6.2–6.6″","6.7″+"],
-      when:(s) => s === "mobiles" || s === "tablets" || s === "laptops" || s === "tv"},
+    {k:"ram", type:"sel", raw:true, filter:"more", unit:"GB", opts:["1","2","3","4","6","8","12","16","32","64"], when:(s) => s === "mobiles" || s === "tablets" || s === "computers"},
+    {k:"screensz", type:"sel", raw:true, filter:"more", opts:(s) => s === "tv" ? ["24–32″","40–43″","50–55″","65″","75″+"] : s === "computers" ? ["13–14″","15–16″","17″+","21–24″","27″+"] : s === "tablets" ? ["7–8″","10–11″","12–13″"] : ["до 5.5″","5.5–6.1″","6.2–6.6″","6.7″+"],
+      when:(s) => s === "mobiles" || s === "tablets" || s === "computers" || s === "tv"},
     {k:"camera", type:"sel", opts:["yes","no"], when:(s) => s === "mobiles" || s === "tablets"},
     {k:"frontcam", type:"sel", opts:["yes","no"], when:(s) => s === "mobiles" || s === "tablets"},
     {k:"sim", type:"sel", raw:true, opts:["1 SIM","2 SIM","eSIM"], when:(s) => s === "mobiles"},
     {k:"nfc", type:"sel", opts:["yes","no"], when:(s) => s === "mobiles" || s === "smartwatches"},
-    {k:"box", type:"multi", opts:["box","charger","docs","warranty"], when:(s) => s === "mobiles" || s === "tablets" || s === "laptops" || s === "smartwatches"}
+    {k:"box", type:"multi", opts:["box","charger","docs","warranty"], when:(s) => s === "mobiles" || s === "tablets" || s === "computers" || s === "smartwatches"}
   ],
   appliances: [{k:"brandt", type:"text", max:30}],
   auto: [
@@ -1718,11 +1717,11 @@ const SUBT = {
   ups:["ИБП","UPS","UPS"], surge:["Сетевые фильтры","Tok filtrleri","Surge protectors"], network:["Сетевое оборудование","Tor enjamlary","Network equipment"],
   powerbanks:["Внешние аккумуляторы, пауэрбанки","Powerbanklar","Power banks"], landline:["Стационарные телефоны","Stasionar telefonlar","Landline phones"],
   batteries:["Батарейки и аккумуляторы","Batareýalar we akkumulýatorlar","Batteries"], smartrings:["Умные кольца","Akylly ýüzükler","Smart rings"],
-  chargers:["Зарядные устройства","Zarýad berijiler","Chargers"], phoneparts:["Автозапчасти","Awtoşaýlar","Car parts"],
+  chargers:["Зарядные устройства","Zarýad berijiler","Chargers"], phoneparts:["Запчасти для телефонов","Telefon şaýlary","Phone parts"],
   components:["Детали электроники","Elektronika şaýlary","Electronic components"],
   buttonphones:["Кнопочные телефоны","Düwmeli telefonlar","Button phones"], smartwatches:["Смарт-часы","Akylly sagatlar","Smartwatches"],
   phoneacc:["Аксессуары для смартфонов","Smartfon aksesuarlary","Smartphone accessories"],
-  laptops:["Ноутбуки","Noutbuklar","Laptops"], computers:["Компьютеры и мониторы","Kompýuterler we monitorlar","Computers & monitors"],
+  laptops:["Ноутбуки","Noutbuklar","Laptops"], computers:["Компьютеры и ноутбуки","Kompýuterler we noutbuklar","Computers & laptops"],
   tv:["Телевизоры","Telewizorlar","TVs"], audio:["Аудио и наушники","Audio we nauşnikler","Audio & headphones"],
   cameras:["Фото и видео","Foto we wideo","Cameras"], consoles:["Игровые приставки","Oýun pristawkalary","Game consoles"],
   elecacc:["Аксессуары и запчасти","Aksesuarlar we şaýlar","Accessories & parts"],
@@ -2167,7 +2166,7 @@ const Mock = (() => {
       [b,"Жёлтая детская футболка","kids","shirt","#ffc93c",60,"new","kidsclothes"],
       [c,"Smartfon, 128 GB","electronics","phone","#1f1f1f",3200,"new","mobiles",{brand:"Samsung",model:"Galaxy A55",memory:"128",ram:"8",color:"black",camera:"yes",frontcam:"yes",sim:"2 SIM"}],
       [c,"iPhone 13, mawy","electronics","phone","#7fb3ff",6400,"used","mobiles",{brand:"Apple",model:"iPhone 13",memory:"128",color:"blue"}],
-      [c,"Noutbuk 15.6\"","electronics","laptop","#9aa0a6",8900,"new","laptops"],
+      [c,"Noutbuk 15.6\"","electronics","laptop","#9aa0a6",8900,"new","computers"],
       [a,"Futbol topy","sport","ball","#ffffff",180,"new","football"],
       [a,"Баскетбольный мяч","sport","ball","#f08a24",210,"new","football"],
       [a,"Кастрюля 5 литров","home","pot","#c0c4cc",240,"new","kitchenware"],
@@ -2488,7 +2487,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "90";   // номер версии — виден внизу профиля
+const APP_VER = "91";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2636,7 +2635,9 @@ async function loadVectors(){
   return S.vectors || [];
 }
 // старые объявления → новые категории
-const OLD_SUB = {smartphones:"mobiles", buttonphones:"mobiles", audio:"speakers", elecacc:"components"};
+const OLD_SUB = {smartphones:"mobiles", buttonphones:"mobiles", audio:"speakers", elecacc:"components",
+  laptops:"computers", tablets:"mobiles", landline:"mobiles", players:"speakers", headphones:"phoneacc", cases:"phoneacc",
+  powerbanks:"phoneacc", chargers:"phoneacc", batteries:"phoneacc", smartrings:"smartwatches", office:"printers", surge:"ups"};
 const OLD_CAT = {
   phones:      s => ["electronics", OLD_SUB[s] || s || "mobiles"],
   clothes:     s => s === "kids" ? ["kids","kidsclothes"] : ["personal", s === "men" ? "menclothes" : "womenclothes"],
