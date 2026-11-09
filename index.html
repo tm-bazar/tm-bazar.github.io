@@ -971,6 +971,21 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .o-seller div{flex:1;min-width:0}
 .o-seller small{display:block;color:var(--mut);font-size:12px}
 .ci .lt{font-size:13px;white-space:nowrap}
+.cc-row{display:flex;gap:6px;margin-top:8px}
+.cc-cart{position:relative;flex:none;width:40px;height:38px;border-radius:12px;border:1.5px solid var(--red);background:#fff;color:var(--red);display:grid;place-items:center;cursor:pointer;padding:0}
+.cc-cart svg{width:20px;height:20px}
+.cc-cart.on{background:var(--redBg)}
+.cc-n{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;border-radius:9px;background:var(--red);color:#fff;font-size:11px;font-style:normal;font-weight:800;display:grid;place-items:center;padding:0 4px;border:2px solid #fff}
+.cc-buy{flex:1;min-width:0;height:38px;border:0;border-radius:12px;background:var(--red);color:#fff;font:inherit;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;white-space:nowrap}
+.cc-buy svg{width:17px;height:17px}
+.cart-tot{gap:12px}.cart-tot small{display:block;color:var(--mut);font-size:12.5px}.cart-tot b{color:var(--red);font-size:20px}.cart-tot .btn{flex:1;max-width:220px}
+.o-items{display:grid;gap:10px;margin-bottom:14px}
+.o-it{display:flex;gap:10px;align-items:flex-start}
+.o-it img,.o-it .noimg{width:60px;height:60px;border-radius:10px;object-fit:cover;flex:none;background:var(--bg)}
+.o-it .bd{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.o-it .tt{font-size:14px;font-weight:600;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.o-it small{color:var(--mut);font-size:12.5px}
+.o-it .inp{height:38px;font-size:14px}
 .cc-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:36px;margin-top:8px;border:0;border-radius:999px;background:var(--red);color:#fff;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer}
 .cc-btn svg{width:18px;height:18px}
 .cc-btn.on{background:var(--redBg);color:var(--red)}
@@ -1053,7 +1068,7 @@ ru: {
   imoCopied:"Номер {n} скопирован. В IMO нажмите поиск и вставьте номер.",
   forgotPinQ:"Забыли PIN?", forgotPinHow:"Напишите администратору в IMO или позвоните: назовите свой номер телефона, и вам поставят новый PIN.",
   contactAdmin:"Связаться с администрацией", contactAdminSub:"Вопросы, забытый PIN, проблемы с продавцом — напишите в чат приложения, в IMO или позвоните.",
-  tCart:"Корзина", buyNow:"Купить", toCart:"В корзину", inCart:"В корзине", cartAdded:"Добавлено в корзину", cartEmpty:"Корзина пуста", cartEmptySub:"Нажмите «В корзину» на странице товара", cartPickSize:"Выберите размер", nItems:"{n} товар(ов)", total:"Итого", checkout:"Оформить заказ", orderTitle:"Оформление заказа", oName:"Имя и фамилия", oPhone:"Телефон", oFixed:"Берётся из вашего аккаунта — изменить нельзя", oAddr:"Адрес доставки", oAddrPh:"Велаят, этрап, улица, дом", oNote:"Комментарий (необязательно)", e_addr:"Укажите адрес доставки", orderImo:"Заказать через IMO", oSeller:"Продавец", oCopyNum:"Копировать номер", orderHow:"Заказ придёт продавцу в чат приложения, и откроется IMO: выберите продавца {n} и отправьте. Текст заказа уже скопирован — если не появится, вставьте его.", orderCopied:"Заказ скопирован. В IMO найдите продавца {n} и вставьте текст.", orderSent:"Заказ отправлен продавцу?", clearSent:"Убрать из корзины", oNew:"Новый заказ", oSize:"размер", oPhoto:"Фото", oProduct:"Товар", remove:"Удалить", 
+  tCart:"Корзина", yes:"Да", no:"Нет", clearCart:"Очистить корзину", clearCartQ:"Очистить корзину?", oSizePh:"Размер / цвет (если нужно)", buyNow:"Купить", toCart:"В корзину", inCart:"В корзине", cartAdded:"Добавлено в корзину", cartEmpty:"Корзина пуста", cartEmptySub:"Нажмите «В корзину» на странице товара", cartPickSize:"Выберите размер", nItems:"{n} товар(ов)", total:"Итого", checkout:"Оформить заказ", orderTitle:"Оформление заказа", oName:"Имя и фамилия", oPhone:"Телефон", oFixed:"Берётся из вашего аккаунта — изменить нельзя", oAddr:"Адрес доставки", oAddrPh:"Велаят, этрап, улица, дом", oNote:"Комментарий (необязательно)", e_addr:"Укажите адрес доставки", orderImo:"Заказать через IMO", oSeller:"Продавец", oCopyNum:"Копировать номер", orderHow:"Заказ придёт продавцу в чат приложения, и откроется IMO: выберите продавца {n} и отправьте. Текст заказа уже скопирован — если не появится, вставьте его.", orderCopied:"Заказ скопирован. В IMO найдите продавца {n} и вставьте текст.", orderSent:"Заказ отправлен продавцу?", clearSent:"Убрать из корзины", oNew:"Новый заказ", oSize:"размер", oPhoto:"Фото", oProduct:"Товар", remove:"Удалить", 
   tHome:"Главная", tCats:"Категории", tPhoto:"По фото", tChats:"Чаты", tMe:"Профиль",
   back:"Назад", searchPh:"Искать товары", find:"Найти",
   demo:"Демо-режим: товары для примера. Вход продавца: 65 000000, PIN 1234",
@@ -1202,7 +1217,7 @@ tm: {
   imoCopied:"{n} belgi göçürildi. IMO-da gözlegi basyp, belgini goýuň.",
   forgotPinQ:"PIN ýatdan çykdymy?", forgotPinHow:"Administratora IMO-da ýazyň ýa-da jaň ediň: telefon belgiňizi aýdyň, size täze PIN goýarlar.",
   contactAdmin:"Administrasiýa bilen habarlaşmak", contactAdminSub:"Soraglar, ýatdan çykan PIN, satyjy bilen meseleler — programmadaky çata, IMO-da ýazyň ýa-da jaň ediň.",
-  tCart:"Sebet", buyNow:"Satyn al", toCart:"Sebede", inCart:"Sebetde", cartAdded:"Sebede goşuldy", cartEmpty:"Sebet boş", cartEmptySub:"Haryt sahypasynda «Sebede» basyň", cartPickSize:"Ölçegi saýlaň", nItems:"{n} haryt", total:"Jemi", checkout:"Sargyt etmek", orderTitle:"Sargydy resmileşdirmek", oName:"Ady we familiýasy", oPhone:"Telefon", oFixed:"Hasabyňyzdan alynýar — üýtgedip bolmaýar", oAddr:"Eltip berme salgysy", oAddrPh:"Welaýat, etrap, köçe, jaý", oNote:"Bellik (islege bagly)", e_addr:"Salgyny giriziň", orderImo:"IMO arkaly sargyt et", oSeller:"Satyjy", oCopyNum:"Belgini göçür", orderHow:"Sargyt satyja programmanyň hatyna geler we IMO açylar: satyjyny {n} saýlaň we iberiň. Sargyt teksti göçürildi — görünmese, goýuň.", orderCopied:"Sargyt göçürildi. IMO-da satyjyny {n} tapyp, teksti goýuň.", orderSent:"Sargyt satyja iberildimi?", clearSent:"Sebetden aýyr", oNew:"Täze sargyt", oSize:"ölçeg", oPhoto:"Surat", oProduct:"Haryt", remove:"Aýyr", 
+  tCart:"Sebet", yes:"Hawa", no:"Ýok", clearCart:"Sebedi arassala", clearCartQ:"Sebedi arassalamalymy?", oSizePh:"Ölçeg / reňk (gerek bolsa)", buyNow:"Satyn al", toCart:"Sebede", inCart:"Sebetde", cartAdded:"Sebede goşuldy", cartEmpty:"Sebet boş", cartEmptySub:"Haryt sahypasynda «Sebede» basyň", cartPickSize:"Ölçegi saýlaň", nItems:"{n} haryt", total:"Jemi", checkout:"Sargyt etmek", orderTitle:"Sargydy resmileşdirmek", oName:"Ady we familiýasy", oPhone:"Telefon", oFixed:"Hasabyňyzdan alynýar — üýtgedip bolmaýar", oAddr:"Eltip berme salgysy", oAddrPh:"Welaýat, etrap, köçe, jaý", oNote:"Bellik (islege bagly)", e_addr:"Salgyny giriziň", orderImo:"IMO arkaly sargyt et", oSeller:"Satyjy", oCopyNum:"Belgini göçür", orderHow:"Sargyt satyja programmanyň hatyna geler we IMO açylar: satyjyny {n} saýlaň we iberiň. Sargyt teksti göçürildi — görünmese, goýuň.", orderCopied:"Sargyt göçürildi. IMO-da satyjyny {n} tapyp, teksti goýuň.", orderSent:"Sargyt satyja iberildimi?", clearSent:"Sebetden aýyr", oNew:"Täze sargyt", oSize:"ölçeg", oPhoto:"Surat", oProduct:"Haryt", remove:"Aýyr", 
   tHome:"Baş sahypa", tCats:"Bölümler", tPhoto:"Surat bilen", tChats:"Hatlar", tMe:"Profil",
   back:"Yza", searchPh:"Haryt gözle", find:"Gözle",
   demo:"Demo: mysal harytlar. Satyjy girişi: 65 000000, PIN 1234",
@@ -1351,7 +1366,7 @@ en: {
   imoCopied:"Number {n} copied. In IMO, tap search and paste the number.",
   forgotPinQ:"Forgot your PIN?", forgotPinHow:"Message the administrator on IMO or call: tell them your phone number and they'll set a new PIN.",
   contactAdmin:"Contact the administration", contactAdminSub:"Questions, forgotten PIN, problems with a seller — use the in-app chat, IMO, or call.",
-  tCart:"Cart", buyNow:"Buy now", toCart:"Add to cart", inCart:"In cart", cartAdded:"Added to cart", cartEmpty:"Your cart is empty", cartEmptySub:"Tap «Add to cart» on a product page", cartPickSize:"Choose a size", nItems:"{n} item(s)", total:"Total", checkout:"Checkout", orderTitle:"Checkout", oName:"Full name", oPhone:"Phone", oFixed:"Taken from your account — cannot be changed", oAddr:"Delivery address", oAddrPh:"Region, district, street, house", oNote:"Note (optional)", e_addr:"Enter a delivery address", orderImo:"Order via IMO", oSeller:"Seller", oCopyNum:"Copy number", orderHow:"The order goes to the seller\'s chat in the app, and IMO opens: pick the seller {n} and send. The order text is copied — paste it if it does not appear.", orderCopied:"Order copied. In IMO find the seller {n} and paste the text.", orderSent:"Order sent to the seller?", clearSent:"Remove from cart", oNew:"New order", oSize:"size", oPhoto:"Photo", oProduct:"Product", remove:"Remove", 
+  tCart:"Cart", yes:"Yes", no:"No", clearCart:"Clear cart", clearCartQ:"Clear the cart?", oSizePh:"Size / colour (if needed)", buyNow:"Buy now", toCart:"Add to cart", inCart:"In cart", cartAdded:"Added to cart", cartEmpty:"Your cart is empty", cartEmptySub:"Tap «Add to cart» on a product page", cartPickSize:"Choose a size", nItems:"{n} item(s)", total:"Total", checkout:"Checkout", orderTitle:"Checkout", oName:"Full name", oPhone:"Phone", oFixed:"Taken from your account — cannot be changed", oAddr:"Delivery address", oAddrPh:"Region, district, street, house", oNote:"Note (optional)", e_addr:"Enter a delivery address", orderImo:"Order via IMO", oSeller:"Seller", oCopyNum:"Copy number", orderHow:"The order goes to the seller\'s chat in the app, and IMO opens: pick the seller {n} and send. The order text is copied — paste it if it does not appear.", orderCopied:"Order copied. In IMO find the seller {n} and paste the text.", orderSent:"Order sent to the seller?", clearSent:"Remove from cart", oNew:"New order", oSize:"size", oPhoto:"Photo", oProduct:"Product", remove:"Remove", 
   tHome:"Home", tCats:"Categories", tPhoto:"Photo", tChats:"Chats", tMe:"Profile",
   back:"Back", searchPh:"Search products", find:"Search",
   demo:"Demo mode: sample products. Seller login: 65 000000, PIN 1234",
@@ -2466,7 +2481,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "84";   // номер версии — виден внизу профиля
+const APP_VER = "85";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3317,7 +3332,7 @@ function cartAdd(p, size){
 }
 // корзина — только для товаров (не для квартир, работы, услуг, аренды, машин)
 const NO_CART = {realty:1, jobs:1, services:1, buy:1, rent:1, business:1};
-function cartable(p){ return !!p && !NO_CART[p.cat] && !VEHICLE_SUBS[p.sub] && !(S.user && S.user.id === p.user); }
+function cartable(p){ return !!p && !NO_CART[p.cat] && !VEHICLE_SUBS[p.sub]; }
 async function cartAddFlow(p){
   const x = await cartPick(p); if (!x) return false;
   cartAdd(x.p, x.size); return true;
@@ -3355,12 +3370,15 @@ function cartBtn(p){
 // кнопка «В корзину» на карточке в списках
 function cardCartBtn(p){
   if (S.cardExtra || !cartable(p)) return null;
-  const b = h("button",{type:"button",class:"cc-btn"+(cartHas(p.id)?" on":"")}, h("span",{html:IC.bag}), h("span",{text:cartHas(p.id) ? t("inCart") : t("toCart")}));
-  b.onclick = async e => {
-    e.preventDefault(); e.stopPropagation();
-    if (await cartAddFlow(p)){ b.classList.add("on"); b.lastChild.textContent = t("inCart"); }
-  };
-  return b;
+  const qtyOf = () => S.cart.filter(x => x.id === p.id).reduce((a, x) => a + (+x.qty || 1), 0);
+  const n = h("i",{class:"cc-n"});
+  const b = h("button",{type:"button",class:"cc-cart","aria-label":t("toCart"),title:t("toCart")}, h("span",{html:IC.bag}), n);
+  const paint = () => { const q = qtyOf(); b.classList.toggle("on", !!q); n.textContent = q || ""; n.hidden = !q; };
+  paint();
+  b.onclick = async e => { e.preventDefault(); e.stopPropagation(); if (await cartAddFlow(p)) paint(); };
+  const buy = h("button",{type:"button",class:"cc-buy"}, h("span",{html:IC.bag}), h("span",{text:t("buyNow")}));
+  buy.onclick = e => { e.preventDefault(); e.stopPropagation(); buyNow(p); };
+  return h("div",{class:"cc-row"}, b, buy);
 }
 function cartGroups(){
   const g = new Map();
@@ -3371,7 +3389,11 @@ function cartSum(items){ return items.reduce((a, x) => a + (+x.price || 0) * (+x
 function viewCart(){
   setTab("cart");
   const root = h("div",{class:"wrap"});
-  page(h("div",{class:"bar"}, h("h1",{text:t("tCart"),style:{paddingLeft:"8px"}})), root);
+  const clr = h("button",{class:"icon-btn","aria-label":t("clearCart"),title:t("clearCart"),html:IC.trash,style:{color:"var(--red)"},onclick:async()=>{
+    if (!S.cart.length) return;
+    if (await confirmSheet(t("clearCartQ"))){ S.cart = []; cartSave(); draw(); }
+  }});
+  page(h("div",{class:"bar"}, h("h1",{text:t("tCart"),style:{paddingLeft:"8px"}}), clr), root);
   const draw = () => {
     cartBadge();
     if (!S.cart.length){
@@ -3394,14 +3416,20 @@ function viewCart(){
                 h("button",{type:"button","aria-label":"-",text:"−",onclick:()=>{ if ((+x.qty||1) > 1){ x.qty--; cartSave(); draw(); } }}),
                 h("b",{text:String(x.qty || 1)}),
                 h("button",{type:"button","aria-label":"+",text:"+",onclick:()=>{ x.qty = (+x.qty||1) + 1; cartSave(); draw(); }})),
-              (+x.qty||1) > 1 ? h("b",{class:"lt",text:"= "+fmt((+x.price||0)*(+x.qty||1))+" TMT"}) : null,
+              h("b",{class:"lt",text:fmt((+x.price||0)*(+x.qty||1))+" TMT"}),
               h("button",{type:"button",class:"del","aria-label":t("remove"),html:IC.trash,onclick:()=>{
                 S.cart = S.cart.filter(y => y !== x); cartSave(); draw(); }}))))),
-        h("div",{class:"cart-tot"}, h("span",{text:t("total")}), h("b",{text:fmt(sum)+" TMT"})),
-        h("button",{class:"btn block",onclick:()=>checkoutSheet(g, draw)}, icon("bag"), t("checkout")));
+        h("div",{class:"cart-tot"}, h("div",null, h("small",{text:t("total")}), h("b",{text:fmt(sum)+" TMT"})),
+          h("button",{class:"btn",onclick:()=>checkoutSheet(g, draw)}, t("checkout"))));
     }));
   };
   draw();
+}
+function confirmSheet(q){
+  return sheet((box, close) => box.append(h("h2",{text:q}),
+    h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}},
+      h("button",{class:"btn ghost",text:t("no"),onclick:()=>close(false)}),
+      h("button",{class:"btn",text:t("yes"),onclick:()=>close(true)}))));
 }
 function orderText(g, addr, note){
   const u = S.user, L = [];
@@ -3431,6 +3459,22 @@ async function orderFiles(items){
   }));
   const files = out.filter(Boolean);
   return files.length && navigator.canShare({files}) ? files : null;
+}
+// заказ — в чат приложения: сначала фото товаров, потом текст заказа
+async function sendOrderToChat(g, text){
+  try{
+    const r = await call("openChat", {product: g.items[0].id});
+    if (!r || !r.ok) return;
+    for (const x of g.items.slice(0, 5)){
+      try{
+        if (!x.photo) continue;
+        const blob = await (await fetch(x.photo)).blob();
+        const c = await compress(new File([blob], "p.jpg", {type: blob.type || "image/jpeg"}), 1000);
+        await call("send", {id: r.id, text: x.title + (x.size ? " · " + t("oSize") + ": " + x.size : ""), data: c.b64, mime: "image/jpeg"});
+      }catch(e){}
+    }
+    await call("send", {id: r.id, text});
+  }catch(e){}
 }
 function openImoApp(){
   const ua = navigator.userAgent;
@@ -3463,7 +3507,7 @@ async function checkoutSheet(g, redraw){
       }
       close();
       // заказ приходит продавцу и в чат приложения (с уведомлением)
-      call("openChat", {product: g.items[0].id}).then(r => r && r.ok ? call("send", {id: r.id, text}) : null).catch(() => {});
+      sendOrderToChat(g, text);
       if (!shared){ toast(copied ? t("orderCopied",{n:num}) : text); setTimeout(openImoApp, 700); }
       setTimeout(() => toast(t("orderSent"), {label: t("clearSent"), fn: () => {
         const keys = g.items.map(cartKey); S.cart = S.cart.filter(x => !keys.includes(cartKey(x))); cartSave(); if (redraw && curPath() === "/cart") redraw();
@@ -3473,7 +3517,13 @@ async function checkoutSheet(g, redraw){
       h("div",{class:"o-seller"}, avaEl(s.name, s.logo),
         h("div",null, h("small",{text:t("oSeller")+" · IMO"}), h("b",{text:(s.name || "") + " · " + phoneFmt(s.phone)})),
         h("button",{type:"button",class:"btn sm ghost",text:t("oCopyNum"),onclick:async()=>{ await copyLink("+993"+s.phone); toast(t("linkCopied")); }})),
-      h("div",{class:"o-sum"}, ...g.items.map(x => x.thumb ? h("img",{src:x.thumb,alt:x.title}) : null)),
+      h("div",{class:"o-items"}, ...g.items.map(x => {
+        const sz = h("input",{class:"inp",maxlength:"40",placeholder:t("oSizePh"),value:x.size || ""});
+        sz.oninput = () => { x.size = sz.value.trim(); if (S.cart.includes(x)) lsSet("cart", S.cart); };
+        return h("div",{class:"o-it"}, x.thumb ? h("img",{src:x.thumb,alt:x.title}) : h("div",{class:"noimg"}),
+          h("div",{class:"bd"}, h("div",{class:"tt",text:x.title}),
+            h("small",{text:(x.qty||1)+" × "+fmt(x.price)+" TMT"+(x.variant ? " · "+x.variant : "")}), sz));
+      })),
       h("div",{class:"field"}, h("span",{text:t("oName")}), ro("user", u.name)),
       h("div",{class:"field"}, h("span",{text:t("oPhone")}), ro("phone", phoneFmt(u.phone)),
         h("div",{class:"hint",text:t("oFixed")})),
