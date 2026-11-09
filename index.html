@@ -2521,7 +2521,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "96";   // номер версии — виден внизу профиля
+const APP_VER = "97";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3148,7 +3148,8 @@ const CAT_PHOTO = {shoes:1, electronics:1, realty:1, home:1, auto:1, personal:1,
 // готовые фото разделов (папка subs/ на сайте)
 const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"].map(k => ["auto:"+k, 1]).concat(["flat","house","land","commercial","garage"].map(k => ["realty:"+k, 1]))
   .concat(["mobiles","computers","tv","consoles","smartwatches","speakers","printers","cameras","phoneacc","security","ups","network","phoneparts","components"].map(k => ["electronics:"+k, 1]))
-  .concat(["womenshoes","menshoes","kidsshoes"].map(k => ["shoes:"+k, 1])));
+  .concat(["womenshoes","menshoes","kidsshoes"].map(k => ["shoes:"+k, 1]))
+  .concat(["furniture","kitchenware","textile","carpets","lighting","other"].map(k => ["home:"+k, 1])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
   if (key === "cat:all") return "icons/logo.webp"; // «Все товары» — всегда логотип
@@ -3172,7 +3173,8 @@ const ALL_SUB = {
   electronics:["Вся электроника","Ähli elektronika","All electronics"],
   auto:["Весь транспорт","Ähli ulaglar","All vehicles"],
   realty:["Вся недвижимость","Ähli gozgalmaýan emläk","All real estate"],
-  shoes:["Вся обувь","Ähli aýakgaplar","All shoes"]
+  shoes:["Вся обувь","Ähli aýakgaplar","All shoes"],
+  home:["Всё для дома","Öý üçin ähli zat","All home & garden"]
 };
 function photoTile(key, label, on, onclick, count, iconId){
   return h("button",{type:"button",class:"pt"+(on?" on":""),onclick},
