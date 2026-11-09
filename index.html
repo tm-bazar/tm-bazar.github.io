@@ -1459,7 +1459,7 @@ en: {
    Типы полей: sel (один вариант), multi (несколько), num (число), text, year. */
 const SUBS = {
   electronics: ["mobiles","computers","tv","consoles","smartwatches","speakers","printers","cameras","phoneacc",
-                "security","ups","network","phoneparts","components"],
+                "security","ups","components"],
   realty:      ["flat","house","land","commercial","garage"],
   home:        ["furniture","kitchenware","textile","carpets","decor","lighting","cleaning","garden","food","other"],
   auto:        ["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"],
@@ -2487,7 +2487,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "91";   // номер версии — виден внизу профиля
+const APP_VER = "92";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2637,7 +2637,8 @@ async function loadVectors(){
 // старые объявления → новые категории
 const OLD_SUB = {smartphones:"mobiles", buttonphones:"mobiles", audio:"speakers", elecacc:"components",
   laptops:"computers", tablets:"mobiles", landline:"mobiles", players:"speakers", headphones:"phoneacc", cases:"phoneacc",
-  powerbanks:"phoneacc", chargers:"phoneacc", batteries:"phoneacc", smartrings:"smartwatches", office:"printers", surge:"ups"};
+  powerbanks:"phoneacc", chargers:"phoneacc", batteries:"phoneacc", smartrings:"smartwatches", office:"printers", surge:"ups",
+  network:"components", phoneparts:"phoneacc"};
 const OLD_CAT = {
   phones:      s => ["electronics", OLD_SUB[s] || s || "mobiles"],
   clothes:     s => s === "kids" ? ["kids","kidsclothes"] : ["personal", s === "men" ? "menclothes" : "womenclothes"],
