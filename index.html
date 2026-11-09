@@ -179,6 +179,7 @@ textarea.inp{height:auto;min-height:96px;padding:12px 14px;resize:vertical;line-
 .tabbar .wrap{display:flex;height:var(--tab);max-width:620px}
 .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:var(--mut);position:relative}
 .tabbar a.on{color:var(--red);font-weight:700}
+.tabbar a{font-size:10.5px;min-width:0}.tabbar a>span:last-of-type{white-space:nowrap}
 .tabbar a.cam span.c{width:52px;height:52px;margin-top:-22px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;display:grid;place-items:center;box-shadow:0 4px 12px rgba(232,52,28,.4);border:4px solid #fff}
 .badge{position:absolute;top:5px;left:calc(50% + 6px);background:var(--red);color:#fff;font-size:10.5px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;padding:0 5px;border:2px solid #fff}
 
@@ -942,6 +943,38 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 #intro .i-ring.done{animation:ipop .4s ease}
 @keyframes ispin{to{transform:rotate(360deg)}}
 @keyframes ipop{50%{transform:scale(1.12)}}
+
+/* ===== КОРЗИНА ===== */
+.dock .mini.cart-b{background:none;border:0;padding:0;cursor:pointer;font:inherit;font-size:11px}
+.dock .mini.cart-b.on{color:var(--red)}
+.dock .mini.cart-b{width:46px}.dock .btn{padding:0 12px}
+.cart-sh{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.cart-sh .nm{font-weight:700}
+.cart-sh small{color:var(--mut)}
+.ci{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.ci img,.ci .noimg{width:74px;height:74px;border-radius:10px;object-fit:cover;background:var(--bg);flex:none}
+.ci .bd{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.ci .tt{font-size:14px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--fg)}
+.ci .vr{font-size:12.5px;color:var(--mut)}
+.ci .rw{display:flex;align-items:center;gap:8px;margin-top:auto}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;height:32px}
+.qty button{width:32px;height:30px;border:0;background:none;font-size:18px;font-weight:700;cursor:pointer;color:var(--fg)}
+.qty b{min-width:22px;text-align:center;font-size:14px}
+.ci .del{margin-left:auto;border:0;background:none;color:var(--mut);cursor:pointer;padding:6px}
+.cart-tot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:12px;margin:2px 0 12px;font-size:15px}
+.cart-tot b{font-size:18px}
+.ro-f{display:flex;align-items:center;gap:10px;min-height:48px;border:1.5px dashed var(--line);border-radius:12px;padding:0 14px;background:var(--bg);font-weight:600;font-size:16px}
+.ro-f .lk{margin-left:auto;color:var(--mut2);font-size:14px}
+.o-sum{display:flex;gap:8px;overflow-x:auto;margin:0 0 14px;padding-bottom:2px}
+.o-sum img{width:56px;height:56px;border-radius:8px;object-fit:cover;flex:none;background:var(--bg)}
+.o-seller{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:12px;padding:10px 12px;margin-bottom:14px}
+.o-seller div{flex:1;min-width:0}
+.o-seller small{display:block;color:var(--mut);font-size:12px}
+.ci .lt{font-size:13px;white-space:nowrap}
+.cc-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:36px;margin-top:8px;border:0;border-radius:999px;background:var(--red);color:#fff;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer}
+.cc-btn svg{width:18px;height:18px}
+.cc-btn.on{background:var(--redBg);color:var(--red)}
+.lcard .lbd{display:flex;flex-direction:column}
 </style>
 </head>
 <body>
@@ -1020,6 +1053,7 @@ ru: {
   imoCopied:"Номер {n} скопирован. В IMO нажмите поиск и вставьте номер.",
   forgotPinQ:"Забыли PIN?", forgotPinHow:"Напишите администратору в IMO или позвоните: назовите свой номер телефона, и вам поставят новый PIN.",
   contactAdmin:"Связаться с администрацией", contactAdminSub:"Вопросы, забытый PIN, проблемы с продавцом — напишите в чат приложения, в IMO или позвоните.",
+  tCart:"Корзина", buyNow:"Купить", toCart:"В корзину", inCart:"В корзине", cartAdded:"Добавлено в корзину", cartEmpty:"Корзина пуста", cartEmptySub:"Нажмите «В корзину» на странице товара", cartPickSize:"Выберите размер", nItems:"{n} товар(ов)", total:"Итого", checkout:"Оформить заказ", orderTitle:"Оформление заказа", oName:"Имя и фамилия", oPhone:"Телефон", oFixed:"Берётся из вашего аккаунта — изменить нельзя", oAddr:"Адрес доставки", oAddrPh:"Велаят, этрап, улица, дом", oNote:"Комментарий (необязательно)", e_addr:"Укажите адрес доставки", orderImo:"Заказать через IMO", oSeller:"Продавец", oCopyNum:"Копировать номер", orderHow:"Заказ придёт продавцу в чат приложения, и откроется IMO: выберите продавца {n} и отправьте. Текст заказа уже скопирован — если не появится, вставьте его.", orderCopied:"Заказ скопирован. В IMO найдите продавца {n} и вставьте текст.", orderSent:"Заказ отправлен продавцу?", clearSent:"Убрать из корзины", oNew:"Новый заказ", oSize:"размер", oPhoto:"Фото", oProduct:"Товар", remove:"Удалить", 
   tHome:"Главная", tCats:"Категории", tPhoto:"По фото", tChats:"Чаты", tMe:"Профиль",
   back:"Назад", searchPh:"Искать товары", find:"Найти",
   demo:"Демо-режим: товары для примера. Вход продавца: 65 000000, PIN 1234",
@@ -1168,6 +1202,7 @@ tm: {
   imoCopied:"{n} belgi göçürildi. IMO-da gözlegi basyp, belgini goýuň.",
   forgotPinQ:"PIN ýatdan çykdymy?", forgotPinHow:"Administratora IMO-da ýazyň ýa-da jaň ediň: telefon belgiňizi aýdyň, size täze PIN goýarlar.",
   contactAdmin:"Administrasiýa bilen habarlaşmak", contactAdminSub:"Soraglar, ýatdan çykan PIN, satyjy bilen meseleler — programmadaky çata, IMO-da ýazyň ýa-da jaň ediň.",
+  tCart:"Sebet", buyNow:"Satyn al", toCart:"Sebede", inCart:"Sebetde", cartAdded:"Sebede goşuldy", cartEmpty:"Sebet boş", cartEmptySub:"Haryt sahypasynda «Sebede» basyň", cartPickSize:"Ölçegi saýlaň", nItems:"{n} haryt", total:"Jemi", checkout:"Sargyt etmek", orderTitle:"Sargydy resmileşdirmek", oName:"Ady we familiýasy", oPhone:"Telefon", oFixed:"Hasabyňyzdan alynýar — üýtgedip bolmaýar", oAddr:"Eltip berme salgysy", oAddrPh:"Welaýat, etrap, köçe, jaý", oNote:"Bellik (islege bagly)", e_addr:"Salgyny giriziň", orderImo:"IMO arkaly sargyt et", oSeller:"Satyjy", oCopyNum:"Belgini göçür", orderHow:"Sargyt satyja programmanyň hatyna geler we IMO açylar: satyjyny {n} saýlaň we iberiň. Sargyt teksti göçürildi — görünmese, goýuň.", orderCopied:"Sargyt göçürildi. IMO-da satyjyny {n} tapyp, teksti goýuň.", orderSent:"Sargyt satyja iberildimi?", clearSent:"Sebetden aýyr", oNew:"Täze sargyt", oSize:"ölçeg", oPhoto:"Surat", oProduct:"Haryt", remove:"Aýyr", 
   tHome:"Baş sahypa", tCats:"Bölümler", tPhoto:"Surat bilen", tChats:"Hatlar", tMe:"Profil",
   back:"Yza", searchPh:"Haryt gözle", find:"Gözle",
   demo:"Demo: mysal harytlar. Satyjy girişi: 65 000000, PIN 1234",
@@ -1316,6 +1351,7 @@ en: {
   imoCopied:"Number {n} copied. In IMO, tap search and paste the number.",
   forgotPinQ:"Forgot your PIN?", forgotPinHow:"Message the administrator on IMO or call: tell them your phone number and they'll set a new PIN.",
   contactAdmin:"Contact the administration", contactAdminSub:"Questions, forgotten PIN, problems with a seller — use the in-app chat, IMO, or call.",
+  tCart:"Cart", buyNow:"Buy now", toCart:"Add to cart", inCart:"In cart", cartAdded:"Added to cart", cartEmpty:"Your cart is empty", cartEmptySub:"Tap «Add to cart» on a product page", cartPickSize:"Choose a size", nItems:"{n} item(s)", total:"Total", checkout:"Checkout", orderTitle:"Checkout", oName:"Full name", oPhone:"Phone", oFixed:"Taken from your account — cannot be changed", oAddr:"Delivery address", oAddrPh:"Region, district, street, house", oNote:"Note (optional)", e_addr:"Enter a delivery address", orderImo:"Order via IMO", oSeller:"Seller", oCopyNum:"Copy number", orderHow:"The order goes to the seller\'s chat in the app, and IMO opens: pick the seller {n} and send. The order text is copied — paste it if it does not appear.", orderCopied:"Order copied. In IMO find the seller {n} and paste the text.", orderSent:"Order sent to the seller?", clearSent:"Remove from cart", oNew:"New order", oSize:"size", oPhoto:"Photo", oProduct:"Product", remove:"Remove", 
   tHome:"Home", tCats:"Categories", tPhoto:"Photo", tChats:"Chats", tMe:"Profile",
   back:"Back", searchPh:"Search products", find:"Search",
   demo:"Demo mode: sample products. Seller login: 65 000000, PIN 1234",
@@ -2430,7 +2466,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "83";   // номер версии — виден внизу профиля
+const APP_VER = "84";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2513,6 +2549,7 @@ const IC = {
   rows:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/></svg>',
   plus:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   share:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7.5 7.5L12 3l4.5 4.5"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>',
+  bag:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6.5a3 3 0 016 0V8"/></svg>',
   imo:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3c5 0 9 3.6 9 8s-4 8-9 8c-1 0-2-.1-2.9-.4L4 20l1.4-3.8A7.6 7.6 0 013 11c0-4.4 4-8 9-8z"/><path d="M8.5 9.5v4M12 9.5v4M15.5 9.5v4" stroke-linecap="round"/></svg>'
 };
 const icon = (k, cls) => h("span",{class:cls||null,style:{display:"inline-grid"},html:IC[k]});
@@ -2747,7 +2784,7 @@ function langSwitch(){
    без касания (или вторую за то же касание) — Chrome перестаёт доверять ВСЕМ записям сайта и «Назад» выходит.
    Поэтому: одно касание = одна запись, а после «Назад» ничего не добавляется.
    На любом экране «Назад» — шаг назад до главного меню; на главном меню — вопрос «Выйти из приложения?». */
-const TOP_PAGES = ["/fav", "/sell", "/chats", "/me", "/cats"];
+const TOP_PAGES = ["/fav", "/sell", "/cart", "/chats", "/me", "/cats"];
 const SPARE = 60;                                // предел записей (обычно касаний больше, чем экранов)
 const curPath = () => location.hash.slice(1) || "/";
 const navStack = [];
@@ -2838,6 +2875,7 @@ const ROUTES = [
   [/^\/u\/(\w+)\/view$/, m => viewShop(m[1])],
   [/^\/photo$/, () => viewPhoto()],
   [/^\/fav$/, () => viewFav()],
+  [/^\/cart$/, () => viewCart()],
   [/^\/chats$/, () => viewChats()],
   [/^\/chat\/(\w+)$/, m => viewChat(m[1])],
   [/^\/me$/, () => viewMe()],
@@ -2878,15 +2916,16 @@ function topBar(title, opts){
 
 /* ===== ТАББАР ===== */
 function renderTabbar(){
-  const tabs = [["home","/",IC.home,t("tHome")],["cats","/cats",IC.grid,t("tCats")],["add","/sell",IC.plus,t("tAdd")],
+  const tabs = [["home","/",IC.home,t("tHome")],["cats","/cats",IC.grid,t("tCats")],["add","/sell",IC.plus,t("tAdd")],["cart","/cart",IC.bag,t("tCart")],
     ["chats","/chats",IC.chat,t("tChats")],["me","/me",IC.user,t("tMe")]];
   $("tabbar").replaceChildren(h("div",{class:"wrap"}, ...tabs.map(([k,href,ic,label]) =>
     h("a",{href:"#"+href,"data-tab":k,class:k==="add"?"cam":null,onclick:k==="add"?(()=>{ S.sellPreset = null; }):null},
       k === "add" ? h("span",{class:"c",html:ic}) : h("span",{html:ic}),
       h("span",{text:label}),
       k === "chats" ? h("span",{class:"badge",id:"badge",hidden:true}) : null,
+      k === "cart" ? h("span",{class:"badge",id:"badge-cart",hidden:true}) : null,
       k === "me" ? h("span",{class:"badge dot",id:"badge-me",hidden:true}) : null))));
-  updateBadge();
+  updateBadge(); cartBadge();
 }
 function updateBadge(){
   const b = $("badge"); if (!b) return;
@@ -3245,6 +3284,207 @@ async function viewModels(cat, sub, b){
   wrap.append(h("div",{class:"mk"}, q, list), bar);
 }
 
+/* ===== КОРЗИНА (v84) ===== */
+// Товары хранятся на телефоне покупателя. Заказ уходит продавцу в IMO:
+// текст заказа (имя и телефон из аккаунта, адрес, ссылки на товары) + фото товаров.
+S.cart = lsGet("cart", []);
+function cartSave(){ lsSet("cart", S.cart); cartBadge(); }
+function cartCount(){ return S.cart.reduce((a, x) => a + (+x.qty || 1), 0); }
+function cartBadge(){
+  const b = $("badge-cart"); if (!b) return;
+  const n = cartCount(); b.hidden = !n; b.textContent = n > 9 ? "9+" : n;
+}
+function cartKey(x){ return x.id + "|" + (x.variant || "") + "|" + (x.size || ""); }
+function cartHas(id){ return S.cart.some(x => x.id === id); }
+function cartItem(p, size){
+  const ph = (p.photos && p.photos[0]) || null;
+  const variant = S.pickVariant && S.pickVariant.product === p.id ? S.pickVariant.label : "";
+  const vph = variant && (p.photos || []).find(x => x.label === variant);
+  const s = p.seller || {};
+  const it = {id: p.id, title: p.title, price: +p.price || 0, cat: p.cat,
+    thumb: (vph && (vph.thumb || vph.url)) || (ph ? (ph.thumb || ph.url) : p.thumb) || "",
+    photo: (vph && (vph.url || vph.thumb)) || (ph ? (ph.url || ph.thumb) : p.thumb) || "",
+    variant, size: size || "", qty: 1,
+    seller: {id: s.id || p.user, name: s.name || "", phone: s.phone || "", imo: !!s.imo, logo: s.logo || ""}};
+  return it;
+}
+function cartAdd(p, size){
+  const it = cartItem(p, size);
+  const same = S.cart.find(x => cartKey(x) === cartKey(it));
+  if (same) same.qty = (+same.qty || 1) + 1; else S.cart.push(it);
+  cartSave();
+  toast(t("cartAdded"), {label: t("tCart"), fn: () => go("/cart")});
+}
+// корзина — только для товаров (не для квартир, работы, услуг, аренды, машин)
+const NO_CART = {realty:1, jobs:1, services:1, buy:1, rent:1, business:1};
+function cartable(p){ return !!p && !NO_CART[p.cat] && !VEHICLE_SUBS[p.sub] && !(S.user && S.user.id === p.user); }
+async function cartAddFlow(p){
+  const x = await cartPick(p); if (!x) return false;
+  cartAdd(x.p, x.size); return true;
+}
+// один клик: сразу оформить заказ на этот товар, не кладя в корзину
+async function buyNow(p){
+  const x = await cartPick(p); if (!x) return;
+  const it = cartItem(x.p, x.size);
+  checkoutSheet({seller: it.seller, items: [it]}, null);
+}
+async function cartPick(p){
+  if (S.user && S.user.id === p.user){ toast(t("e_own")); return null; }
+  if (!p.seller || !p.seller.phone){          // в карточке списка нет телефона продавца — берём полный товар
+    const b = busy(); const r = await call("product", {id: p.id}); b.done();
+    if (!r.ok || !r.product){ toast(errText(r)); return null; }
+    migrateProduct(r.product); p = r.product;
+  }
+  const z = (p.attrs || {}).size; const sizes = Array.isArray(z) ? z : z ? [z] : [];
+  let size = "";
+  if (sizes.length > 1){
+    size = await sheet((box, close) => box.append(h("h2",{text:t("cartPickSize")}),
+      h("div",{class:"sz-row",style:{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"8px"}},
+        ...sizes.map(v => h("button",{type:"button",class:"sz",style:{background:"#fff",cursor:"pointer"},text:v,onclick:()=>close(v)})))));
+    if (!size) return null;
+  } else if (sizes.length === 1) size = sizes[0];
+  return {p, size};
+}
+function cartBtn(p){
+  if (!cartable(p)) return null;
+  const b = h("button",{type:"button",class:"mini cart-b"+(cartHas(p.id)?" on":""),disabled:p.loading||null,"aria-label":t("toCart")},
+    h("span",{html:IC.bag}), h("span",{text:cartHas(p.id) ? t("inCart") : t("toCart")}));
+  b.onclick = async () => { if (await cartAddFlow(p)){ b.classList.add("on"); b.lastChild.textContent = t("inCart"); } };
+  return b;
+}
+// кнопка «В корзину» на карточке в списках
+function cardCartBtn(p){
+  if (S.cardExtra || !cartable(p)) return null;
+  const b = h("button",{type:"button",class:"cc-btn"+(cartHas(p.id)?" on":"")}, h("span",{html:IC.bag}), h("span",{text:cartHas(p.id) ? t("inCart") : t("toCart")}));
+  b.onclick = async e => {
+    e.preventDefault(); e.stopPropagation();
+    if (await cartAddFlow(p)){ b.classList.add("on"); b.lastChild.textContent = t("inCart"); }
+  };
+  return b;
+}
+function cartGroups(){
+  const g = new Map();
+  S.cart.forEach(x => { const k = x.seller.id || "?"; if (!g.has(k)) g.set(k, {seller: x.seller, items: []}); g.get(k).items.push(x); });
+  return [...g.values()];
+}
+function cartSum(items){ return items.reduce((a, x) => a + (+x.price || 0) * (+x.qty || 1), 0); }
+function viewCart(){
+  setTab("cart");
+  const root = h("div",{class:"wrap"});
+  page(h("div",{class:"bar"}, h("h1",{text:t("tCart"),style:{paddingLeft:"8px"}})), root);
+  const draw = () => {
+    cartBadge();
+    if (!S.cart.length){
+      root.replaceChildren(emptyBox("🛒", t("cartEmpty"), t("cartEmptySub"), h("a",{class:"btn soft",href:"#/",text:t("toShop")})));
+      return;
+    }
+    root.replaceChildren(...cartGroups().map(g => {
+      const s = g.seller, sum = cartSum(g.items), n = g.items.reduce((a, x) => a + (+x.qty || 1), 0);
+      return h("div",{class:"box"},
+        h("a",{class:"cart-sh",href:"#/u/"+s.id}, avaEl(s.name, s.logo),
+          h("div",null, h("div",{class:"nm",text:s.name || t("oSeller")}), h("small",{text:t("nItems",{n})}))),
+        ...g.items.map(x => h("div",{class:"ci"},
+          h("a",{href:"#/p/"+x.id}, x.thumb ? h("img",{src:x.thumb,alt:x.title,loading:"lazy"}) : h("div",{class:"noimg"})),
+          h("div",{class:"bd"},
+            h("a",{class:"tt",href:"#/p/"+x.id,text:x.title}),
+            x.variant || x.size ? h("div",{class:"vr",text:[x.variant, x.size ? t("oSize")+": "+x.size : ""].filter(Boolean).join(" · ")}) : null,
+            priceEl(x.price, null, "", x.cat),
+            h("div",{class:"rw"},
+              h("div",{class:"qty"},
+                h("button",{type:"button","aria-label":"-",text:"−",onclick:()=>{ if ((+x.qty||1) > 1){ x.qty--; cartSave(); draw(); } }}),
+                h("b",{text:String(x.qty || 1)}),
+                h("button",{type:"button","aria-label":"+",text:"+",onclick:()=>{ x.qty = (+x.qty||1) + 1; cartSave(); draw(); }})),
+              (+x.qty||1) > 1 ? h("b",{class:"lt",text:"= "+fmt((+x.price||0)*(+x.qty||1))+" TMT"}) : null,
+              h("button",{type:"button",class:"del","aria-label":t("remove"),html:IC.trash,onclick:()=>{
+                S.cart = S.cart.filter(y => y !== x); cartSave(); draw(); }}))))),
+        h("div",{class:"cart-tot"}, h("span",{text:t("total")}), h("b",{text:fmt(sum)+" TMT"})),
+        h("button",{class:"btn block",onclick:()=>checkoutSheet(g, draw)}, icon("bag"), t("checkout")));
+    }));
+  };
+  draw();
+}
+function orderText(g, addr, note){
+  const u = S.user, L = [];
+  L.push("🛒 " + t("oNew") + " — " + APP_NAME, "");
+  g.items.forEach((x, i) => {
+    const extra = [x.variant, x.size ? t("oSize")+": "+x.size : ""].filter(Boolean).join(", ");
+    L.push((i+1) + ") " + x.title + (extra ? " (" + extra + ")" : ""));
+    L.push("   " + (x.qty || 1) + " × " + fmt(x.price) + " TMT");
+    L.push("   🔗 " + productLink(x.id));
+    if (/^https?:/.test(x.photo || "")) L.push("   📷 " + x.photo);
+  });
+  L.push("", "💰 " + t("total") + ": " + fmt(cartSum(g.items)) + " TMT", "");
+  L.push("👤 " + u.name, "📞 " + phoneFmt(u.phone), "📍 " + addr);
+  if (note) L.push("💬 " + note);
+  return L.join("\n");
+}
+async function orderFiles(items){
+  if (!navigator.canShare) return null;
+  const out = [];
+  await Promise.all(items.slice(0, 6).map(async (x, i) => {
+    try{
+      if (!x.photo) return;
+      const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 4000);
+      const b = await (await fetch(x.photo, {signal: ctl.signal})).blob(); clearTimeout(tm);
+      out[i] = new File([b], "tmbazar-" + x.id + "-" + (i+1) + ".jpg", {type: b.type || "image/jpeg"});
+    }catch(e){}
+  }));
+  const files = out.filter(Boolean);
+  return files.length && navigator.canShare({files}) ? files : null;
+}
+function openImoApp(){
+  const ua = navigator.userAgent;
+  if (/Android/i.test(ua)) location.href = "intent://#Intent;package=com.imo.android.imoim;end";
+  else if (/iPhone|iPad|iPod/i.test(ua)) location.href = "imo://";
+}
+async function checkoutSheet(g, redraw){
+  if (!await needAuth("authWhy")) return;
+  const u = S.user, s = g.seller;
+  const filesP = orderFiles(g.items);    // фото готовим заранее, чтобы окно «Поделиться» открылось сразу
+  const addr = h("textarea",{class:"inp",rows:"2",maxlength:"200",placeholder:t("oAddrPh"),style:{minHeight:"64px"}});
+  addr.value = lsGet("addr", "");
+  const note = h("textarea",{class:"inp",rows:"2",maxlength:"300",style:{minHeight:"60px"}});
+  const err = h("div",{class:"err"});
+  const ro = (ic, text) => h("div",{class:"ro-f"}, icon(ic), h("span",{text}), h("span",{class:"lk",text:"🔒"}));
+  sheet((box, close) => {
+    const send = h("button",{class:"btn block",style:{background:"#2b7de9"}}, icon("imo"), t("orderImo") + " · " + fmt(cartSum(g.items)) + " TMT");
+    send.onclick = async () => {
+      const a = addr.value.trim();
+      if (a.length < 3){ err.textContent = t("e_addr"); addr.focus(); return; }
+      lsSet("addr", a);
+      const text = orderText(g, a, note.value.trim());
+      const copied = await copyLink(text);
+      const num = phoneFmt(s.phone);
+      let shared = false;
+      if (navigator.share){
+        const files = await filesP;
+        try{ await navigator.share(files ? {files, text} : {text}); shared = true; }
+        catch(e){ if (e && e.name === "AbortError") return; }
+      }
+      close();
+      // заказ приходит продавцу и в чат приложения (с уведомлением)
+      call("openChat", {product: g.items[0].id}).then(r => r && r.ok ? call("send", {id: r.id, text}) : null).catch(() => {});
+      if (!shared){ toast(copied ? t("orderCopied",{n:num}) : text); setTimeout(openImoApp, 700); }
+      setTimeout(() => toast(t("orderSent"), {label: t("clearSent"), fn: () => {
+        const keys = g.items.map(cartKey); S.cart = S.cart.filter(x => !keys.includes(cartKey(x))); cartSave(); if (redraw && curPath() === "/cart") redraw();
+      }}), shared ? 600 : 3400);
+    };
+    box.append(h("h2",{text:t("orderTitle")}),
+      h("div",{class:"o-seller"}, avaEl(s.name, s.logo),
+        h("div",null, h("small",{text:t("oSeller")+" · IMO"}), h("b",{text:(s.name || "") + " · " + phoneFmt(s.phone)})),
+        h("button",{type:"button",class:"btn sm ghost",text:t("oCopyNum"),onclick:async()=>{ await copyLink("+993"+s.phone); toast(t("linkCopied")); }})),
+      h("div",{class:"o-sum"}, ...g.items.map(x => x.thumb ? h("img",{src:x.thumb,alt:x.title}) : null)),
+      h("div",{class:"field"}, h("span",{text:t("oName")}), ro("user", u.name)),
+      h("div",{class:"field"}, h("span",{text:t("oPhone")}), ro("phone", phoneFmt(u.phone)),
+        h("div",{class:"hint",text:t("oFixed")})),
+      h("label",{class:"field"}, h("span",{text:t("oAddr")}), addr),
+      h("label",{class:"field"}, h("span",{text:t("oNote")}), note),
+      err,
+      h("div",{class:"hint",style:{margin:"0 0 12px"},text:t("orderHow",{n:phoneFmt(s.phone)})}),
+      send);
+  });
+}
+
 /* ===== IMO ===== */
 // У IMO нет ссылки «открыть чат с номером», поэтому: копируем номер и открываем приложение IMO.
 async function openImo(phone){
@@ -3463,7 +3703,8 @@ function card(p, extra){
       h("div",{class:"mt"}, extra || null,
         p.rating ? h("span",{class:"rt"}, "★ "+p.rating.toFixed(1), h("small",{text:" ("+p.reviews+")"})) : null,
         h("span",{class:"mt-loc",text:"📍"+placeText(p)}), h("span",{class:"mt-ago",text:"· "+ago(p.at)}),
-        h("span",{class:"mt-btns"}, shareBtn(p), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")))));
+        h("span",{class:"mt-btns"}, shareBtn(p), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart"))),
+      cardCartBtn(p)));
 }
 // карточка-строка (как в Aýterek): фото слева, справа цена, название, характеристики
 function listCard(p){
@@ -3475,7 +3716,8 @@ function listCard(p){
       infoChips(p),
       cardLine(p) ? h("div",{class:"car-line",text:cardLine(p)}) : null,
       h("div",{class:"lmt"}, p.rating ? h("span",{class:"rt",text:"★ "+p.rating.toFixed(1)}) : null,
-        h("span",{class:"mt-loc",text:"📍"+placeText(p)}), h("span",{text:ago(p.at)}))));
+        h("span",{class:"mt-loc",text:"📍"+placeText(p)}), h("span",{text:ago(p.at)})),
+      cardCartBtn(p)));
 }
 // все фото объявления (для крупного вида) — один запрос на объявление, с запоминанием
 const photoCache = {};
@@ -3507,7 +3749,8 @@ function bigCard(p){
       h("div",{class:"bc-tt",text:p.title}),
       infoChips(p),
       cardLine(p) ? h("div",{class:"car-line",text:cardLine(p)}) : null,
-      h("div",{class:"lmt"}, h("span",{class:"mt-loc",text:"📍"+placeText(p)}), h("span",{text:ago(p.at)}))));
+      h("div",{class:"lmt"}, h("span",{class:"mt-loc",text:"📍"+placeText(p)}), h("span",{text:ago(p.at)})),
+      cardCartBtn(p)));
   if (p.photoCount > 1){
     el._more = () => productPhotos(p.id).then(ph => {
       ph.slice(0, 10).forEach((x, i) => {
@@ -4322,9 +4565,13 @@ function renderProduct(root, p){
   // нижняя панель
   const dock = h("div",{class:"dock"}, h("div",{class:"wrap"},
     heartBtn(p.id, "mini"),
+    isOwner ? null : cartBtn(p),
+    !isOwner && cartable(p) ? h("button",{type:"button",class:"mini cart-b",disabled:p.loading||null,onclick:()=>contact("call", p)}, h("span",{html:IC.phone}), h("span",{text:t("call")})) : null,
     isOwner ? h("a",{class:"btn ghost",href:"#/edit/"+p.id}, icon("edit"), t("edit")) :
       h("button",{class:"btn ghost",disabled:p.loading||null,onclick:()=>contact("chat", p)}, icon("chat"), t("write")),
-    isOwner ? null : h("button",{class:"btn",disabled:p.loading||null,onclick:()=>contact("call", p)}, icon("phone"), t("call"))));
+    isOwner ? null : cartable(p) ?
+      h("button",{class:"btn",disabled:p.loading||null,onclick:()=>buyNow(p)}, icon("bag"), t("buyNow")) :
+      h("button",{class:"btn",disabled:p.loading||null,onclick:()=>contact("call", p)}, icon("phone"), t("call"))));
   dock.querySelector(".mini").append(h("span",{text:t("fav")}));
   root.append(dock);
 
