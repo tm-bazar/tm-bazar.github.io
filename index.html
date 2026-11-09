@@ -979,6 +979,12 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .cc-buy{flex:1;min-width:0;height:38px;border:0;border-radius:12px;background:var(--red);color:#fff;font:inherit;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;white-space:nowrap}
 .cc-buy svg{width:17px;height:17px}
 .cc-call{background:var(--green)}
+.cc-qty{display:flex;align-items:center;justify-content:space-between;flex:1;min-width:86px;height:38px;border:1.5px solid var(--red);border-radius:12px;background:var(--redBg);color:var(--red)}
+.cc-qty button{width:30px;height:100%;border:0;background:none;color:var(--red);font-size:20px;font-weight:800;cursor:pointer;padding:0}
+.cc-qty b{font-size:15px}
+.cc-buy.sm{flex:0 1 auto;padding:0 10px}.cc-buy.sm svg{display:none}
+.o-lbl{font-size:12.5px;font-weight:700;color:var(--red);margin-top:2px}
+.o-need.bad{border-color:var(--red);background:var(--redBg)}
 .cart-tot{gap:12px}.cart-tot small{display:block;color:var(--mut);font-size:12.5px}.cart-tot b{color:var(--red);font-size:20px}.cart-tot .btn{flex:1;max-width:220px}
 .o-items{display:grid;gap:10px;margin-bottom:14px}
 .o-it{display:flex;gap:10px;align-items:flex-start}
@@ -1069,7 +1075,7 @@ ru: {
   imoCopied:"Номер {n} скопирован. В IMO нажмите поиск и вставьте номер.",
   forgotPinQ:"Забыли PIN?", forgotPinHow:"Напишите администратору в IMO или позвоните: назовите свой номер телефона, и вам поставят новый PIN.",
   contactAdmin:"Связаться с администрацией", contactAdminSub:"Вопросы, забытый PIN, проблемы с продавцом — напишите в чат приложения, в IMO или позвоните.",
-  tCart:"Корзина", orderSend:"Отправить заказ", orderSending:"Отправляем заказ…", orderDone:"Заказ отправлен продавцу", orderDoneSub:"Он пришёл в чат приложения. Отправьте продавцу SMS, чтобы он скорее увидел заказ.", orderDoneSms:"Он пришёл в чат приложения, продавцу отправлено SMS.", smsSeller:"Отправить SMS продавцу", openChat:"Открыть чат", yes:"Да", no:"Нет", clearCart:"Очистить корзину", clearCartQ:"Очистить корзину?", oSizePh:"Размер / цвет (если нужно)", buyNow:"Купить", toCart:"В корзину", inCart:"В корзине", cartAdded:"Добавлено в корзину", cartEmpty:"Корзина пуста", cartEmptySub:"Нажмите «В корзину» на странице товара", cartPickSize:"Выберите размер", nItems:"{n} товар(ов)", total:"Итого", checkout:"Оформить заказ", orderTitle:"Оформление заказа", oName:"Имя и фамилия", oPhone:"Телефон", oFixed:"Берётся из вашего аккаунта — изменить нельзя", oAddr:"Адрес доставки", oAddrPh:"Велаят, этрап, улица, дом", oNote:"Комментарий (необязательно)", e_addr:"Укажите адрес доставки", orderImo:"Заказать через IMO", oSeller:"Продавец", oCopyNum:"Копировать номер", orderHow:"Заказ с фото, размером, вашим именем, телефоном и адресом придёт продавцу в чат приложения TM Bazar.", orderCopied:"Заказ скопирован. В IMO найдите продавца {n} и вставьте текст.", orderSent:"Заказ отправлен продавцу?", clearSent:"Убрать из корзины", oNew:"Новый заказ", oSize:"размер", oPhoto:"Фото", oProduct:"Товар", remove:"Удалить", 
+  tCart:"Корзина", oColor:"Цвет", oSizeL:"Размер / цвет", oNoteL:"Комментарий", oSizeReq:"Размер, цвет или что нужно *", e_size:"Напишите размер, цвет или что нужно — продавцу должно быть понятно", orderSend:"Отправить заказ", orderSending:"Отправляем заказ…", orderDone:"Заказ отправлен продавцу", orderDoneSub:"Он пришёл в чат приложения. Отправьте продавцу SMS, чтобы он скорее увидел заказ.", orderDoneSms:"Он пришёл в чат приложения, продавцу отправлено SMS.", smsSeller:"Отправить SMS продавцу", openChat:"Открыть чат", yes:"Да", no:"Нет", clearCart:"Очистить корзину", clearCartQ:"Очистить корзину?", oSizePh:"Напр.: 41 размер, чёрный", buyNow:"Купить", toCart:"В корзину", inCart:"В корзине", cartAdded:"Добавлено в корзину", cartEmpty:"Корзина пуста", cartEmptySub:"Нажмите «В корзину» на странице товара", cartPickSize:"Выберите размер", nItems:"{n} товар(ов)", total:"Итого", checkout:"Оформить заказ", orderTitle:"Оформление заказа", oName:"Имя и фамилия", oPhone:"Телефон", oFixed:"Берётся из вашего аккаунта — изменить нельзя", oAddr:"Адрес доставки", oAddrPh:"Велаят, этрап, улица, дом", oNote:"Комментарий (необязательно)", e_addr:"Укажите адрес доставки", orderImo:"Заказать через IMO", oSeller:"Продавец", oCopyNum:"Копировать номер", orderHow:"Заказ с фото, размером, вашим именем, телефоном и адресом придёт продавцу в чат приложения TM Bazar.", orderCopied:"Заказ скопирован. В IMO найдите продавца {n} и вставьте текст.", orderSent:"Заказ отправлен продавцу?", clearSent:"Убрать из корзины", oNew:"Новый заказ", oSize:"размер", oPhoto:"Фото", oProduct:"Товар", remove:"Удалить", 
   tHome:"Главная", tCats:"Категории", tPhoto:"По фото", tChats:"Чаты", tMe:"Профиль",
   back:"Назад", searchPh:"Искать товары", find:"Найти",
   demo:"Демо-режим: товары для примера. Вход продавца: 65 000000, PIN 1234",
@@ -1218,7 +1224,7 @@ tm: {
   imoCopied:"{n} belgi göçürildi. IMO-da gözlegi basyp, belgini goýuň.",
   forgotPinQ:"PIN ýatdan çykdymy?", forgotPinHow:"Administratora IMO-da ýazyň ýa-da jaň ediň: telefon belgiňizi aýdyň, size täze PIN goýarlar.",
   contactAdmin:"Administrasiýa bilen habarlaşmak", contactAdminSub:"Soraglar, ýatdan çykan PIN, satyjy bilen meseleler — programmadaky çata, IMO-da ýazyň ýa-da jaň ediň.",
-  tCart:"Sebet", orderSend:"Sargydy iber", orderSending:"Sargyt iberilýär…", orderDone:"Sargyt satyja iberildi", orderDoneSub:"Ol programmanyň hatyna geldi. Satyjy tizräk görer ýaly, oňa SMS iberiň.", orderDoneSms:"Ol programmanyň hatyna geldi, satyja SMS iberildi.", smsSeller:"Satyja SMS iber", openChat:"Haty aç", yes:"Hawa", no:"Ýok", clearCart:"Sebedi arassala", clearCartQ:"Sebedi arassalamalymy?", oSizePh:"Ölçeg / reňk (gerek bolsa)", buyNow:"Satyn al", toCart:"Sebede", inCart:"Sebetde", cartAdded:"Sebede goşuldy", cartEmpty:"Sebet boş", cartEmptySub:"Haryt sahypasynda «Sebede» basyň", cartPickSize:"Ölçegi saýlaň", nItems:"{n} haryt", total:"Jemi", checkout:"Sargyt etmek", orderTitle:"Sargydy resmileşdirmek", oName:"Ady we familiýasy", oPhone:"Telefon", oFixed:"Hasabyňyzdan alynýar — üýtgedip bolmaýar", oAddr:"Eltip berme salgysy", oAddrPh:"Welaýat, etrap, köçe, jaý", oNote:"Bellik (islege bagly)", e_addr:"Salgyny giriziň", orderImo:"IMO arkaly sargyt et", oSeller:"Satyjy", oCopyNum:"Belgini göçür", orderHow:"Surat, ölçeg, adyňyz, telefonyňyz we salgyňyz bilen sargyt satyja TM Bazar programmasynyň hatyna geler.", orderCopied:"Sargyt göçürildi. IMO-da satyjyny {n} tapyp, teksti goýuň.", orderSent:"Sargyt satyja iberildimi?", clearSent:"Sebetden aýyr", oNew:"Täze sargyt", oSize:"ölçeg", oPhoto:"Surat", oProduct:"Haryt", remove:"Aýyr", 
+  tCart:"Sebet", oColor:"Reňk", oSizeL:"Ölçeg / reňk", oNoteL:"Bellik", oSizeReq:"Ölçeg, reňk ýa-da näme gerek *", e_size:"Ölçegi, reňki ýa-da näme gerekdigini ýazyň — satyja düşnükli bolsun", orderSend:"Sargydy iber", orderSending:"Sargyt iberilýär…", orderDone:"Sargyt satyja iberildi", orderDoneSub:"Ol programmanyň hatyna geldi. Satyjy tizräk görer ýaly, oňa SMS iberiň.", orderDoneSms:"Ol programmanyň hatyna geldi, satyja SMS iberildi.", smsSeller:"Satyja SMS iber", openChat:"Haty aç", yes:"Hawa", no:"Ýok", clearCart:"Sebedi arassala", clearCartQ:"Sebedi arassalamalymy?", oSizePh:"Mysal: 41 ölçeg, gara", buyNow:"Satyn al", toCart:"Sebede", inCart:"Sebetde", cartAdded:"Sebede goşuldy", cartEmpty:"Sebet boş", cartEmptySub:"Haryt sahypasynda «Sebede» basyň", cartPickSize:"Ölçegi saýlaň", nItems:"{n} haryt", total:"Jemi", checkout:"Sargyt etmek", orderTitle:"Sargydy resmileşdirmek", oName:"Ady we familiýasy", oPhone:"Telefon", oFixed:"Hasabyňyzdan alynýar — üýtgedip bolmaýar", oAddr:"Eltip berme salgysy", oAddrPh:"Welaýat, etrap, köçe, jaý", oNote:"Bellik (islege bagly)", e_addr:"Salgyny giriziň", orderImo:"IMO arkaly sargyt et", oSeller:"Satyjy", oCopyNum:"Belgini göçür", orderHow:"Surat, ölçeg, adyňyz, telefonyňyz we salgyňyz bilen sargyt satyja TM Bazar programmasynyň hatyna geler.", orderCopied:"Sargyt göçürildi. IMO-da satyjyny {n} tapyp, teksti goýuň.", orderSent:"Sargyt satyja iberildimi?", clearSent:"Sebetden aýyr", oNew:"Täze sargyt", oSize:"ölçeg", oPhoto:"Surat", oProduct:"Haryt", remove:"Aýyr", 
   tHome:"Baş sahypa", tCats:"Bölümler", tPhoto:"Surat bilen", tChats:"Hatlar", tMe:"Profil",
   back:"Yza", searchPh:"Haryt gözle", find:"Gözle",
   demo:"Demo: mysal harytlar. Satyjy girişi: 65 000000, PIN 1234",
@@ -1367,7 +1373,7 @@ en: {
   imoCopied:"Number {n} copied. In IMO, tap search and paste the number.",
   forgotPinQ:"Forgot your PIN?", forgotPinHow:"Message the administrator on IMO or call: tell them your phone number and they'll set a new PIN.",
   contactAdmin:"Contact the administration", contactAdminSub:"Questions, forgotten PIN, problems with a seller — use the in-app chat, IMO, or call.",
-  tCart:"Cart", orderSend:"Send order", orderSending:"Sending the order…", orderDone:"Order sent to the seller", orderDoneSub:"It is in the app chat. Send the seller an SMS so they see it sooner.", orderDoneSms:"It is in the app chat and the seller got an SMS.", smsSeller:"SMS the seller", openChat:"Open chat", yes:"Yes", no:"No", clearCart:"Clear cart", clearCartQ:"Clear the cart?", oSizePh:"Size / colour (if needed)", buyNow:"Buy now", toCart:"Add to cart", inCart:"In cart", cartAdded:"Added to cart", cartEmpty:"Your cart is empty", cartEmptySub:"Tap «Add to cart» on a product page", cartPickSize:"Choose a size", nItems:"{n} item(s)", total:"Total", checkout:"Checkout", orderTitle:"Checkout", oName:"Full name", oPhone:"Phone", oFixed:"Taken from your account — cannot be changed", oAddr:"Delivery address", oAddrPh:"Region, district, street, house", oNote:"Note (optional)", e_addr:"Enter a delivery address", orderImo:"Order via IMO", oSeller:"Seller", oCopyNum:"Copy number", orderHow:"The order with photos, size, your name, phone and address goes to the seller's TM Bazar app chat.", orderCopied:"Order copied. In IMO find the seller {n} and paste the text.", orderSent:"Order sent to the seller?", clearSent:"Remove from cart", oNew:"New order", oSize:"size", oPhoto:"Photo", oProduct:"Product", remove:"Remove", 
+  tCart:"Cart", oColor:"Colour", oSizeL:"Size / colour", oNoteL:"Note", oSizeReq:"Size, colour or what you need *", e_size:"Write the size, colour or what you need so the seller understands", orderSend:"Send order", orderSending:"Sending the order…", orderDone:"Order sent to the seller", orderDoneSub:"It is in the app chat. Send the seller an SMS so they see it sooner.", orderDoneSms:"It is in the app chat and the seller got an SMS.", smsSeller:"SMS the seller", openChat:"Open chat", yes:"Yes", no:"No", clearCart:"Clear cart", clearCartQ:"Clear the cart?", oSizePh:"E.g. size 41, black", buyNow:"Buy now", toCart:"Add to cart", inCart:"In cart", cartAdded:"Added to cart", cartEmpty:"Your cart is empty", cartEmptySub:"Tap «Add to cart» on a product page", cartPickSize:"Choose a size", nItems:"{n} item(s)", total:"Total", checkout:"Checkout", orderTitle:"Checkout", oName:"Full name", oPhone:"Phone", oFixed:"Taken from your account — cannot be changed", oAddr:"Delivery address", oAddrPh:"Region, district, street, house", oNote:"Note (optional)", e_addr:"Enter a delivery address", orderImo:"Order via IMO", oSeller:"Seller", oCopyNum:"Copy number", orderHow:"The order with photos, size, your name, phone and address goes to the seller's TM Bazar app chat.", orderCopied:"Order copied. In IMO find the seller {n} and paste the text.", orderSent:"Order sent to the seller?", clearSent:"Remove from cart", oNew:"New order", oSize:"size", oPhoto:"Photo", oProduct:"Product", remove:"Remove", 
   tHome:"Home", tCats:"Categories", tPhoto:"Photo", tChats:"Chats", tMe:"Profile",
   back:"Back", searchPh:"Search products", find:"Search",
   demo:"Demo mode: sample products. Seller login: 65 000000, PIN 1234",
@@ -2482,7 +2488,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "86";   // номер версии — виден внизу профиля
+const APP_VER = "87";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3389,15 +3395,30 @@ function cardCartBtn(p){
     c.onclick = e => { e.preventDefault(); e.stopPropagation(); callNow(p); };
     return h("div",{class:"cc-row"}, c);
   }
+  const row = h("div",{class:"cc-row"});
+  const stop = e => { e.preventDefault(); e.stopPropagation(); };
+  const lastOf = () => { const l = S.cart.filter(x => x.id === p.id); return l[l.length-1]; };
   const qtyOf = () => S.cart.filter(x => x.id === p.id).reduce((a, x) => a + (+x.qty || 1), 0);
-  const n = h("i",{class:"cc-n"});
-  const b = h("button",{type:"button",class:"cc-cart","aria-label":t("toCart"),title:t("toCart")}, h("span",{html:IC.bag}), n);
-  const paint = () => { const q = qtyOf(); b.classList.toggle("on", !!q); n.textContent = q || ""; n.hidden = !q; };
-  paint();
-  b.onclick = async e => { e.preventDefault(); e.stopPropagation(); if (await cartAddFlow(p)) paint(); };
   const buy = h("button",{type:"button",class:"cc-buy"}, h("span",{html:IC.bag}), h("span",{text:t("buyNow")}));
-  buy.onclick = e => { e.preventDefault(); e.stopPropagation(); buyNow(p); };
-  return h("div",{class:"cc-row"}, b, buy);
+  buy.onclick = e => { stop(e); buyNow(p); };
+  const draw = () => {
+    const q = qtyOf();
+    if (!q){
+      const add = h("button",{type:"button",class:"cc-cart","aria-label":t("toCart"),title:t("toCart"),html:IC.bag});
+      add.onclick = async e => { stop(e); if (await cartAddFlow(p)) draw(); };
+      row.replaceChildren(add, buy); buy.classList.remove("sm"); return;
+    }
+    const minus = h("button",{type:"button","aria-label":"-",text:"−",onclick:e=>{ stop(e);
+      const x = lastOf(); if (!x) return;
+      if ((+x.qty||1) > 1) x.qty--; else S.cart = S.cart.filter(y => y !== x);
+      cartSave(); draw(); }});
+    const plus = h("button",{type:"button","aria-label":"+",text:"+",onclick:e=>{ stop(e);
+      const x = lastOf(); if (!x) return; x.qty = (+x.qty||1) + 1; cartSave(); draw(); }});
+    row.replaceChildren(h("div",{class:"cc-qty",onclick:stop}, minus, h("b",{text:String(q)}), plus), buy);
+    buy.classList.add("sm");
+  };
+  draw();
+  return row;
 }
 function cartGroups(){
   const g = new Map();
@@ -3454,15 +3475,18 @@ function orderText(g, addr, note){
   const u = S.user, L = [];
   L.push("🛒 " + t("oNew") + " — " + APP_NAME, "");
   g.items.forEach((x, i) => {
-    const extra = [x.variant, x.size ? t("oSize")+": "+x.size : ""].filter(Boolean).join(", ");
-    L.push((i+1) + ") " + x.title + (extra ? " (" + extra + ")" : ""));
-    L.push("   " + (x.qty || 1) + " × " + fmt(x.price) + " TMT");
-    L.push("   🔗 " + productLink(x.id));
-    if (/^https?:/.test(x.photo || "")) L.push("   📷 " + x.photo);
+    const q = +x.qty || 1;
+    L.push((i+1) + ". " + x.title);
+    if (x.variant && x.variant !== x.size) L.push("    " + t("oColor") + ": " + x.variant);
+    if (x.size) L.push("    " + t("oSizeL") + ": " + x.size);
+    L.push("    " + q + " × " + fmt(x.price) + " = " + fmt((+x.price||0) * q) + " TMT", "");
   });
-  L.push("", "💰 " + t("total") + ": " + fmt(cartSum(g.items)) + " TMT", "");
-  L.push("👤 " + u.name, "📞 " + phoneFmt(u.phone), "📍 " + addr);
-  if (note) L.push("💬 " + note);
+  L.push("💰 " + t("total") + ": " + fmt(cartSum(g.items)) + " TMT");
+  L.push("━━━━━━━━━━━━");
+  L.push("👤 " + t("oName") + ": " + u.name);
+  L.push("📞 " + t("oPhone") + ": " + phoneFmt(u.phone));
+  L.push("📍 " + t("oAddr") + ": " + addr);
+  if (note) L.push("💬 " + t("oNoteL") + ": " + note);
   return L.join("\n");
 }
 async function orderFiles(items){
@@ -3489,7 +3513,7 @@ async function sendOrderToChat(g, text){
         if (!x.photo) continue;
         const blob = await (await fetch(x.photo)).blob();
         const c = await compress(new File([blob], "p.jpg", {type: blob.type || "image/jpeg"}), 1000);
-        await call("send", {id: r.id, text: x.title + (x.size ? " · " + t("oSize") + ": " + x.size : ""), data: c.b64, mime: "image/jpeg"});
+        await call("send", {id: r.id, text: x.title + (x.size ? "\n" + t("oSizeL") + ": " + x.size : "") + "\n" + (+x.qty||1) + " × " + fmt(x.price) + " TMT", data: c.b64, mime: "image/jpeg"});
       }catch(e){}
     }
     const m = await call("send", {id: r.id, text});
@@ -3503,9 +3527,9 @@ function openImoApp(){
 }
 // SMS продавцу (RU + EN): «у вас заказ — посмотрите в TM Bazar»
 function orderSmsText(){
-  const site = location.host || "tm-bazar.github.io";
-  return "TM Bazar: Здравствуйте! Мы хотим заказать у вас товар. Пожалуйста, посмотрите заказ в приложении TM Bazar (Чаты).\n" +
-    "Hello! We would like to order from you. Please check the order in your TM Bazar app (Chats).\n" + site;
+  return "TM Bazar: Salam! Sizden haryt sargyt etmek isleýäris. Sargydy TM Bazar programmasynda (Hatlar) görüň.\n" +
+    "Здравствуйте! Мы хотим заказать у вас товар. Посмотрите заказ в приложении TM Bazar (Чаты).\n" +
+    (location.host || "tm-bazar.github.io");
 }
 function smsHref(phone, body){
   const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -3525,6 +3549,9 @@ async function checkoutSheet(g, redraw){
     const send = h("button",{class:"btn block"}, icon("send"), t("orderSend") + " · " + fmt(cartSum(g.items)) + " TMT");
     send.onclick = async () => {
       const a = addr.value.trim();
+      const empty = [...box.querySelectorAll(".o-need")].filter(i => !i.value.trim());
+      box.querySelectorAll(".o-need").forEach(i => i.classList.toggle("bad", !i.value.trim()));
+      if (empty.length){ err.textContent = t("e_size"); empty[0].focus(); return; }
       if (a.length < 3){ err.textContent = t("e_addr"); addr.focus(); return; }
       lsSet("addr", a); err.textContent = "";
       send.disabled = true;
@@ -3540,11 +3567,13 @@ async function checkoutSheet(g, redraw){
       h("div",{class:"o-seller"}, avaEl(s.name, s.logo),
         h("div",null, h("small",{text:t("oSeller")}), h("b",{text:s.name || ""}))),
       h("div",{class:"o-items"}, ...g.items.map(x => {
-        const sz = h("input",{class:"inp",maxlength:"40",placeholder:t("oSizePh"),value:x.size || ""});
+        const sz = h("input",{class:"inp o-need",maxlength:"60",placeholder:t("oSizePh"),value:x.size || x.variant || ""});
+        if (!x.size && x.variant) x.size = x.variant;
         sz.oninput = () => { x.size = sz.value.trim(); if (S.cart.includes(x)) lsSet("cart", S.cart); };
         return h("div",{class:"o-it"}, x.thumb ? h("img",{src:x.thumb,alt:x.title}) : h("div",{class:"noimg"}),
           h("div",{class:"bd"}, h("div",{class:"tt",text:x.title}),
-            h("small",{text:(x.qty||1)+" × "+fmt(x.price)+" TMT"+(x.variant ? " · "+x.variant : "")}), sz));
+            h("small",{text:(x.qty||1)+" × "+fmt(x.price)+" TMT"+(x.variant ? " · "+x.variant : "")}),
+            h("label",{class:"o-lbl",text:t("oSizeReq")}), sz));
       })),
       h("div",{class:"field"}, h("span",{text:t("oName")}), ro("user", u.name)),
       h("div",{class:"field"}, h("span",{text:t("oPhone")}), ro("phone", phoneFmt(u.phone)),
