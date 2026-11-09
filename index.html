@@ -2521,7 +2521,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "98";   // номер версии — виден внизу профиля
+const APP_VER = "99";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3149,13 +3149,13 @@ const CAT_PHOTO = {shoes:1, electronics:1, realty:1, home:1, auto:1, personal:1,
 // готовые фото разделов (папка subs/ на сайте)
 const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"].map(k => ["auto:"+k, 1]).concat(["flat","house","land","commercial","garage"].map(k => ["realty:"+k, 1]))
   .concat(["mobiles","computers","tv","consoles","smartwatches","speakers","printers","cameras","phoneacc","security","ups","network","phoneparts","components"].map(k => ["electronics:"+k, 1]))
-  .concat(["womenshoes","menshoes","kidsshoes"].map(k => ["shoes:"+k, 1]))
+  .concat(["womenshoes","menshoes","kidsshoes"].map(k => ["shoes:"+k, 2]))
   .concat(["furniture","kitchenware","textile","carpets","lighting","other"].map(k => ["home:"+k, 1])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
   if (key === "cat:all") return "icons/logo.webp"; // «Все товары» — всегда логотип
   if (key.startsWith("cat:") && CAT_PHOTO[key.slice(4)]) return "cats/" + key.slice(4) + ".jpg";
-  if (key.startsWith("sub:") && SUB_PHOTO[key.slice(4)]) return "subs/" + key.slice(4).replace(":", "-") + ".jpg";
+  if (key.startsWith("sub:") && SUB_PHOTO[key.slice(4)]) return "subs/" + key.slice(4).replace(":", "-") + ".jpg" + (SUB_PHOTO[key.slice(4)] > 1 ? "?v=" + SUB_PHOTO[key.slice(4)] : "");
   if (key.startsWith("brand:") && BRAND_LOGO[key.slice(6)]) return "brands/" + BRAND_LOGO[key.slice(6)] + ".webp";
   const [kind, a, b] = key.split(":");
   let p = null;
