@@ -272,6 +272,7 @@ textarea.inp{height:auto;min-height:96px;padding:12px 14px;resize:vertical;line-
 .msg img{border-radius:10px;max-width:220px;max-height:260px;object-fit:cover;margin:-3px -5px 3px}
 .msg .tm{font-size:10.5px;opacity:.65;text-align:right;margin-top:2px}
 .msg.pending{opacity:.6}
+.msg.order{background:var(--red);color:#fff}
 .day{align-self:center;font-size:11.5px;color:var(--mut);background:#e9e9ec;border-radius:999px;padding:3px 10px;margin:8px 0}
 .quick{display:flex;gap:6px;overflow-x:auto;padding:0 10px 8px;scrollbar-width:none}
 .quick::-webkit-scrollbar{display:none}
@@ -2521,7 +2522,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "100";   // номер версии — виден внизу профиля
+const APP_VER = "101";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3525,9 +3526,10 @@ function confirmSheet(q){
       h("button",{class:"btn ghost",text:t("no"),onclick:()=>close(false)}),
       h("button",{class:"btn",text:t("yes"),onclick:()=>close(true)}))));
 }
+// сообщение-заказ: есть строка «💰 Итого» и разделитель
+function isOrderText(s){ return !!s && s.includes("━━━━━━━━━━━━") && /^💰 /m.test(s); }
 function orderText(g, addr, note){
   const u = S.user, L = [];
-  L.push("🛒 " + t("oNew") + " — " + APP_NAME, "");
   g.items.forEach((x, i) => {
     const q = +x.qty || 1;
     L.push((i+1) + ". " + x.title);
@@ -3567,7 +3569,7 @@ async function sendOrderToChat(g, text){
         if (!x.photo) continue;
         const blob = await (await fetch(x.photo)).blob();
         const c = await compress(new File([blob], "p.jpg", {type: blob.type || "image/jpeg"}), 1000);
-        await call("send", {id: r.id, text: x.title + (x.size ? "\n" + t("oSizeL") + ": " + x.size : "") + "\n" + (+x.qty||1) + " × " + fmt(x.price) + " TMT", data: c.b64, mime: "image/jpeg"});
+        await call("send", {id: r.id, text: "", data: c.b64, mime: "image/jpeg"});
       }catch(e){}
     }
     // сервер обрезает сообщение на 1000 знаках — длинный заказ шлём частями, по целым строкам
@@ -5229,15 +5231,29 @@ async function viewChat(id){
     const day = dayName(m.at);
     const out = [];
     if (day !== lastDay){ out.push(h("div",{class:"day",text:day})); lastDay = day; }
-    out.push(h("div",{class:"msg "+(m.mine?"me":"them")+(m.pending?" pending":""),"data-id":m.id||""},
+    const isOrder = isOrderText(m.text);
+    const txt = isOrder ? m.text.replace(/^🛒[^\n]*\n+/, "") : m.text;
+    out.push(h("div",{class:"msg "+(m.mine?"me":"them")+(m.pending?" pending":"")+(isOrder?" order":""),"data-id":m.id||""},
       m.photo ? h("a",{href:m.photo.url,target:"_blank",rel:"noopener"}, h("img",{src:m.photo.thumb||m.photo.url,alt:""})) : null,
-      m.text ? h("div",{text:m.text}) : null,
+      txt ? h("div",{text:txt}) : null,
       h("div",{class:"tm",text:m.pending ? "…" : hm(m.at)})));
     return out;
   };
   const addMsgs = list => {
     const stick = atBottom() || !lastAt;
-    list.forEach(m => { if (seen.has(m.id)) return; seen.add(m.id); msgs.append(...bubble(m)); if (m.at > lastAt) lastAt = m.at; });
+    list.forEach(m => {
+      if (seen.has(m.id)) return; seen.add(m.id);
+      const els = bubble(m); msgs.append(...els); if (m.at > lastAt) lastAt = m.at;
+      const ob = els[els.length - 1];
+      if (ob.classList.contains("order")){   // фото товаров, отправленные вместе с заказом, — тоже красные
+        const side = m.mine ? "me" : "them";
+        for (let p = ob.previousElementSibling, k = 0; p && k < 6; p = p.previousElementSibling, k++){
+          if (p.classList.contains("day")) continue;
+          if (!p.classList.contains("msg") || !p.classList.contains(side) || !p.querySelector("img")) break;
+          p.classList.add("order");
+        }
+      }
+    });
     if (stick) toBottom();
   };
   const drawQuick = () => {
