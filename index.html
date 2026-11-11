@@ -1499,7 +1499,7 @@ const SUBS = {
   home:        ["furniture","kitchenware","textile","carpets","lighting","other"],
   auto:        ["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"],
   shoes:       ["womenshoes","menshoes","kidsshoes"],
-  personal:    ["womenclothes","menclothes","bags","accessories"],
+  personal:    ["womenclothes","menclothes","national","jewels","cosmetics","bags","backpacks"],
   appliances:  ["bigapp","kitchenapp","climate","smallapp","other"],
   jobs:        ["vacancy","resume"],
   rent:        ["rentcars","rentequip","renttools","rentevent","rentclothes","other"],
@@ -1592,10 +1592,10 @@ const FIELDS = {
   personal: [
     {k:"size", type:"multi", raw:true, filter:"main", opts:["XS","S","M","L","XL","XXL","3XL","4XL+"],
       when:(s) => s === "womenclothes" || s === "menclothes", unitKey:"sizeHint"},
-    {k:"brandt", type:"text", max:30, when:(s) => s !== "gold" && s !== "silver"},
-    {k:"color", type:"sel", filter:"more", opts:["black","white","silver","gray","gold","blue","red","green","purple","pink","other"], when:(s) => s !== "gold" && s !== "silver" && s !== "perfume" && s !== "cosmetics"},
-    {k:"probe", type:"sel", raw:true, filter:"more", opts:(s) => s === "silver" ? ["875","925","999"] : ["375","500","585","750","875","999"], when:(s) => s === "gold" || s === "silver"},
-    {k:"weight", type:"num", unit:"g", step:"0.01", when:(s) => s === "gold" || s === "silver"}
+    {k:"brandt", type:"text", max:30, when:(s) => s !== "jewels"},
+    {k:"color", type:"sel", filter:"more", opts:["black","white","silver","gray","gold","blue","red","green","purple","pink","other"], when:(s) => s !== "jewels" && s !== "cosmetics"},
+    {k:"probe", type:"sel", raw:true, filter:"more", opts:["375","500","585","750","875","925","999"], when:(s) => s === "jewels"},
+    {k:"weight", type:"num", unit:"g", step:"0.01", when:(s) => s === "jewels"}
   ],
   kids: [
     {k:"size", type:"multi", raw:true, filter:"main", opts:["0-1","1-2","2-3","3-4","4-6","6-8","8-10","10-12","12-14","14+"], when:(s) => s === "kidsclothes"},
@@ -1722,7 +1722,8 @@ const SUBT = {
   womenclothes:["Женская одежда","Aýal eşikleri","Women's clothing"], menclothes:["Мужская одежда","Erkek eşikleri","Men's clothing"],
   womenshoes:["Женская обувь","Aýal aýakgaplary","Women's shoes"], menshoes:["Мужская обувь","Erkek aýakgaplary","Men's shoes"],
   sportshoes:["Спортивная обувь","Sport aýakgaplary","Sports shoes"],
-  bags:["Сумки и рюкзаки","Sumkalar we rýukzaklar","Bags & backpacks"], accessories:["Аксессуары","Aksesuarlar","Accessories"],
+  bags:["Женские сумки","Aýal sumkalary","Women's bags"], backpacks:["Рюкзаки","Rýukzaklar","Backpacks"],
+  national:["Национальная одежда и вышивка","Milli eşikler we keşdeler","National dress & embroidery"], jewels:["Украшения","Şaý-sepler","Jewellery"],
   kidsshoes:["Детская обувь","Çaga aýakgaplary","Kids' shoes"], textile:["Текстиль и шторы","Dokma we perdeler","Textiles & curtains"],
   garden:["Сад и огород","Bag we bakja","Garden"], food:["Продукты питания","Azyk önümleri","Food"], furniture:["Мебель","Mebel","Furniture"],
   imported:["Привозимые авто (в дороге)","Getirilýän awtoulaglar (ýolda)","Imported cars (on the way)"], moto:["Мотоциклы и мопеды","Motosikl we mopedler","Motorbikes & mopeds"],
@@ -2522,7 +2523,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "101";   // номер версии — виден внизу профиля
+const APP_VER = "102";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2696,7 +2697,8 @@ function migrateProduct(p){
   else if ((p.cat === "electronics" || p.cat === "shoes") && OLD_SUB[p.sub]) p.sub = OLD_SUB[p.sub];
   else if (p.cat === "realty" && p.sub === "cottage") p.sub = "house";
   if (p.cat === "home" && ["decor","cleaning","garden","food"].includes(p.sub)) p.sub = "other"; // v98: эти разделы убраны
-  if (p.cat === "personal" && ["gold","silver","watches","bijou","cosmetics","perfume"].includes(p.sub)) p.sub = "accessories"; // v100: эти разделы убраны
+  if (p.cat === "personal" && ["gold","silver","watches","bijou","accessories"].includes(p.sub)) p.sub = "jewels"; // v102: украшения
+  if (p.cat === "personal" && p.sub === "perfume") p.sub = "cosmetics";
   if (SUBS[p.cat] && p.sub && !SUBS[p.cat].includes(p.sub)) p.sub = "";
   return p;
 }
@@ -3153,7 +3155,7 @@ const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","specia
   .concat(["mobiles","computers","tv","consoles","smartwatches","speakers","printers","cameras","phoneacc","security","ups","network","phoneparts","components"].map(k => ["electronics:"+k, 1]))
   .concat(["womenshoes","menshoes","kidsshoes"].map(k => ["shoes:"+k, 2]))
   .concat(["furniture","kitchenware","textile","carpets","lighting","other"].map(k => ["home:"+k, 1]))
-  .concat(["womenclothes","menclothes","bags","accessories"].map(k => ["personal:"+k, 1])));
+  .concat(["womenclothes","menclothes","national","jewels","cosmetics","bags","backpacks"].map(k => ["personal:"+k, 2])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
   if (key === "cat:all") return "icons/logo.webp"; // «Все товары» — всегда логотип
