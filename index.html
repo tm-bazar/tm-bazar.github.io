@@ -2524,7 +2524,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "104";   // номер версии — виден внизу профиля
+const APP_VER = "105";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3151,13 +3151,14 @@ function mallsOf(city){ const m = S.malls || MALLS_DEFAULT; return (m[city] || [
    2) иначе — фото самого нового товара этой категории / раздела / марки;
    3) иначе — значок. */
 // готовые фото верхних категорий (папка cats/ на сайте)
-const CAT_PHOTO = {shoes:1, electronics:1, realty:1, home:2, auto:1, personal:2, appliances:1, jobs:1, rent:1, kids:1, build:1, sport:1, business:1, services:1, buy:1, med:1, animals:1, free:1};
+const CAT_PHOTO = {shoes:1, electronics:1, realty:1, home:3, auto:1, personal:2, appliances:1, jobs:2, rent:1, kids:1, build:1, sport:1, business:1, services:1, buy:1, med:1, animals:1, free:1};
 // готовые фото разделов (папка subs/ на сайте)
 const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"].map(k => ["auto:"+k, 1]).concat(["flat","house","land","commercial","garage"].map(k => ["realty:"+k, 1]))
   .concat(["mobiles","computers","tv","consoles","smartwatches","speakers","printers","cameras","phoneacc","security","ups","network","phoneparts","components"].map(k => ["electronics:"+k, 1]))
   .concat(["womenshoes","menshoes","kidsshoes"].map(k => ["shoes:"+k, 2]))
   .concat(["furniture","kitchenware","textile","carpets","lighting","other"].map(k => ["home:"+k, 1]))
   .concat(["bigapp","kitchenapp","climate","smallapp","otherapp"].map(k => ["appliances:"+k, 1]))
+  .concat(["vacancy","resume"].map(k => ["jobs:"+k, 1]))
   .concat(["womenclothes","menclothes","national","fabrics","jewels","cosmetics","bags","backpacks"].map(k => ["personal:"+k, ["womenclothes","national","fabrics"].includes(k) ? 3 : 2])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
@@ -3185,7 +3186,8 @@ const ALL_SUB = {
   shoes:["Вся обувь","Ähli aýakgaplar","All shoes"],
   home:["Всё для дома","Öý üçin ähli zat","All home & garden"],
   personal:["Все личные вещи","Ähli şahsy zatlar","All personal items"],
-  appliances:["Вся бытовая техника","Ähli öý tehnikasy","All appliances"]
+  appliances:["Вся бытовая техника","Ähli öý tehnikasy","All appliances"],
+  jobs:["Вся работа","Ähli iş","All jobs"]
 };
 function photoTile(key, label, on, onclick, count, iconId){
   return h("button",{type:"button",class:"pt"+(on?" on":""),onclick},
