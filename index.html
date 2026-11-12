@@ -1499,7 +1499,7 @@ const SUBS = {
   home:        ["furniture","kitchenware","textile","carpets","lighting","other"],
   auto:        ["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"],
   shoes:       ["womenshoes","menshoes","kidsshoes"],
-  personal:    ["womenclothes","menclothes","national","jewels","cosmetics","bags","backpacks"],
+  personal:    ["womenclothes","menclothes","national","fabrics","jewels","cosmetics","bags","backpacks"],
   appliances:  ["bigapp","kitchenapp","climate","smallapp","other"],
   jobs:        ["vacancy","resume"],
   rent:        ["rentcars","rentequip","renttools","rentevent","rentclothes","other"],
@@ -2523,7 +2523,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "102";   // номер версии — виден внизу профиля
+const APP_VER = "103";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3155,7 +3155,7 @@ const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","specia
   .concat(["mobiles","computers","tv","consoles","smartwatches","speakers","printers","cameras","phoneacc","security","ups","network","phoneparts","components"].map(k => ["electronics:"+k, 1]))
   .concat(["womenshoes","menshoes","kidsshoes"].map(k => ["shoes:"+k, 2]))
   .concat(["furniture","kitchenware","textile","carpets","lighting","other"].map(k => ["home:"+k, 1]))
-  .concat(["womenclothes","menclothes","national","jewels","cosmetics","bags","backpacks"].map(k => ["personal:"+k, 2])));
+  .concat(["womenclothes","menclothes","national","fabrics","jewels","cosmetics","bags","backpacks"].map(k => ["personal:"+k, ["womenclothes","national","fabrics"].includes(k) ? 3 : 2])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
   if (key === "cat:all") return "icons/logo.webp"; // «Все товары» — всегда логотип
