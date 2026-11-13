@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Сканер гостей</title>
+<meta name="theme-color" content="#2d2d2d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --bg:#404040; --bar:#2d2d2d; --card:#2a2a2a; --org:#ff9800;
+  --txt:#fff; --blue:#1e88e5; --mut:#bdbdbd; --hl:rgba(255,238,0,.55); --hlText:rgba(255,238,0,.9); --sel:rgba(255,0,255,.85);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--txt);font-family:system-ui,Roboto,Arial,sans-serif}
+header{background:var(--bar);padding:16px;font-size:22px;font-weight:600;display:flex;align-items:center;gap:10px}
+header small{margin-left:auto;font-size:14px;font-weight:400;color:var(--mut)}
+main{padding:12px 12px 230px}
+.seg{display:flex;gap:8px;margin-bottom:12px}
+.seg button{flex:1;padding:14px 8px;font-size:19px;font-weight:700;border-radius:14px;border:2px solid #666;background:transparent;color:var(--mut)}
+.seg #mIn.on{background:var(--org);border-color:var(--org);color:#fff}
+.seg #mOut.on{background:var(--blue);border-color:var(--blue);color:#fff}
+body.out .label{color:#64b5f6} body.out .label b,body.out .camBtn{border-color:var(--blue)} body.out .camBtn svg{fill:var(--blue)}
+body.out #sendBtn{background:var(--blue)}
+.stats{display:flex;gap:8px;margin:12px 0}
+.stats div{flex:1;background:var(--card);border-radius:12px;padding:8px;text-align:center;font-size:13px;color:var(--mut)}
+.stats b{display:block;font-size:22px;color:#fff}
+#search{width:100%;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid #666;background:#333;color:#fff;margin-bottom:6px}
+.g{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid #555;cursor:pointer}
+.g .n{flex:1;min-width:0;font-size:17px;overflow-wrap:anywhere}
+.g .t{font-size:13px;color:var(--mut);text-align:right;white-space:nowrap;line-height:1.5}
+.g .t .i{color:#ffb74d}.g .t .o{color:#64b5f6}
+.g.inside .n::before{content:"●";color:#4caf50;margin-right:6px;font-size:12px;vertical-align:middle}
+.empty{color:var(--mut);text-align:center;padding:24px 8px}
+.fbtns{display:flex;gap:8px;margin-top:8px}
+.fbtns button{flex:1;padding:12px 6px;border-radius:12px;border:0;font-size:15px;font-weight:600;background:#333;color:#fff}
+.fbtns #exportBtn{background:#2e7d32}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-end;justify-content:center;z-index:30}
+.modal.on{display:flex}
+.modal .box{background:#2a2a2a;width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:85vh;overflow:auto}
+#mTitle{font-size:18px;font-weight:600;margin-bottom:6px}
+#mText{color:var(--mut);font-size:15px;margin-bottom:12px;white-space:pre-line}
+#mBody input{width:100%;font-size:20px;padding:12px;border-radius:8px;border:1px solid #888;background:#fff;color:#000;margin-bottom:12px}
+#mBtns{display:grid;gap:8px}
+#mBtns button{padding:14px;border-radius:12px;border:0;font-size:17px;background:#444;color:#fff;text-align:left}
+#mBtns button.main{background:var(--org);text-align:center;font-weight:700}
+#mBtns button.blue{background:var(--blue);text-align:center;font-weight:700}
+#mBtns button.red{background:#c62828;text-align:center}
+#mBtns button.plain{background:transparent;border:1px solid #666;text-align:center}
+.card{background:var(--card);border-radius:18px;padding:16px}
+.label{color:var(--org);font-size:20px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.label b{border:2px solid var(--org);border-radius:4px;padding:0 6px;font-size:15px}
+.row{display:flex;gap:10px}
+#text{flex:1;min-width:0;font-size:22px;padding:12px;border-radius:8px;border:1px solid #888;background:#fff;color:#000}
+.camBtn{width:68px;flex:none;border:2px solid var(--org);border-radius:12px;background:transparent;display:grid;place-items:center;cursor:pointer}
+.camBtn svg{width:40px;height:40px;fill:var(--org)}
+#hist{margin-top:14px;color:var(--mut);font-size:14px}
+#hist div{padding:6px 2px;border-bottom:1px solid #555}
+#sendBtn{position:fixed;right:16px;bottom:92px;width:78px;height:78px;border-radius:50%;border:0;background:var(--org);display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.4);z-index:5}
+#sendBtn svg{width:40px;height:40px;fill:#fff;margin-left:6px}
+footer{position:fixed;left:0;right:0;bottom:0;background:#000;padding:10px 14px calc(10px + env(safe-area-inset-bottom));text-align:center;z-index:4}
+#status{font-size:15px;min-height:20px}
+#link{font-size:13px;margin-top:4px}
+.ok{color:#4caf50}.bad{color:#f44336}
+
+.screen{position:fixed;inset:0;background:#000;display:none;z-index:10;overflow:hidden}
+.screen.on{display:block}
+#video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hint{position:absolute;top:calc(14px + env(safe-area-inset-top));left:12px;right:12px;text-align:center;background:rgba(0,0,0,.55);padding:10px;border-radius:10px;font-size:16px;pointer-events:none;border:3px solid transparent}
+.hint.sharp{border-color:#4caf50}
+.hint.blur{border-color:#f44336}
+#meter{display:block;font-size:13px;margin-top:4px;color:var(--mut)}
+.tools{position:absolute;left:0;right:0;bottom:0;padding:14px 16px calc(14px + env(safe-area-inset-bottom));display:flex;gap:12px;align-items:center;background:linear-gradient(transparent,rgba(0,0,0,.6))}
+.round{width:62px;height:62px;flex:none;border-radius:50%;border:3px solid #fff;background:rgba(0,0,0,.35);color:#fff;font-size:24px;display:grid;place-items:center;cursor:pointer;padding:0}
+.round.on{background:var(--org);border-color:var(--org)}
+.round.ok{border-color:var(--org);background:var(--org)}
+.spacer{flex:1}
+
+#stage{position:absolute;top:0;left:0;right:0;bottom:96px;overflow:auto;background:#111}
+#wrap{position:relative;width:100%}
+#shot{display:block;width:100%;user-select:none;-webkit-user-drag:none}
+.w{position:absolute;background:var(--hlText);border-radius:3px;cursor:pointer;display:flex;align-items:center;overflow:hidden}
+.w span{display:inline-block;color:#000;font-weight:600;line-height:1;white-space:nowrap;transform-origin:0 50%;pointer-events:none;padding-left:1px}
+#wrap.notext .w{background:var(--hl)}
+#wrap.notext .w span{display:none}
+.w.on, #wrap.notext .w.on{background:var(--sel)}
+#pick{position:absolute;top:0;left:0;right:0;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));background:rgba(0,0,0,.75);font-size:17px;z-index:2;min-height:44px}
+#pick.empty{color:var(--mut)}
+#pick.warn{color:#ffb74d}
+#busy{position:absolute;inset:0;display:none;place-items:center;background:rgba(0,0,0,.45);z-index:3;font-size:18px;text-align:center;padding:20px}
+#busy.on{display:grid}
+</style>
+</head>
+<body>
+
+<header>Гости <small id="evName"></small></header>
+
+<main>
+  <div class="seg"><button id="mIn">⬇ Вход</button><button id="mOut">⬆ Выход</button></div>
+  <div class="card">
+    <div class="label"><b id="modeLetter">⬇</b> <span id="modeLabel">ФАМИЛИЯ ИМЯ — ВХОД</span></div>
+    <div class="row">
+      <input id="text" type="text" autocomplete="off" placeholder="">
+      <button class="camBtn" id="camBtn" aria-label="Камера">
+        <svg viewBox="0 0 24 24"><path d="M9 3 7.2 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9zm3 5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="stats"><div><b id="sIn">0</b>внутри</div><div><b id="sAll">0</b>пришло</div><div><b id="sOut">0</b>ушло</div></div>
+  <input id="search" type="search" placeholder="🔍 Поиск по списку" autocomplete="off">
+  <div id="list"></div>
+</main>
+
+<button id="sendBtn" aria-label="Сохранить">
+  <svg viewBox="0 0 24 24"><path d="M2 21 23 12 2 3v7l15 2-15 2z"/></svg>
+</button>
+
+<footer>
+  <div id="status">Нажмите на камеру, чтобы начать.</div>
+  <div id="link">● Проверка…</div>
+  <div class="fbtns"><button id="exportBtn">📤 Скачать Excel</button><button id="clearBtn">🗑 Новый ивент</button></div>
+</footer>
+
+<div class="modal" id="modal"><div class="box">
+  <div id="mTitle"></div><div id="mText"></div><div id="mBody"></div><div id="mBtns"></div>
+</div></div>
+
+<input id="file" type="file" accept="image/*" capture="environment" hidden>
+
+<div class="screen" id="camScreen">
+  <video id="video" playsinline muted></video>
+  <div class="hint" id="hint"><span id="hintText">Наведите на текст и нажмите на экран</span><span id="meter"></span></div>
+  <div class="tools">
+    <button class="round" id="camClose" aria-label="Закрыть">✕</button>
+    <button class="round" id="switchCam" aria-label="Другая камера">⇄</button>
+    <button class="round" id="camZoom" aria-label="Зум камеры">1×</button>
+    <button class="round" id="torch" aria-label="Фонарик">⚡</button>
+    <div class="spacer"></div>
+    <button class="round" id="nativeCam" aria-label="Системная камера">📷</button>
+  </div>
+</div>
+
+<div class="screen" id="selScreen">
+  <div id="pick" class="empty">Нажмите на нужные слова</div>
+  <div id="stage"><div id="wrap"><img id="shot" alt=""></div></div>
+  <div id="busy">Ищу текст…</div>
+  <div class="tools">
+    <button class="round" id="retake" aria-label="Переснять">↻</button>
+    <button class="round" id="zoom" aria-label="Увеличить">1×</button>
+    <button class="round on" id="showText" aria-label="Показать текст">Aa</button>
+    <div class="spacer"></div>
+    <button class="round ok" id="accept" aria-label="Готово">✓</button>
+  </div>
+</div>
+
+<script src="lib/tesseract.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+let workerPromise = null, stream = null, words = [], picked = [], zoom = 1, capturing = false;
+let cams = [], camIdx = 0, camZoom = 1;
+
+const LANGS = "eng";
+const MAX_SIDE = 2400;
+const MIN_CONF = 45;
+const BLUR_LIMIT = 80;
+const HINT_DEFAULT = "Наведите на текст и нажмите на экран";
+
+function setStatus(t){ $("status").textContent = t; }
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function store(k, v){ try { v === undefined ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} }
+function load(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+function getWorker(){
+  if (!workerPromise){
+    workerPromise = Tesseract.createWorker(LANGS, 1, {
+      workerPath: new URL("lib/worker.min.js", location.href).href,
+      corePath: new URL("lib/core", location.href).href,
+      langPath: new URL("lib/lang", location.href).href,
+      gzip: true,
+      workerBlobURL: false
+    }).then(async w => {
+      try { await w.setParameters({ tessedit_pageseg_mode: "11", preserve_interword_spaces: "1", tessedit_do_invert: "0" }); } catch (e) {}
+      return w;
+    }).catch(e => { workerPromise = null; throw e; });
+  }
+  return workerPromise;
+}
+getWorker().catch(() => {});
+
+function collectWords(data){
+  if (data.words && data.words.length) return data.words;
+  const out = [];
+  (data.blocks || []).forEach(b => (b.paragraphs || []).forEach(p =>
+    (p.lines || []).forEach(l => (l.words || []).forEach(w => out.push(w)))));
+  return out;
+}
+
+function goodWord(wd, W, H){
+  const t = (wd.text || "").trim();
+  if (!t) return false;
+  const al = (t.match(/[0-9A-Za-zА-Яа-яЁёÄäÇçŇňÖöŞşÜüÝýŽž]/g) || []).length;
+  const lt = (t.match(/</g) || []).length;
+  if (al === 0) return false;
+  if ((al + lt) / t.length < 0.6) return false;
+  const b = wd.bbox, bw = b.x1 - b.x0, bh = b.y1 - b.y0;
+  if (bh < Math.max(8, H * 0.006) || bh > H * 0.15) return false;
+  if (al >= 2 && bw < bh * 0.5) return false;
+  if (al === 1) return wd.confidence >= 75;
+  if (al === 2) return wd.confidence >= 55;
+  return wd.confidence >= MIN_CONF;
+}
+
+function mergeWords(list){
+  list.sort((a, b) => b.confidence - a.confidence);
+  const out = [];
+  for (const w of list){
+    const a = w.bbox, sa = (a.x1 - a.x0) * (a.y1 - a.y0);
+    const dup = out.some(o => {
+      const b = o.bbox, sb = (b.x1 - b.x0) * (b.y1 - b.y0);
+      const ix = Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0));
+      const iy = Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));
+      return ix * iy > 0.4 * Math.min(sa, sb);
+    });
+    if (!dup) out.push(w);
+  }
+  return out;
+}
+
+function toCanvas(src, w, h){
+  const k = Math.min(1, MAX_SIDE / Math.max(w, h));
+  const c = document.createElement("canvas");
+  c.width = Math.round(w * k); c.height = Math.round(h * k);
+  const x = c.getContext("2d");
+  x.imageSmoothingQuality = "high";
+  x.drawImage(src, 0, 0, c.width, c.height);
+  return c;
+}
+
+function sharpness(src, sw, sh){
+  sw = sw || src.width; sh = sh || src.height;
+  const w = 640, h = Math.max(1, Math.round(sh * w / sw));
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  const x = c.getContext("2d", { willReadFrequently: true });
+  x.drawImage(src, 0, 0, w, h);
+  const d = x.getImageData(0, 0, w, h).data, g = new Float32Array(w * h);
+  for (let i = 0, j = 0; i < g.length; i++, j += 4) g[i] = .299 * d[j] + .587 * d[j + 1] + .114 * d[j + 2];
+  let sum = 0, sq = 0, n = 0;
+  for (let y = 1; y < h - 1; y++) for (let xx = 1; xx < w - 1; xx++){
+    const i = y * w + xx;
+    const l = 4 * g[i] - g[i - 1] - g[i + 1] - g[i - w] - g[i + w];
+    sum += l; sq += l * l; n++;
+  }
+  const m = sum / n;
+  return sq / n - m * m;
+}
+
+function preprocess(src, target){
+  const f = Math.min(2, target / Math.max(src.width, src.height));
+  const w = Math.round(src.width * f), h = Math.round(src.height * f), n = w * h;
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  const x = c.getContext("2d", { willReadFrequently: true });
+  x.imageSmoothingQuality = "high";
+  x.drawImage(src, 0, 0, w, h);
+  const im = x.getImageData(0, 0, w, h), d = im.data;
+  const g = new Float32Array(n), t = new Float32Array(n);
+  for (let i = 0, j = 0; i < n; i++, j += 4) g[i] = Math.max(d[j], d[j + 1], d[j + 2]);
+  for (let y = 0; y < h; y++){
+    const r = y * w;
+    t[r] = g[r]; t[r + w - 1] = g[r + w - 1];
+    for (let xx = 1; xx < w - 1; xx++){ const i = r + xx; t[i] = (g[i - 1] + g[i] + g[i + 1]) / 3; }
+  }
+  const AMT = 0.6, hist = new Uint32Array(256);
+  for (let i = 0, j = 0; i < n; i++, j += 4){
+    const y = (i / w) | 0;
+    const b = (y > 0 && y < h - 1) ? (t[i - w] + t[i] + t[i + w]) / 3 : t[i];
+    d[j] = g[i] + AMT * (g[i] - b);
+    hist[d[j]]++;
+  }
+  let lo = 0, hi = 255, acc = 0;
+  for (; lo < 255; lo++){ acc += hist[lo]; if (acc > n * .01) break; }
+  acc = 0;
+  for (hi = 0; hi < 255; hi++){ acc += hist[hi]; if (acc > n * .5) break; }
+  const k = 255 / Math.max(1, hi - lo);
+  for (let j = 0; j < d.length; j += 4){
+    const v = (d[j] - lo) * k;
+    d[j] = d[j + 1] = d[j + 2] = v; d[j + 3] = 255;
+  }
+  x.putImageData(im, 0, 0);
+  return { canvas: c, scale: f };
+}
+
+function binarize(src, target){
+  const f = Math.min(2, target / Math.max(src.width, src.height));
+  const w = Math.round(src.width * f), h = Math.round(src.height * f), n = w * h;
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  const x = c.getContext("2d", { willReadFrequently: true });
+  x.imageSmoothingQuality = "high";
+  x.drawImage(src, 0, 0, w, h);
+  const im = x.getImageData(0, 0, w, h), d = im.data;
+  const g = new Uint8Array(n);
+  for (let i = 0, j = 0; i < n; i++, j += 4) g[i] = Math.max(d[j], d[j + 1], d[j + 2]);
+  const W1 = w + 1, I = new Uint32Array(W1 * (h + 1));
+  for (let y = 0; y < h; y++){
+    let row = 0; const o = (y + 1) * W1, p = y * W1, r = y * w;
+    for (let xx = 0; xx < w; xx++){ row += g[r + xx]; I[o + xx + 1] = I[p + xx + 1] + row; }
+  }
+  const half = Math.max(7, Math.round(Math.max(w, h) / 90)), T = 0.2;
+  const b = new Uint8Array(n);
+  for (let y = 0; y < h; y++){
+    const y0 = Math.max(0, y - half), y1 = Math.min(h - 1, y + half);
+    for (let xx = 0; xx < w; xx++){
+      const x0 = Math.max(0, xx - half), x1 = Math.min(w - 1, xx + half);
+      const cnt = (x1 - x0 + 1) * (y1 - y0 + 1);
+      const sum = I[(y1 + 1) * W1 + x1 + 1] - I[y0 * W1 + x1 + 1] - I[(y1 + 1) * W1 + x0] + I[y0 * W1 + x0];
+      if (g[y * w + xx] * cnt < sum * (1 - T)) b[y * w + xx] = 1;
+    }
+  }
+  const m = new Uint8Array(n);
+  for (let y = 1; y < h - 1; y++) for (let xx = 1; xx < w - 1; xx++){
+    const i = y * w + xx;
+    const s = b[i - w - 1] + b[i - w] + b[i - w + 1] + b[i - 1] + b[i] + b[i + 1] + b[i + w - 1] + b[i + w] + b[i + w + 1];
+    if (s >= 5) m[i] = 1;
+  }
+  const q = new Int32Array(n), minA = Math.max(6, Math.round(n * 0.000004)), bigA = n * 0.01;
+  for (let i = 0; i < n; i++){
+    if (m[i] !== 1) continue;
+    let head = 0, tail = 0, minY = h, maxY = 0;
+    q[tail++] = i; m[i] = 2;
+    while (head < tail){
+      const p = q[head++], py = (p / w) | 0, px = p - py * w;
+      if (py < minY) minY = py; if (py > maxY) maxY = py;
+      for (let dy = -1; dy <= 1; dy++){
+        const ny = py + dy; if (ny < 0 || ny >= h) continue;
+        for (let dx = -1; dx <= 1; dx++){
+          const nx = px + dx; if (nx < 0 || nx >= w) continue;
+          const ni = ny * w + nx;
+          if (m[ni] === 1){ m[ni] = 2; q[tail++] = ni; }
+        }
+      }
+    }
+    if (tail < minA || (tail > bigA && maxY - minY > h * 0.12)) for (let k = 0; k < tail; k++) m[q[k]] = 3;
+  }
+  for (let i = 0, j = 0; i < n; i++, j += 4){
+    const v = m[i] === 2 ? 0 : 255;
+    d[j] = d[j + 1] = d[j + 2] = v; d[j + 3] = 255;
+  }
+  x.putImageData(im, 0, 0);
+  return { canvas: c, scale: f };
+}
+
+function show(id){
+  ["camScreen", "selScreen"].forEach(s => $(s).classList.toggle("on", s === id));
+}
+function stopStream(){
+  if (stream){ stream.getTracks().forEach(t => t.stop()); stream = null; }
+}
+function closeAll(){
+  stopStream();
+  $("torch").classList.remove("on");
+  show(null);
+}
+
+function camScore(d){
+  const l = (d.label || "").toLowerCase();
+  let s = 0;
+  if (/front|user|передн|selfie/.test(l)) s -= 10;
+  if (/back|rear|environment|задн/.test(l)) s += 2;
+  if (/camera2? 0\b/.test(l)) s += 5;
+  if (/wide|ultra|tele|macro|depth/.test(l)) s -= 4;
+  return s;
+}
+async function listCams(){
+  const all = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === "videoinput");
+  const back = all.filter(d => camScore(d) > -10);
+  return (back.length ? back : all).sort((a, b) => camScore(b) - camScore(a));
+}
+
+async function startStream(deviceId){
+  stopStream();
+  const base = { width: { ideal: 3840 }, height: { ideal: 2160 } };
+  const pick = deviceId ? { deviceId: { exact: deviceId } } : { facingMode: { ideal: "environment" } };
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: Object.assign({}, base, pick), audio: false });
+  } catch (e){
+    stream = await navigator.mediaDevices.getUserMedia({ video: pick, audio: false });
+  }
+  const v = $("video");
+  v.srcObject = stream;
+  await v.play();
+  await setupTrack();
+}
+
+async function setupTrack(){
+  const track = stream.getVideoTracks()[0];
+  const caps = track.getCapabilities ? track.getCapabilities() : {};
+  $("torch").style.display = caps.torch ? "" : "none";
+  $("torch").classList.remove("on");
+  $("camZoom").style.display = caps.zoom ? "" : "none";
+  camZoom = 1; $("camZoom").textContent = "1×";
+  const adv = {};
+  if (caps.focusMode && caps.focusMode.includes("continuous")) adv.focusMode = "continuous";
+  if (caps.exposureMode && caps.exposureMode.includes("continuous")) adv.exposureMode = "continuous";
+  if (caps.whiteBalanceMode && caps.whiteBalanceMode.includes("continuous")) adv.whiteBalanceMode = "continuous";
+  if (Object.keys(adv).length){ try { await track.applyConstraints({ advanced: [adv] }); } catch (e) {} }
+  const v = $("video");
+  $("hintText").textContent = HINT_DEFAULT + " (камера " + v.videoWidth + "×" + v.videoHeight + ")";
+}
+
+async function openCamera(){
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    setStatus("Живая камера работает только по https. Открываю обычную камеру.");
+    $("file").click(); return;
+  }
+  try {
+    const saved = load("camId");
+    await startStream(cams[camIdx] ? cams[camIdx].deviceId : saved || undefined);
+  } catch (e){
+    store("camId");
+    try { await startStream(); }
+    catch (e2){
+      setStatus("Камера недоступна (" + e2.message + "). Открываю обычную камеру.");
+      $("file").click(); return;
+    }
+  }
+  if (!cams.length){
+    try { cams = await listCams(); } catch (e) { cams = []; }
+    const cur = stream.getVideoTracks()[0].getSettings().deviceId;
+    camIdx = Math.max(0, cams.findIndex(c => c.deviceId === cur));
+    if (!load("camId") && cams.length && cams[0].deviceId !== cur){
+      camIdx = 0;
+      try { await startStream(cams[0].deviceId); } catch (e) {}
+    }
+  }
+  $("switchCam").style.display = cams.length > 1 ? "" : "none";
+  show("camScreen");
+  history.pushState({ cam: 1 }, "");
+}
+
+$("camBtn").addEventListener("click", openCamera);
+$("camClose").addEventListener("click", () => history.back());
+window.addEventListener("popstate", () => { if ($("camScreen").classList.contains("on") || $("selScreen").classList.contains("on")) closeAll(); });
+
+$("switchCam").addEventListener("click", async () => {
+  if (cams.length < 2) return;
+  camIdx = (camIdx + 1) % cams.length;
+  store("camId", cams[camIdx].deviceId);
+  try { await startStream(cams[camIdx].deviceId); } catch (e){ setStatus("Не удалось переключить камеру"); }
+});
+
+$("camZoom").addEventListener("click", async () => {
+  if (!stream) return;
+  const t = stream.getVideoTracks()[0];
+  const caps = t.getCapabilities ? t.getCapabilities() : {};
+  if (!caps.zoom) return;
+  const steps = [1, 1.5, 2, 3].filter(z => z <= caps.zoom.max);
+  camZoom = steps[(steps.indexOf(camZoom) + 1) % steps.length];
+  try { await t.applyConstraints({ advanced: [{ zoom: Math.max(caps.zoom.min, camZoom) }] }); } catch (e) {}
+  $("camZoom").textContent = camZoom + "×";
+});
+
+$("nativeCam").addEventListener("click", () => $("file").click());
+
+$("torch").addEventListener("click", async () => {
+  if (!stream) return;
+  const on = !$("torch").classList.contains("on");
+  try {
+    await stream.getVideoTracks()[0].applyConstraints({ advanced: [{ torch: on }] });
+    $("torch").classList.toggle("on", on);
+  } catch (e){ $("torch").style.display = "none"; }
+});
+
+setInterval(() => {
+  const v = $("video"), h = $("hint");
+  if (!$("camScreen").classList.contains("on") || capturing || !v.videoWidth || v.paused){ return; }
+  const s = sharpness(v, v.videoWidth, v.videoHeight);
+  const okS = s >= BLUR_LIMIT * 1.5;
+  h.classList.toggle("sharp", okS);
+  h.classList.toggle("blur", !okS);
+  $("meter").textContent = okS ? "Резко — можно снимать" : "Размыто: отодвиньте телефон на 20–25 см или нажмите 2×";
+}, 700);
+
+async function focusAt(track, e, v){
+  const caps = track.getCapabilities ? track.getCapabilities() : {};
+  if (!caps.focusMode) { await sleep(300); return; }
+  const r = v.getBoundingClientRect();
+  const p = { x: Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), y: Math.min(1, Math.max(0, (e.clientY - r.top) / r.height)) };
+  try {
+    const adv = { pointsOfInterest: [p] };
+    if (caps.focusMode.includes("single-shot")) adv.focusMode = "single-shot";
+    await track.applyConstraints({ advanced: [adv] });
+  } catch (err) {}
+  await sleep(600);
+}
+
+async function restoreFocus(track){
+  const caps = track.getCapabilities ? track.getCapabilities() : {};
+  if (caps.focusMode && caps.focusMode.includes("continuous")){
+    try { await track.applyConstraints({ advanced: [{ focusMode: "continuous" }] }); } catch (e) {}
+  }
+}
+
+async function takeFullPhoto(track){
+  if (!("ImageCapture" in window)) return null;
+  const ic = new ImageCapture(track);
+  let opts = {};
+  try {
+    const pc = await ic.getPhotoCapabilities();
+    if (pc.imageWidth && pc.imageWidth.max) opts = { imageWidth: pc.imageWidth.max, imageHeight: pc.imageHeight.max };
+  } catch (e) {}
+  const blob = await Promise.race([ic.takePhoto(opts), sleep(3000).then(() => { throw new Error("timeout"); })]);
+  const bmp = await createImageBitmap(blob);
+  return toCanvas(bmp, bmp.width, bmp.height);
+}
+
+async function bestFrame(v, n, gap){
+  let best = null, score = -1;
+  for (let i = 0; i < n; i++){
+    if (v.videoWidth){
+      const s = sharpness(v, v.videoWidth, v.videoHeight);
+      if (s > score){ score = s; best = toCanvas(v, v.videoWidth, v.videoHeight); }
+    }
+    await sleep(gap);
+  }
+  return { canvas: best, score };
+}
+
+$("video").addEventListener("click", async e => {
+  const v = $("video");
+  if (!v.videoWidth || capturing || !stream) return;
+  capturing = true;
+  $("hintText").textContent = "Фокусировка… держите телефон неподвижно";
+  $("meter").textContent = "";
+  const track = stream.getVideoTracks()[0];
+  try {
+    await focusAt(track, e, v);
+    let best = await bestFrame(v, 5, 50);
+    try {
+      const photo = await takeFullPhoto(track);
+      if (photo){
+        const s = sharpness(photo);
+        if (s >= best.score * 0.8) best = { canvas: photo, score: s };
+      }
+    } catch (err) {}
+    if (!best.canvas) return;
+    v.pause();
+    analyze(best.canvas, best.score);
+  } finally {
+    capturing = false;
+    restoreFocus(track);
+    $("hintText").textContent = HINT_DEFAULT;
+  }
+});
+
+$("file").addEventListener("change", async e => {
+  const file = e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+  const img = new Image();
+  img.src = URL.createObjectURL(file);
+  await img.decode();
+  if (stream) $("video").pause();
+  analyze(toCanvas(img, img.naturalWidth, img.naturalHeight));
+  if (!history.state) history.pushState({ cam: 1 }, "");
+});
+
+async function analyze(canvas, score){
+  if (score === undefined) score = sharpness(canvas);
+  $("shot").src = canvas.toDataURL("image/jpeg", 0.92);
+  $("wrap").querySelectorAll(".w").forEach(n => n.remove());
+  words = []; picked = []; updatePick();
+  setZoom(1);
+  show("selScreen");
+  $("busy").textContent = "Ищу текст…";
+  $("busy").classList.add("on");
+  try {
+    const w = await getWorker();
+    const W = canvas.width, H = canvas.height, all = [];
+    const runPass = async pp => {
+      const { data } = await w.recognize(pp.canvas, {}, { text: true, blocks: true });
+      const sc = pp.scale;
+      collectWords(data).forEach(x => all.push({
+        text: x.text, confidence: x.confidence,
+        bbox: { x0: x.bbox.x0 / sc, y0: x.bbox.y0 / sc, x1: x.bbox.x1 / sc, y1: x.bbox.y1 / sc }
+      }));
+    };
+    await runPass(binarize(canvas, 1800));
+    if (all.filter(x => goodWord(x, W, H)).length < 12){
+      $("busy").textContent = "Ищу текст… ещё раз";
+      await runPass(preprocess(canvas, 1300));
+    }
+    words = mergeWords(all.filter(x => goodWord(x, W, H)));
+    try { await $("shot").decode(); } catch (e) {}
+    words.forEach((wd, i) => {
+      const b = wd.bbox, pad = 2;
+      const d = document.createElement("div");
+      d.className = "w";
+      d.style.left = (b.x0 - pad) / W * 100 + "%";
+      d.style.top = (b.y0 - pad) / H * 100 + "%";
+      d.style.width = (b.x1 - b.x0 + pad * 2) / W * 100 + "%";
+      d.style.height = (b.y1 - b.y0 + pad * 2) / H * 100 + "%";
+      const s = document.createElement("span");
+      s.textContent = wd.text.trim();
+      d.appendChild(s);
+      d.addEventListener("click", () => toggle(i, d));
+      $("wrap").appendChild(d);
+    });
+    layoutLabels();
+    $("busy").classList.remove("on");
+    if (!words.length){
+      $("pick").textContent = "Текст не найден. Нажмите ↻ и снимите с 20–25 см, при хорошем свете.";
+      $("pick").className = "warn";
+    } else if (score < BLUR_LIMIT){
+      $("pick").textContent = "Снимок размытый — лучше нажать ↻ и переснять.";
+      $("pick").className = "warn";
+    }
+  } catch (err){
+    $("busy").textContent = "Ошибка распознавания: " + err.message;
+  }
+}
+
+function layoutLabels(){
+  if ($("wrap").classList.contains("notext")) return;
+  $("wrap").querySelectorAll(".w").forEach(d => {
+    const s = d.firstChild;
+    s.style.transform = "";
+    s.style.fontSize = Math.max(8, d.clientHeight * 0.8) + "px";
+    const k = s.scrollWidth ? Math.min(1.6, (d.clientWidth - 2) / s.scrollWidth) : 1;
+    s.style.transform = "scaleX(" + k + ")";
+  });
+}
+window.addEventListener("resize", layoutLabels);
+
+$("showText").addEventListener("click", () => {
+  const on = $("wrap").classList.toggle("notext");
+  $("showText").classList.toggle("on", !on);
+  layoutLabels();
+});
+
+function toggle(i, el){
+  const k = picked.indexOf(i);
+  if (k >= 0){ picked.splice(k, 1); el.classList.remove("on"); }
+  else { picked.push(i); el.classList.add("on"); }
+  updatePick();
+}
+
+function pickedText(){
+  return picked.map(i => words[i].text.trim()).join(" ");
+}
+
+function updatePick(){
+  const t = pickedText();
+  $("pick").textContent = t || "Нажмите на нужные слова";
+  $("pick").className = t ? "" : "empty";
+}
+
+function setZoom(z){
+  zoom = z;
+  $("wrap").style.width = (z * 100) + "%";
+  $("zoom").textContent = z + "×";
+  layoutLabels();
+}
+$("zoom").addEventListener("click", () => setZoom(zoom >= 3 ? 1 : zoom + 1));
+
+$("retake").addEventListener("click", () => {
+  if (stream){ $("video").play(); show("camScreen"); }
+  else { $("file").click(); }
+});
+
+$("accept").addEventListener("click", () => {
+  const t = pickedText();
+  if (!t){ $("pick").textContent = "Сначала нажмите на слово (станет розовым)"; return; }
+  $("text").value = t;
+  history.back();
+  setStatus("Проверьте текст и нажмите ➤, чтобы сохранить.");
+});
+
+/* ===== ГОСТИ: всё хранится в этом телефоне ===== */
+const KEY = "guests_v1";
+let guests = [];
+try { guests = JSON.parse(load(KEY)) || []; } catch (e) { guests = []; }
+let mode = load("mode") === "out" ? "out" : "in";
+let dirty = load("dirty") === "1";
+
+function persist(){
+  try {
+    localStorage.setItem(KEY, JSON.stringify(guests));
+    localStorage.setItem("dirty", dirty ? "1" : "0");
+    return true;
+  } catch (e){
+    setStatus("⚠️ Не получилось сохранить в телефон! Скачайте Excel прямо сейчас.");
+    return false;
+  }
+}
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+
+const pad2 = n => String(n).padStart(2, "0");
+function stamp(d){
+  d = d || new Date();
+  return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + " " +
+    pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + ":" + pad2(d.getSeconds());
+}
+const hm = s => s ? s.slice(11, 16) : "";
+
+/* сравнение имён: без регистра, ü→U, ň→N, W=V и т.п., чтобы «Remezanow» и «REMEZANOV» совпали */
+const TR = { "Ü":"U","Ň":"N","Ý":"Y","Ş":"S","Ç":"C","Ä":"A","Ö":"O","Ž":"Z","Ё":"Е","W":"V" };
+function norm(s){
+  return String(s || "").toUpperCase().replace(/[ÜŇÝŞÇÄÖŽЁW]/g, c => TR[c]).replace(/[^A-ZА-Я]/g, "");
+}
+function lev(a, b){
+  const m = a.length, n = b.length; let prev = Array.from({length: n + 1}, (_, j) => j);
+  for (let i = 1; i <= m; i++){
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[n];
+}
+function similar(a, b){
+  const x = norm(a), y = norm(b);
+  if (!x || !y) return false;
+  if (x === y) return true;
+  if ((x.length >= 4 && y.includes(x)) || (y.length >= 4 && x.includes(y))) return true;
+  if (x.length >= 5 && y.length >= 5 && x.slice(0, 5) === y.slice(0, 5)) return true;
+  return lev(x, y) <= Math.max(1, Math.floor(Math.min(x.length, y.length) / 5));
+}
+
+/* окно с выбором (вместо системных alert/confirm) */
+function ask(title, text, buttons, input){
+  return new Promise(resolve => {
+    $("mTitle").textContent = title;
+    $("mText").textContent = text || "";
+    $("mBody").replaceChildren();
+    let inp = null;
+    if (input != null){
+      inp = document.createElement("input");
+      inp.value = input; inp.autocomplete = "off";
+      $("mBody").append(inp);
+    }
+    $("mBtns").replaceChildren(...buttons.map(b => {
+      const el = document.createElement("button");
+      el.textContent = b.label; if (b.cls) el.className = b.cls;
+      el.onclick = () => { $("modal").classList.remove("on"); resolve({ value: b.value, input: inp ? inp.value.trim() : null }); };
+      return el;
+    }));
+    $("modal").classList.add("on");
+  });
+}
+$("modal").addEventListener("click", e => { if (e.target === $("modal")) $("mBtns").lastChild.click(); });
+
+function setMode(m){
+  mode = m; store("mode", m);
+  document.body.classList.toggle("out", m === "out");
+  $("mIn").classList.toggle("on", m === "in");
+  $("mOut").classList.toggle("on", m === "out");
+  $("modeLetter").textContent = m === "in" ? "⬇" : "⬆";
+  $("modeLabel").textContent = m === "in" ? "ФАМИЛИЯ ИМЯ — ВХОД" : "ФАМИЛИЯ ИМЯ — ВЫХОД";
+}
+$("mIn").addEventListener("click", () => setMode("in"));
+$("mOut").addEventListener("click", () => setMode("out"));
+
+function newId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function done(msg){
+  dirty = true; persist(); render();
+  $("text").value = "";
+  setStatus(msg);
+  if (navigator.vibrate) navigator.vibrate(60);
+}
+
+async function saveNow(){
+  const name = $("text").value.trim().replace(/\s+/g, " ");
+  if (!name){ setStatus("Поле пустое: отсканируйте или впишите имя."); return; }
+  const inside = guests.filter(g => g.in && !g.out);
+
+  if (mode === "in"){
+    const dup = inside.find(g => norm(g.name) === norm(name));
+    if (dup){
+      const r = await ask("Этот гость уже внутри", dup.name + " вошёл в " + hm(dup.in) + ".\nЗаписать вход ещё раз?",
+        [{ label: "Записать ещё раз", value: 1, cls: "main" }, { label: "Отмена", value: 0, cls: "plain" }]);
+      if (!r.value) return;
+    }
+    guests.push({ id: newId(), name, in: stamp(), out: "" });
+    done("✅ Вход: " + name);
+    return;
+  }
+
+  // выход: ищем среди тех, кто внутри
+  const exact = inside.filter(g => norm(g.name) === norm(name));
+  let target = exact.length === 1 ? exact[0] : null;
+  if (!target){
+    const cands = inside.filter(g => similar(g.name, name))
+      .sort((a, b) => lev(norm(a.name), norm(name)) - lev(norm(b.name), norm(name))).slice(0, 8);
+    const btns = cands.map(g => ({ label: "⬆ " + g.name + "   (вошёл " + hm(g.in) + ")", value: g.id }));
+    btns.push({ label: "Нет в списке — записать выход отдельно", value: "new", cls: "blue" });
+    btns.push({ label: "Отмена", value: 0, cls: "plain" });
+    const r = await ask(cands.length ? "Кто уходит?" : "Не найден среди тех, кто внутри",
+      cands.length ? "Похожие гости внутри для «" + name + "»:" : "«" + name + "» не записан на вход (или уже вышел).", btns);
+    if (!r.value) return;
+    if (r.value === "new"){
+      guests.push({ id: newId(), name, in: "", out: stamp() });
+      done("✅ Выход (без входа): " + name);
+      return;
+    }
+    target = guests.find(g => g.id === r.value);
+  }
+  target.out = stamp();
+  done("✅ Выход: " + target.name);
+}
+$("sendBtn").addEventListener("click", saveNow);
+$("text").addEventListener("keydown", e => { if (e.key === "Enter") saveNow(); });
+
+function render(){
+  const inside = guests.filter(g => g.in && !g.out).length;
+  $("sIn").textContent = inside;
+  $("sAll").textContent = guests.filter(g => g.in).length;
+  $("sOut").textContent = guests.filter(g => g.out).length;
+  const q = norm($("search").value);
+  let rows = guests.slice().sort((a, b) => ((b.out > b.in ? b.out : b.in) || "").localeCompare((a.out > a.in ? a.out : a.in) || ""));
+  if (q) rows = rows.filter(g => norm(g.name).includes(q));
+  const more = rows.length > 300 ? rows.length - 300 : 0;
+  rows = rows.slice(0, 300);
+  const list = $("list");
+  if (!rows.length){
+    list.innerHTML = "";
+    const e = document.createElement("div"); e.className = "empty";
+    e.textContent = q ? "Никого не найдено." : "Пока никого. Отсканируйте первого гостя.";
+    list.append(e); return;
+  }
+  list.replaceChildren(...rows.map(g => {
+    const d = document.createElement("div");
+    d.className = "g" + (g.in && !g.out ? " inside" : "");
+    const n = document.createElement("div"); n.className = "n"; n.textContent = g.name;
+    const t = document.createElement("div"); t.className = "t";
+    if (g.in){ const i = document.createElement("div"); i.className = "i"; i.textContent = "⬇ " + hm(g.in); t.append(i); }
+    if (g.out){ const o = document.createElement("div"); o.className = "o"; o.textContent = "⬆ " + hm(g.out); t.append(o); }
+    d.append(n, t);
+    d.onclick = () => editGuest(g.id);
+    return d;
+  }));
+  if (more){ const e = document.createElement("div"); e.className = "empty"; e.textContent = "…и ещё " + more + ". Используйте поиск."; list.append(e); }
+}
+$("search").addEventListener("input", render);
+
+async function editGuest(id){
+  const g = guests.find(x => x.id === id); if (!g) return;
+  const info = (g.in ? "Вход: " + g.in : "Без входа") + "\n" + (g.out ? "Выход: " + g.out : "Ещё внутри");
+  const btns = [{ label: "Сохранить имя", value: "save", cls: "main" }];
+  if (g.in && !g.out) btns.push({ label: "⬆ Отметить выход сейчас", value: "out", cls: "blue" });
+  if (g.out && g.in) btns.push({ label: "Отменить выход (снова внутри)", value: "unout" });
+  btns.push({ label: "Удалить запись", value: "del", cls: "red" }, { label: "Отмена", value: 0, cls: "plain" });
+  const r = await ask("Гость", info, btns, g.name);
+  if (r.value === "save" && r.input){ g.name = r.input; done("Имя исправлено: " + g.name); }
+  else if (r.value === "out"){ g.out = stamp(); done("✅ Выход: " + g.name); }
+  else if (r.value === "unout"){ g.out = ""; done("Выход отменён: " + g.name); }
+  else if (r.value === "del"){
+    const c = await ask("Удалить «" + g.name + "»?", "", [{ label: "Да, удалить", value: 1, cls: "red" }, { label: "Отмена", value: 0, cls: "plain" }]);
+    if (c.value){ guests = guests.filter(x => x.id !== id); done("Удалено: " + g.name); }
+  }
+}
+
+/* ===== Excel (.xlsx) без интернета ===== */
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++){ let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(b){ let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function zipStore(files){
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  for (const [name, text] of Object.entries(files)){
+    const nb = enc.encode(name), data = enc.encode(text), crc = crc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint32(14, crc, true);
+    lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, nb.length, true);
+    parts.push(lh, nb, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint32(16, crc, true);
+    ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true); ch.setUint16(28, nb.length, true); ch.setUint32(42, off, true);
+    central.push(ch, nb);
+    off += 30 + nb.length + data.length;
+  }
+  const size = central.reduce((s, p) => s + p.byteLength, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, Object.keys(files).length, true); end.setUint16(10, Object.keys(files).length, true);
+  end.setUint32(12, size, true); end.setUint32(16, off, true);
+  return new Blob([...parts, ...central, end], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+}
+function xe(s){ return String(s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "").replace(/[<>&"]/g, c => ({ "<":"&lt;", ">":"&gt;", "&":"&amp;", '"':"&quot;" }[c])); }
+function makeXlsx(rows){
+  const NS = 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"';
+  const H = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  const data = rows.map((r, ri) => '<row r="' + (ri + 1) + '">' + r.map((v, ci) =>
+    '<c r="' + String.fromCharCode(65 + ci) + (ri + 1) + '" t="inlineStr"' + (ri === 0 ? ' s="1"' : '') + '><is><t xml:space="preserve">' + xe(v) + '</t></is></c>').join("") + '</row>').join("");
+  return zipStore({
+    "[Content_Types].xml": H + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>',
+    "_rels/.rels": H + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
+    "xl/workbook.xml": H + '<workbook ' + NS + ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="SCAN" sheetId="1" r:id="rId1"/></sheets></workbook>',
+    "xl/_rels/workbook.xml.rels": H + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>',
+    "xl/styles.xml": H + '<styleSheet ' + NS + '><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>',
+    "xl/worksheets/sheet1.xml": H + '<worksheet ' + NS + '><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols><col min="1" max="1" width="34" customWidth="1"/><col min="2" max="3" width="21" customWidth="1"/></cols><sheetData>' + data + '</sheetData></worksheet>'
+  });
+}
+
+$("exportBtn").addEventListener("click", async () => {
+  if (!guests.length){ setStatus("Список пуст — нечего выгружать."); return; }
+  const rows = [["Name, Surname", "Arrived Time", "Departure Time"]].concat(
+    guests.slice().sort((a, b) => ((a.in || a.out) || "").localeCompare((b.in || b.out) || "")).map(g => [g.name, g.in, g.out]));
+  const blob = makeXlsx(rows);
+  const d = new Date();
+  const fname = "guests_" + d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + "_" + pad2(d.getHours()) + pad2(d.getMinutes()) + ".xlsx";
+  const file = new File([blob], fname, { type: blob.type });
+  const canShare = navigator.canShare && navigator.canShare({ files: [file] });
+  const btns = [];
+  if (canShare) btns.push({ label: "📤 Отправить (Telegram, IMO, почта…)", value: "share", cls: "main" });
+  btns.push({ label: "💾 Сохранить в телефон (Загрузки)", value: "save", cls: canShare ? "" : "main" });
+  btns.push({ label: "Отмена", value: 0, cls: "plain" });
+  const r = await ask("Excel-файл готов", guests.length + " записей · " + fname, btns);
+  if (r.value === "share"){
+    try { await navigator.share({ files: [file], title: fname }); dirty = false; persist(); setStatus("✅ Файл отправлен: " + fname); }
+    catch (e){ if (e.name !== "AbortError") setStatus("Не получилось отправить: " + e.message + ". Попробуйте «Сохранить в телефон»."); }
+  } else if (r.value === "save"){
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = fname;
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+    dirty = false; persist();
+    setStatus("✅ Сохранено в «Загрузки»: " + fname);
+  }
+});
+
+$("clearBtn").addEventListener("click", async () => {
+  if (!guests.length){ setStatus("Список уже пуст."); return; }
+  const warn = dirty ? "⚠️ Последние изменения ещё НЕ выгружены в Excel!\nСначала нажмите «Скачать Excel»." : "Excel уже выгружен.";
+  const r = await ask("Начать новый ивент?", "Будут удалены все " + guests.length + " записей из телефона.\n" + warn,
+    [{ label: "Удалить всё и начать заново", value: 1, cls: "red" }, { label: "Отмена", value: 0, cls: "plain" }]);
+  if (!r.value) return;
+  if (dirty){
+    const r2 = await ask("Точно удалить без Excel?", "Восстановить будет невозможно.",
+      [{ label: "Да, удалить", value: 1, cls: "red" }, { label: "Нет, сначала скачаю", value: 0, cls: "plain" }]);
+    if (!r2.value) return;
+  }
+  guests = []; dirty = false; persist(); render();
+  setStatus("Список очищен. Можно начинать новый ивент.");
+});
+
+/* ===== работа без интернета ===== */
+async function checkOffline(){
+  const L = $("link");
+  if (!("serviceWorker" in navigator) || !window.caches){ L.className = "bad"; L.textContent = "● Этот браузер не умеет работать без интернета — откройте в Chrome"; return; }
+  try {
+    const keys = await caches.keys();
+    const name = keys.find(k => k.startsWith("guest-scanner-"));
+    const c = name && await caches.open(name);
+    const need = ["lib/tesseract.min.js", "lib/worker.min.js", "lib/core/tesseract-core-simd-lstm.wasm.js", "lib/core/tesseract-core-lstm.wasm.js", "lib/lang/eng.traineddata.gz", "index.html"];
+    let ok = 0;
+    if (c) for (const f of need) if (await c.match(new URL(f, location.href).href, { ignoreSearch: true })) ok++;
+    if (ok === need.length){ L.className = "ok"; L.textContent = "● Готово к работе без интернета · данные хранятся в телефоне"; return true; }
+    L.className = "bad"; L.textContent = "● Загружаю файлы для работы без интернета… " + ok + "/" + need.length + " (не закрывайте)";
+  } catch (e){ L.className = "bad"; L.textContent = "● Проверка не удалась: " + e.message; }
+  return false;
+}
+if ("serviceWorker" in navigator && window.isSecureContext){
+  navigator.serviceWorker.register("sw.js").catch(e => console.warn(e));
+}
+(async () => { for (let i = 0; i < 120; i++){ if (await checkOffline()) break; await sleep(2000); } })();
+
+setMode(mode);
+render();
+</script>
+</body>
+</html>
