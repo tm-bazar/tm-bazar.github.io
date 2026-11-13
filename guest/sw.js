@@ -1,6 +1,6 @@
-// Сканер гостей — работа без интернета.
+// GuestCheck — работа без интернета.
 // После первого открытия все файлы (вместе с распознаванием текста) хранятся в телефоне.
-const CACHE = "guest-scanner-v2";
+const CACHE = "guestcheck-v1";
 const FILES = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png",
   "lib/tesseract.min.js", "lib/worker.min.js",
   "lib/core/tesseract-core-simd-lstm.wasm.js", "lib/core/tesseract-core-lstm.wasm.js",
@@ -11,7 +11,7 @@ self.addEventListener("install", e => {
 });
 self.addEventListener("activate", e => {
   e.waitUntil(caches.keys()
-    .then(keys => Promise.all(keys.filter(k => k.startsWith("guest-scanner-") && k !== CACHE).map(k => caches.delete(k))))
+    .then(keys => Promise.all(keys.filter(k => (k.startsWith("guestcheck-") && k !== CACHE) || k.startsWith("guest-scanner-")).map(k => caches.delete(k))))
     .then(() => self.clients.claim()));
 });
 const timeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);

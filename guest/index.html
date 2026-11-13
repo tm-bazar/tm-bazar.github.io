@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Сканер гостей</title>
+<title>GuestCheck</title>
 <meta name="theme-color" content="#2d2d2d">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
@@ -45,7 +45,10 @@ body.out #sendBtn{background:var(--blue)}
 .tabs button{flex:1;padding:10px;border-radius:10px;border:0;background:#333;color:var(--mut);font-size:15px;font-weight:600}
 .tabs button.on{background:#555;color:#fff}
 .g .tag{display:inline-block;font-size:12px;padding:1px 6px;border-radius:6px;margin-left:6px;vertical-align:middle}
-.tag.deny{background:#e53935;color:#fff}.tag.nil{background:#ffb300;color:#000}.tag.no{background:#555;color:#ddd}.tag.bd{background:#1565c0;color:#fff}
+.tag.deny{background:#e53935;color:#fff}.tag.ks{background:#7b1fa2;color:#fff}.tag.kg{background:#455a64;color:#fff}
+.lst{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;background:#333;margin-bottom:6px;font-size:14px;cursor:pointer}
+.lst .ln{flex:1;min-width:0;overflow-wrap:anywhere}
+.lst .tag{margin-left:0;white-space:nowrap}.tag.nil{background:#ffb300;color:#000}.tag.no{background:#555;color:#ddd}.tag.bd{background:#1565c0;color:#fff}
 .g.deny{background:rgba(229,57,53,.22)}
 .g .sw{width:12px;height:30px;border-radius:4px;flex:none}
 .empty{color:var(--mut);text-align:center;padding:24px 8px}
@@ -113,7 +116,7 @@ footer{position:fixed;left:0;right:0;bottom:0;background:#000;padding:10px 14px 
 </head>
 <body>
 
-<header>Гости <small id="evName"></small></header>
+<header>✔ GuestCheck <small id="evName"></small></header>
 
 <main>
   <div class="seg"><button id="mIn">⬇ Вход</button><button id="mOut">⬆ Выход</button></div>
@@ -127,13 +130,13 @@ footer{position:fixed;left:0;right:0;bottom:0;background:#000;padding:10px 14px 
     </div>
   </div>
   <div class="glbox">
-    <div id="glInfo">Список гостей не загружен</div>
-    <div class="glrow"><button id="loadBtn">📥 Загрузить список гостей</button>
-      <label class="chk"><input type="checkbox" id="askBadge"> Бейдж №</label></div>
+    <div id="lists"></div>
+    <div id="glInfo"></div>
+    <div class="glrow"><button id="loadBtn">📥 Загрузить список (Excel)</button></div>
   </div>
   <input id="glFile" type="file" accept=".xlsx,.xlsm,.csv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12,text/csv,text/plain" hidden>
   <div class="stats"><div><b id="sIn">0</b>внутри</div><div><b id="sAll">0</b>пришло</div><div><b id="sOut">0</b>ушло</div><div id="sNoBox"><b id="sNo">0</b>не пришло</div></div>
-  <div class="tabs"><button id="tRec" class="on">Записи</button><button id="tList">Список гостей</button></div>
+  <div class="tabs"><button id="tRec" class="on">Записи</button><button id="tList">Списки (кто пришёл)</button></div>
   <input id="search" type="search" placeholder="🔍 Поиск" autocomplete="off">
   <div id="list"></div>
 </main>
@@ -701,13 +704,23 @@ $("accept").addEventListener("click", () => {
   setStatus("Проверьте текст и нажмите ➤, чтобы сохранить.");
 });
 
-/* ===== ГОСТИ: всё хранится в этом телефоне ===== */
-const KEY = "guests_v1", LKEY = "glist_v1";
-let guests = [];   // записи: {id, name, scanned, listId, in, out, badge, deny, nil, color}
-let glist = [];    // список гостей: {id, row, name, color, deny}
-let glName = load("glName") || "";
+/* ===== GuestCheck: всё хранится в этом телефоне ===== */
+const KEY = "guests_v1", LKEY = "glists_v2";
+// записи: {id, name, scanned, listId(гость в списке), lst(id списка), kind, in, out, badge, badgeBack, deny, nil, color}
+let guests = [];
+// списки: {id, file, sheet, kind:"guest"|"staff", badge:bool, items:[{id,row,name,color,deny}]}
+let lists = [];
 try { guests = JSON.parse(load(KEY)) || []; } catch (e) { guests = []; }
-try { glist = JSON.parse(load(LKEY)) || []; } catch (e) { glist = []; }
+try { lists = JSON.parse(load(LKEY)) || []; } catch (e) { lists = []; }
+// перенос со старой версии (один список)
+try {
+  const old = JSON.parse(load("glist_v1") || "null");
+  if (old && old.length && !lists.length){
+    lists = [{ id: "A", file: load("glName") || "Guest list", sheet: "Guest list", kind: "guest", badge: false, items: old.map(e => Object.assign({}, e, { id: "A" + e.id })) }];
+    guests.forEach(g => { if (g.listId) { g.listId = "A" + g.listId; g.lst = "A"; g.kind = "guest"; } });
+  }
+  if (old) store("glist_v1");
+} catch (e) {}
 let mode = load("mode") === "out" ? "out" : "in";
 let tab = "rec";
 let dirty = load("dirty") === "1";
@@ -715,8 +728,7 @@ let dirty = load("dirty") === "1";
 function persist(){
   try {
     localStorage.setItem(KEY, JSON.stringify(guests));
-    localStorage.setItem(LKEY, JSON.stringify(glist));
-    localStorage.setItem("glName", glName);
+    localStorage.setItem(LKEY, JSON.stringify(lists));
     localStorage.setItem("dirty", dirty ? "1" : "0");
     return true;
   } catch (e){
@@ -733,6 +745,12 @@ function stamp(d){
     pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + ":" + pad2(d.getSeconds());
 }
 const hm = s => s ? s.slice(11, 16) : "";
+const KIND = { guest: "Гость", staff: "Сотрудник" };
+const listById = id => lists.find(l => l.id === id);
+function allEntries(){ const out = []; lists.forEach(l => l.items.forEach(e => out.push({ e, l }))); return out; }
+function entryById(id){ for (const l of lists){ const e = l.items.find(x => x.id === id); if (e) return { e, l }; } return null; }
+const recsOf = e => guests.filter(g => g.listId === e.id);
+const totalItems = () => lists.reduce((s, l) => s + l.items.length, 0);
 
 /* ===== сравнение имён (как в Excel-макросе) =====
    без регистра, ü→U, ň→N, W=V; совпадает, если: одно — часть другого, одинаковые первые 5 букв,
@@ -815,12 +833,11 @@ function setMode(m){
   $("mIn").classList.toggle("on", m === "in");
   $("mOut").classList.toggle("on", m === "out");
   $("modeLetter").textContent = m === "in" ? "⬇" : "⬆";
-  $("modeLabel").textContent = m === "in" ? "ФАМИЛИЯ ИМЯ — ВХОД" : "ФАМИЛИЯ ИМЯ / БЕЙДЖ — ВЫХОД";
+  $("modeLabel").textContent = m === "in" ? "ФАМИЛИЯ ИМЯ — ВХОД" : "ФАМИЛИЯ ИМЯ / № БЕЙДЖА — ВЫХОД";
+  $("text").placeholder = m === "in" ? "" : "имя или номер бейджа";
 }
 $("mIn").addEventListener("click", () => setMode("in"));
 $("mOut").addEventListener("click", () => setMode("out"));
-$("askBadge").checked = load("askBadge") === "1";
-$("askBadge").addEventListener("change", () => store("askBadge", $("askBadge").checked ? "1" : "0"));
 
 function newId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 function done(msg){
@@ -829,99 +846,110 @@ function done(msg){
   setStatus(msg);
   if (navigator.vibrate) navigator.vibrate(60);
 }
-const entryById = id => glist.find(e => e.id === id);
-const recsOf = e => guests.filter(g => g.listId === e.id);
 
 /* ===== ВХОД ===== */
-async function admit(scanned, entry){
-  // entry — гость из списка (или null, если «нет в списке»)
-  if (entry && entry.deny){
-    const r = await ask("⛔ ЧЁРНЫЙ СПИСОК", entry.name + "\nЭтот гость в чёрном списке. Не пускать!",
+async function admit(scanned, hit){
+  // hit = {e, l} — человек из списка, или null («нет в списке»)
+  const e = hit ? hit.e : null, l = hit ? hit.l : null;
+  const who = e ? e.name : scanned;
+  if (e && e.deny){
+    const r = await ask("⛔ ЧЁРНЫЙ СПИСОК", e.name + (l ? " · " + KIND[l.kind] : "") + "\nЭтот человек в чёрном списке. Не пускать!",
       [{ label: "Не пускать", value: 0, cls: "red" }, { label: "Всё равно впустить", value: 1, cls: "plain" }], null, { danger: true });
-    if (!r.value){ setStatus("⛔ Не впущен (чёрный список): " + entry.name); $("text").value = ""; return; }
+    if (!r.value){ setStatus("⛔ Не впущен (чёрный список): " + e.name); $("text").value = ""; return; }
   }
-  const prev = entry ? recsOf(entry).filter(g => g.in) : guests.filter(g => g.in && !g.listId && norm(g.name) === norm(scanned));
+  const prev = e ? recsOf(e).filter(g => g.in) : guests.filter(g => g.in && !g.listId && norm(g.name) === norm(scanned));
   const insideNow = prev.find(g => !g.out);
   if (prev.length){
     const p = insideNow || prev[prev.length - 1];
-    const r = await ask(insideNow ? "Этот гость уже внутри!" : "Этот гость уже приходил",
+    const r = await ask(insideNow ? "Уже внутри!" : "Уже приходил",
       p.name + "\nВошёл в " + hm(p.in) + (p.out ? ", ушёл в " + hm(p.out) : "") + (p.badge ? "\nБейдж № " + p.badge : "") + "\nЗаписать вход ещё раз?",
       [{ label: "Записать ещё раз", value: 1, cls: "main" }, { label: "Отмена", value: 0, cls: "plain" }], null, { danger: !!insideNow });
     if (!r.value) return;
   }
   let badge = "";
-  if ($("askBadge").checked){
-    const r = await ask("Номер бейджа", (entry ? entry.name : scanned), [
-      { label: "Сохранить", value: 1, cls: "main" }, { label: "Без бейджа", value: 2 }, { label: "Отмена", value: 0, cls: "plain" }], "", { numeric: true });
-    if (!r.value) return;
-    if (r.value === 1) badge = r.input;
-    const busy = badge && guests.find(g => g.badge === badge && g.in && !g.out);
-    if (busy){
-      const r2 = await ask("Бейдж № " + badge + " уже выдан", busy.name + " (вошёл " + hm(busy.in) + ") ещё внутри.",
-        [{ label: "Всё равно записать", value: 1, cls: "main" }, { label: "Отмена", value: 0, cls: "plain" }]);
+  if (l && l.badge){
+    for (;;){
+      const r = await ask("Выдайте бейдж: какой номер?", who + " · " + KIND[l.kind], [
+        { label: "Сохранить", value: 1, cls: "main" }, { label: "Без бейджа", value: 2 }, { label: "Отмена", value: 0, cls: "plain" }], "", { numeric: true });
+      if (!r.value) return;
+      if (r.value === 2) break;
+      badge = r.input;
+      if (!badge){ continue; }
+      const busy = guests.find(g => g.badge === badge && g.in && !g.out);
+      if (!busy) break;
+      const r2 = await ask("Бейдж № " + badge + " уже на руках", busy.name + " (вошёл " + hm(busy.in) + ") ещё не вернул его.",
+        [{ label: "Ввести другой номер", value: 2, cls: "main" }, { label: "Всё равно выдать", value: 1 }, { label: "Отмена", value: 0, cls: "plain" }]);
       if (!r2.value) return;
+      if (r2.value === 1) break;
     }
   }
-  guests.push({ id: newId(), name: entry ? entry.name : scanned, scanned, listId: entry ? entry.id : "",
-    in: stamp(), out: "", badge, deny: !!(entry && entry.deny), nil: !entry && glist.length > 0, color: entry ? entry.color || "" : "" });
-  done("✅ Вход: " + (entry ? entry.name : scanned) + (badge ? " · бейдж " + badge : "") + (!entry && glist.length ? " (нет в списке)" : ""));
+  guests.push({ id: newId(), name: who, scanned, listId: e ? e.id : "", lst: l ? l.id : "", kind: l ? l.kind : "",
+    in: stamp(), out: "", badge, badgeBack: "", deny: !!(e && e.deny), nil: !e && lists.length > 0, color: e ? e.color || "" : "" });
+  done("✅ Вход: " + who + (l ? " · " + KIND[l.kind] : "") + (badge ? " · бейдж № " + badge : "") + (!e && lists.length ? " (нет в списке)" : ""));
 }
 
 async function saveIn(name){
-  if (!glist.length) return admit(name, null);
-  const cands = glist.map(e => ({ e, m: matchName(name, e.name) })).filter(x => x.m).sort((a, b) => a.m.rank - b.m.rank);
+  if (!lists.length) return admit(name, null);
+  const cands = allEntries().map(x => Object.assign(x, { m: matchName(name, x.e.name) })).filter(x => x.m).sort((a, b) => a.m.rank - b.m.rank);
   const strong = cands.filter(x => x.m.strong);
-  if (strong.length === 1 && (cands.length === 1 || strong[0].m.rank < 1)) return admit(name, strong[0].e);
+  if (strong.length === 1 && (cands.length === 1 || strong[0].m.rank < 1)) return admit(name, strong[0]);
   if (!cands.length){
-    const r = await ask("Гостя нет в списке!", "«" + name + "» не найден в списке гостей.",
+    const r = await ask("Нет в списке!", "«" + name + "» не найден ни в одном списке.",
       [{ label: "Не пускать", value: 0, cls: "red" }, { label: "Всё равно впустить (отметить «нет в списке»)", value: 1, cls: "plain" }], null, { danger: true });
     if (r.value) return admit(name, null);
     setStatus("Не впущен (нет в списке): " + name); $("text").value = "";
     return;
   }
-  const list = cands.slice(0, 9);
-  const btns = list.map((x, i) => {
+  const top = cands.slice(0, 9);
+  const btns = top.map((x, i) => {
     const rs = recsOf(x.e).filter(g => g.in), inside = rs.find(g => !g.out);
-    return { label: (i + 1) + ". " + (x.e.deny ? "⛔ " : "") + x.e.name + "   №" + x.e.row + (inside ? "  · уже внутри" : rs.length ? "  · уже был" : ""),
+    return { label: (i + 1) + ". " + (x.e.deny ? "⛔ " : "") + x.e.name + "  — " + KIND[x.l.kind] + " №" + x.e.row + (inside ? " · уже внутри" : rs.length ? " · уже был" : ""),
       value: x.e.id, cls: x.e.deny ? "red" : "", color: x.e.color && !x.e.deny ? x.e.color : "" };
   });
   btns.push({ label: "Никто из них — нет в списке", value: "nil", cls: "plain" }, { label: "Отмена", value: 0, cls: "plain" });
-  const r = await ask("Похожие гости: выберите номер", "Для «" + name + "» найдено: " + cands.length, btns);
+  const r = await ask("Похожие: выберите номер", "Для «" + name + "» найдено: " + cands.length, btns);
   if (!r.value) return;
   if (r.value === "nil") return admit(name, null);
   return admit(name, entryById(r.value));
 }
 
 /* ===== ВЫХОД ===== */
+async function checkout(g){
+  if (g.badge){
+    const r = await ask("Заберите бейдж № " + g.badge, g.name + "\nВошёл в " + hm(g.in),
+      [{ label: "✅ Бейдж № " + g.badge + " вернул", value: "yes", cls: "main" }, { label: "Бейдж НЕ вернул", value: "no", cls: "red" }, { label: "Отмена", value: 0, cls: "plain" }]);
+    if (!r.value) return;
+    g.badgeBack = r.value === "yes" ? stamp() : "НЕТ";
+  }
+  g.out = stamp();
+  done("✅ Выход: " + g.name + (g.badge ? (g.badgeBack === "НЕТ" ? " · ⚠️ бейдж № " + g.badge + " НЕ вернул" : " · бейдж № " + g.badge + " возвращён") : ""));
+}
 async function saveOut(name){
   const inside = guests.filter(g => g.in && !g.out);
-  let target = null;
   if (/^\d+$/.test(name)){                       // ввели номер бейджа
     const b = inside.filter(g => g.badge === name);
-    if (b.length === 1) target = b[0];
-  }
-  if (!target){
-    const exact = inside.filter(g => norm(g.name) === norm(name) || norm(g.scanned) === norm(name));
-    if (exact.length === 1) target = exact[0];
-  }
-  if (!target){
-    const cands = inside.map(g => ({ g, m: matchName(name, g.name) || matchName(name, g.scanned || "") || (g.badge && g.badge === name ? { rank: 0 } : null) }))
-      .filter(x => x.m).sort((a, b) => a.m.rank - b.m.rank).slice(0, 9);
-    const btns = cands.map((x, i) => ({ label: (i + 1) + ". " + x.g.name + "   (вошёл " + hm(x.g.in) + (x.g.badge ? ", бейдж " + x.g.badge : "") + ")", value: x.g.id }));
-    btns.push({ label: "Нет в списке — записать выход отдельно", value: "new", cls: "blue" });
-    btns.push({ label: "Отмена", value: 0, cls: "plain" });
-    const r = await ask(cands.length ? "Кто уходит? Выберите номер" : "Не найден среди тех, кто внутри",
-      cands.length ? "Похожие гости внутри для «" + name + "»:" : "«" + name + "» не записан на вход (или уже вышел).", btns);
-    if (!r.value) return;
-    if (r.value === "new"){
-      guests.push({ id: newId(), name, scanned: name, listId: "", in: "", out: stamp(), badge: "", deny: false, nil: glist.length > 0, color: "" });
-      done("✅ Выход (без входа): " + name);
+    if (b.length === 1) return checkout(b[0]);
+    if (!b.length){
+      const r = await ask("Бейдж № " + name + " не найден", "Ни у кого внутри нет бейджа с этим номером.", [{ label: "OK", value: 0, cls: "plain" }]);
       return;
     }
-    target = guests.find(g => g.id === r.value);
   }
-  target.out = stamp();
-  done("✅ Выход: " + target.name + (target.badge ? " · верните бейдж № " + target.badge : ""));
+  const exact = inside.filter(g => norm(g.name) === norm(name) || norm(g.scanned) === norm(name));
+  if (exact.length === 1) return checkout(exact[0]);
+  const cands = inside.map(g => ({ g, m: (g.badge && g.badge === name ? { rank: 0 } : null) || matchName(name, g.name) || matchName(name, g.scanned || "") }))
+    .filter(x => x.m).sort((a, b) => a.m.rank - b.m.rank).slice(0, 9);
+  const btns = cands.map((x, i) => ({ label: (i + 1) + ". " + x.g.name + (x.g.kind ? " — " + KIND[x.g.kind] : "") + "  (вошёл " + hm(x.g.in) + (x.g.badge ? ", бейдж " + x.g.badge : "") + ")", value: x.g.id }));
+  btns.push({ label: "Нет в списке — записать выход отдельно", value: "new", cls: "blue" });
+  btns.push({ label: "Отмена", value: 0, cls: "plain" });
+  const r = await ask(cands.length ? "Кто уходит? Выберите номер" : "Не найден среди тех, кто внутри",
+    cands.length ? "Похожие внутри для «" + name + "»:" : "«" + name + "» не записан на вход (или уже вышел).", btns);
+  if (!r.value) return;
+  if (r.value === "new"){
+    guests.push({ id: newId(), name, scanned: name, listId: "", lst: "", kind: "", in: "", out: stamp(), badge: "", badgeBack: "", deny: false, nil: lists.length > 0, color: "" });
+    done("✅ Выход (без входа): " + name);
+    return;
+  }
+  return checkout(guests.find(g => g.id === r.value));
 }
 
 async function saveNow(){
@@ -949,54 +977,83 @@ function timesOf(g){
   if (g && g.out){ const o = document.createElement("div"); o.className = "o"; o.textContent = "⬆ " + hm(g.out); t.append(o); }
   return t;
 }
+function recTags(g){
+  const tags = [];
+  if (g.kind) tags.push(tag(g.kind === "staff" ? "ks" : "kg", KIND[g.kind]));
+  if (g.deny) tags.push(tag("deny", "чёрный список"));
+  if (g.nil) tags.push(tag("nil", "нет в списке"));
+  if (g.badge) tags.push(tag(g.out && g.badgeBack === "НЕТ" ? "deny" : "bd", "№ " + g.badge + (g.out ? (g.badgeBack === "НЕТ" ? " не вернул" : " ✓") : "")));
+  return tags;
+}
+function renderLists(){
+  const box = $("lists");
+  box.replaceChildren(...lists.map(l => {
+    const d = document.createElement("div"); d.className = "lst";
+    const k = tag(l.kind === "staff" ? "ks" : "kg", l.kind === "staff" ? "🛠 Сотрудники" : "👥 Гости");
+    const n = document.createElement("div"); n.className = "ln"; n.textContent = l.file + " · " + l.items.length;
+    const dn = l.items.filter(e => e.deny).length;
+    if (dn) n.append(tag("deny", "⛔ " + dn));
+    const b = tag(l.badge ? "bd" : "no", l.badge ? "с бейджем" : "без бейджа");
+    d.append(k, n, b);
+    d.onclick = () => editList(l.id);
+    return d;
+  }));
+  const onHand = guests.filter(g => g.badge && g.in && !g.out).length, lost = guests.filter(g => g.badgeBack === "НЕТ").length;
+  $("glInfo").textContent = lists.length
+    ? "Бейджей на руках: " + onHand + (lost ? " · не вернули: " + lost : "") + " · нажмите на список, чтобы изменить"
+    : "Списки не загружены: приложение просто записывает всех. Загрузите Guest list и/или Vendors check list (.xlsm / .xlsx).";
+  $("loadBtn").textContent = lists.length ? "➕ Добавить ещё список" : "📥 Загрузить список (Excel)";
+}
+async function editList(id){
+  const l = listById(id); if (!l) return;
+  const r = await ask(l.file, (l.sheet ? "Лист «" + l.sheet + "» · " : "") + l.items.length + " человек\nТип: " + KIND[l.kind] + (l.badge ? " — выдаём бейдж" : " — без бейджа"), [
+    { label: l.kind === "staff" ? "Сделать списком ГОСТЕЙ (без бейджа)" : "Сделать списком СОТРУДНИКОВ (с бейджем)", value: "kind", cls: "main" },
+    { label: l.badge ? "Не спрашивать бейдж" : "Спрашивать номер бейджа", value: "badge" },
+    { label: "Удалить этот список", value: "del", cls: "red" },
+    { label: "Отмена", value: 0, cls: "plain" }]);
+  if (r.value === "kind"){ l.kind = l.kind === "staff" ? "guest" : "staff"; l.badge = l.kind === "staff"; }
+  else if (r.value === "badge") l.badge = !l.badge;
+  else if (r.value === "del"){
+    const c = await ask("Удалить список «" + l.file + "»?", "Записи входа/выхода останутся.", [{ label: "Да, удалить", value: 1, cls: "red" }, { label: "Отмена", value: 0, cls: "plain" }]);
+    if (!c.value) return;
+    lists = lists.filter(x => x.id !== id);
+  } else return;
+  persist(); render();
+}
 function render(){
-  const inside = guests.filter(g => g.in && !g.out).length;
-  $("sIn").textContent = inside;
+  renderLists();
+  $("sIn").textContent = guests.filter(g => g.in && !g.out).length;
   $("sAll").textContent = guests.filter(g => g.in).length;
   $("sOut").textContent = guests.filter(g => g.out).length;
   const came = new Set(guests.filter(g => g.in && g.listId).map(g => g.listId));
-  $("sNoBox").style.display = glist.length ? "block" : "none";
-  $("sNo").textContent = glist.filter(e => !came.has(e.id) && !e.deny).length;
-  if (glist.length){
-    const dn = glist.filter(e => e.deny).length;
-    $("glInfo").innerHTML = "";
-    $("glInfo").append("Список: ", Object.assign(document.createElement("b"), { textContent: glist.length + " гостей" }),
-      dn ? " · ⛔ чёрный список: " + dn : "", glName ? " · " + glName : "");
-    $("loadBtn").textContent = "📥 Заменить список";
-  } else {
-    $("glInfo").textContent = "Список гостей не загружен — приложение просто записывает всех. Загрузите Guest list (.xlsm / .xlsx), чтобы проверять гостей.";
-    $("loadBtn").textContent = "📥 Загрузить список гостей";
-  }
+  $("sNoBox").style.display = lists.length ? "block" : "none";
+  $("sNo").textContent = allEntries().filter(x => !came.has(x.e.id) && !x.e.deny).length;
+  if (!lists.length) tab = "rec";
   $("tRec").classList.toggle("on", tab === "rec");
   $("tList").classList.toggle("on", tab === "list");
-  $("tList").style.display = glist.length ? "" : "none";
-  if (!glist.length) tab = "rec";
+  $("tList").style.display = lists.length ? "" : "none";
 
-  const q = norm($("search").value);
+  const raw = $("search").value.trim(), q = norm(raw);
   const list = $("list");
   let items = [];
   if (tab === "rec"){
     let rows = guests.slice().sort((a, b) => ((b.out > b.in ? b.out : b.in) || "").localeCompare((a.out > a.in ? a.out : a.in) || ""));
-    if (q) rows = rows.filter(g => norm(g.name).includes(q) || norm(g.scanned).includes(q) || g.badge === $("search").value.trim());
+    if (q) rows = rows.filter(g => norm(g.name).includes(q) || norm(g.scanned).includes(q) || g.badge === raw);
     items = rows.map(g => {
-      const tags = [];
-      if (g.deny) tags.push(tag("deny", "чёрный список"));
-      if (g.nil) tags.push(tag("nil", "нет в списке"));
-      if (g.badge) tags.push(tag("bd", "№ " + g.badge));
-      const d = row(g.name, timesOf(g), { inside: g.in && !g.out, deny: g.deny, color: g.color, tags });
+      const d = row(g.name, timesOf(g), { inside: g.in && !g.out, deny: g.deny, color: g.color, tags: recTags(g) });
       d.onclick = () => editGuest(g.id);
       return d;
     });
-    if (!items.length){ const e = document.createElement("div"); e.className = "empty"; e.textContent = q ? "Никого не найдено." : "Пока никого. Отсканируйте первого гостя."; items = [e]; }
+    if (!items.length){ const e = document.createElement("div"); e.className = "empty"; e.textContent = q ? "Никого не найдено." : "Пока никого. Отсканируйте первого человека."; items = [e]; }
   } else {
-    let rows = glist.slice();
-    if (q) rows = rows.filter(e => norm(e.name).includes(q));
-    items = rows.map(e => {
+    let rows = allEntries();
+    if (q) rows = rows.filter(x => norm(x.e.name).includes(q));
+    items = rows.map(({ e, l }) => {
       const rs = recsOf(e), last = rs[rs.length - 1], inside = rs.some(g => g.in && !g.out);
-      const tags = [];
+      const tags = [tag(l.kind === "staff" ? "ks" : "kg", KIND[l.kind])];
       if (e.deny) tags.push(tag("deny", "чёрный список"));
       if (!rs.some(g => g.in) && !e.deny) tags.push(tag("no", "не пришёл"));
-      if (last && last.badge) tags.push(tag("bd", "№ " + last.badge));
+      if (last && last.badge) tags.push(tag(last.out && last.badgeBack === "НЕТ" ? "deny" : "bd", "№ " + last.badge + (last.out ? (last.badgeBack === "НЕТ" ? " не вернул" : " ✓") : "")));
       const d = row(e.name, timesOf(last), { inside, deny: e.deny, color: e.color, tags });
       d.onclick = () => editEntry(e.id);
       return d;
@@ -1013,17 +1070,20 @@ $("tList").addEventListener("click", () => { tab = "list"; render(); });
 
 async function editGuest(id){
   const g = guests.find(x => x.id === id); if (!g) return;
-  const info = (g.in ? "Вход: " + g.in : "Без входа") + "\n" + (g.out ? "Выход: " + g.out : "Ещё внутри") +
-    (g.badge ? "\nБейдж № " + g.badge : "") + (g.scanned && g.scanned !== g.name ? "\nОтсканировано: " + g.scanned : "");
+  const info = (g.kind ? KIND[g.kind] + "\n" : "") + (g.in ? "Вход: " + g.in : "Без входа") + "\n" + (g.out ? "Выход: " + g.out : "Ещё внутри") +
+    (g.badge ? "\nБейдж № " + g.badge + (g.out ? (g.badgeBack === "НЕТ" ? " — НЕ вернул" : " — вернул") : " — на руках") : "") +
+    (g.scanned && g.scanned !== g.name ? "\nОтсканировано: " + g.scanned : "");
   const btns = [{ label: "Сохранить имя", value: "save", cls: "main" }];
   if (g.in && !g.out) btns.push({ label: "⬆ Отметить выход сейчас", value: "out", cls: "blue" });
   if (g.out && g.in) btns.push({ label: "Отменить выход (снова внутри)", value: "unout" });
+  if (g.out && g.badge && g.badgeBack === "НЕТ") btns.push({ label: "✅ Бейдж № " + g.badge + " вернули позже", value: "back" });
   btns.push({ label: g.badge ? "Изменить номер бейджа" : "Добавить номер бейджа", value: "badge" });
   btns.push({ label: "Удалить запись", value: "del", cls: "red" }, { label: "Отмена", value: 0, cls: "plain" });
   const r = await ask("Запись", info, btns, g.name);
   if (r.value === "save" && r.input){ g.name = r.input; done("Имя исправлено: " + g.name); }
-  else if (r.value === "out"){ g.out = stamp(); done("✅ Выход: " + g.name); }
-  else if (r.value === "unout"){ g.out = ""; done("Выход отменён: " + g.name); }
+  else if (r.value === "out") await checkout(g);
+  else if (r.value === "unout"){ g.out = ""; g.badgeBack = ""; done("Выход отменён: " + g.name); }
+  else if (r.value === "back"){ g.badgeBack = stamp(); done("✅ Бейдж № " + g.badge + " возвращён: " + g.name); }
   else if (r.value === "badge"){
     const b = await ask("Номер бейджа", g.name, [{ label: "Сохранить", value: 1, cls: "main" }, { label: "Отмена", value: 0, cls: "plain" }], g.badge || "", { numeric: true });
     if (b.value){ g.badge = b.input; done("Бейдж сохранён: " + g.name + (g.badge ? " № " + g.badge : "")); }
@@ -1034,15 +1094,16 @@ async function editGuest(id){
   }
 }
 async function editEntry(id){
-  const e = entryById(id); if (!e) return;
+  const hit = entryById(id); if (!hit) return;
+  const e = hit.e, l = hit.l;
   const rs = recsOf(e).filter(g => g.in);
-  const info = "№ " + e.row + " в списке" + (rs.length ? "\n" + rs.map(g => "Вход " + hm(g.in) + (g.out ? ", выход " + hm(g.out) : " — внутри") + (g.badge ? ", бейдж " + g.badge : "")).join("\n") : "\nЕщё не приходил");
+  const info = KIND[l.kind] + " · " + l.file + " · строка " + e.row + (rs.length ? "\n" + rs.map(g => "Вход " + hm(g.in) + (g.out ? ", выход " + hm(g.out) : " — внутри") + (g.badge ? ", бейдж " + g.badge : "")).join("\n") : "\nЕщё не приходил");
   const btns = [];
   if (!rs.some(g => !g.out)) btns.push({ label: "⬇ Отметить вход вручную", value: "in", cls: "main" });
   btns.push({ label: e.deny ? "Убрать из чёрного списка" : "⛔ Добавить в чёрный список", value: "deny", cls: e.deny ? "" : "red" });
   btns.push({ label: "Отмена", value: 0, cls: "plain" });
   const r = await ask(e.name, info, btns, null, { danger: e.deny });
-  if (r.value === "in") await admit(e.name, e);
+  if (r.value === "in") await admit(e.name, hit);
   else if (r.value === "deny"){ e.deny = !e.deny; done((e.deny ? "⛔ В чёрном списке: " : "Убран из чёрного списка: ") + e.name); }
 }
 
@@ -1196,7 +1257,7 @@ async function parseExcel(buf){
     const c = r.cells[col]; if (!c || !c.val) return;
     out.push({ id: "L" + r.n + "_" + norm(c.val).slice(0, 12), row: r.n, name: c.val, color: c.color ? "#" + c.color : "", deny: isRed(c.color) });
   });
-  return { sheet: pick.name, items: out };
+  return { sheet: pick.name, items: out, badgeHint: strings.some(x => /badge|бейдж/i.test(x)) || Object.values(head).some(c => /badge|бейдж/i.test(c.val)) };
 }
 function parseText(text){
   const out = [];
@@ -1209,8 +1270,8 @@ function parseText(text){
 }
 
 $("loadBtn").addEventListener("click", () => $("glFile").click());
-$("glFile").addEventListener("change", async e => {
-  const f = e.target.files[0]; e.target.value = "";
+$("glFile").addEventListener("change", async ev => {
+  const f = ev.target.files[0]; ev.target.value = "";
   if (!f) return;
   setStatus("Читаю " + f.name + "…");
   let res;
@@ -1220,53 +1281,71 @@ $("glFile").addEventListener("change", async e => {
     res = u[0] === 0x50 && u[1] === 0x4B ? await parseExcel(buf) : parseText(new TextDecoder().decode(buf));
   } catch (err){ setStatus("⚠️ Не получилось прочитать файл: " + err.message); return; }
   if (!res.items.length){ setStatus("⚠️ В файле не нашлось имён."); return; }
+  // тип списка: Vendors / сотрудники / есть колонка «Badge» → сотрудники с бейджем; иначе гости
+  const staff = /vendor|staff|employ|worker|сотруд|персонал|ishgar|işgär/i.test(f.name) || !!res.badgeHint;
+  const file = f.name.replace(/\.(xlsx|xlsm|xls|csv|txt)$/i, "").replace(/[_]+/g, " ");
+  const same = lists.find(l => l.file === file);
   const dn = res.items.filter(x => x.deny).length;
-  const r = await ask("Загрузить список?", f.name + (res.sheet ? " · лист «" + res.sheet + "»" : "") + "\nГостей: " + res.items.length + (dn ? "\n⛔ Чёрный список (красные): " + dn : "") +
-    "\n\nПервые: " + res.items.slice(0, 3).map(x => x.name).join("; ") + (glist.length ? "\n\nТекущий список (" + glist.length + ") будет заменён. Записи входа/выхода останутся." : ""),
-    [{ label: "Загрузить", value: 1, cls: "main" }, { label: "Отмена", value: 0, cls: "plain" }]);
+  const r = await ask("Добавить список?", f.name + (res.sheet ? " · лист «" + res.sheet + "»" : "") + "\nЛюдей: " + res.items.length + (dn ? "\n⛔ Чёрный список (красные): " + dn : "") +
+    "\nТип: " + (staff ? "🛠 СОТРУДНИКИ — выдаём бейдж" : "👥 ГОСТИ — без бейджа") +
+    "\n\nПервые: " + res.items.slice(0, 3).map(x => x.name).join("; ") + (same ? "\n\nСписок «" + file + "» уже загружен — он будет заменён." : ""),
+    [{ label: staff ? "Загрузить как СОТРУДНИКОВ (с бейджем)" : "Загрузить как ГОСТЕЙ (без бейджа)", value: staff ? "staff" : "guest", cls: "main" },
+     { label: staff ? "Нет, это гости (без бейджа)" : "Нет, это сотрудники (с бейджем)", value: staff ? "guest" : "staff" },
+     { label: "Отмена", value: 0, cls: "plain" }]);
   if (!r.value){ setStatus(""); return; }
-  glist = res.items; glName = f.name;
-  // привязать уже сделанные записи к новому списку
+  const id = same ? same.id : "L" + newId();
+  const lst = { id, file, sheet: res.sheet, kind: r.value, badge: r.value === "staff",
+    items: res.items.map(x => Object.assign({}, x, { id: id + "_" + x.id })) };
+  if (same) lists = lists.map(l => l.id === id ? lst : l); else lists.push(lst);
+  // привязать уже сделанные записи к спискам
   guests.forEach(g => {
-    if (!g.listId && !g.name) return;
-    const m = glist.find(x => norm(x.name) === norm(g.name));
-    g.listId = m ? m.id : ""; if (m){ g.deny = m.deny; g.color = m.color; g.nil = false; }
+    if (g.listId && entryById(g.listId)) return;
+    const m = lst.items.find(x => norm(x.name) === norm(g.name));
+    if (m){ g.listId = m.id; g.lst = id; g.kind = lst.kind; g.deny = m.deny; g.color = m.color; g.nil = false; }
   });
   persist(); tab = "list"; render();
-  setStatus("✅ Список загружен: " + glist.length + " гостей" + (dn ? ", в чёрном списке " + dn : ""));
+  setStatus("✅ Загружен: " + file + " — " + lst.items.length + " (" + KIND[lst.kind].toLowerCase() + (lst.kind === "staff" ? "и" : "и") + ")" + (dn ? ", в чёрном списке " + dn : ""));
 });
 
 /* ===== ВЫГРУЗКА ===== */
 $("exportBtn").addEventListener("click", async () => {
-  if (!guests.length && !glist.length){ setStatus("Список пуст — нечего выгружать."); return; }
+  if (!guests.length && !lists.length){ setStatus("Пусто — нечего выгружать."); return; }
   const recs = guests.slice().sort((a, b) => ((a.in || a.out) || "").localeCompare((b.in || b.out) || ""));
-  const note = g => g.deny ? "DENY LIST" : g.nil ? "Not in guest list" : "";
+  const note = g => g.deny ? "DENY LIST" : g.nil ? "Not in list" : "";
+  const kindEn = k => k === "staff" ? "Vendor" : k === "guest" ? "Guest" : "";
+  const back = g => !g.badge ? "" : !g.out ? "On hand" : g.badgeBack === "НЕТ" ? "NOT RETURNED" : "Returned " + (g.badgeBack || "").slice(11);
+  const fillOf = (deny, color, nil) => deny ? "FF0000" : (color || "").replace("#", "") || (nil ? "FFC000" : "");
   const sheets = [{
-    name: "SCAN", widths: [34, 21, 21, 14, 18],
-    rows: [["Name, Surname", "Arrived Time", "Departure Time", "Badge number", "Note"]].concat(recs.map(g => [g.name, g.in, g.out, g.badge || "", note(g)])),
-    fills: [""].concat(recs.map(g => g.deny ? "#FF0000" : (g.color || "").replace("#", "") ? g.color.replace("#", "") : g.nil ? "FFC000" : ""))
+    name: "SCAN", widths: [34, 10, 21, 21, 14, 20, 16],
+    rows: [["Name, Surname", "List", "Arrived Time", "Departure Time", "Badge number", "Badge", "Note"]]
+      .concat(recs.map(g => [g.name, kindEn(g.kind), g.in, g.out, g.badge || "", back(g), note(g)])),
+    fills: [""].concat(recs.map(g => fillOf(g.deny, g.color, g.nil)))
   }];
-  if (glist.length){
-    const rows = glist.map(e => {
+  const used = new Set(["SCAN"]);
+  lists.forEach(l => {
+    let nm = (l.file || "List").replace(/[\\\/\?\*\[\]:]/g, " ").slice(0, 28).trim() || "List";
+    let n2 = nm, k = 2; while (used.has(n2.toUpperCase())) n2 = nm.slice(0, 26) + " " + k++;
+    used.add(n2.toUpperCase());
+    const rows = l.items.map(e => {
       const rs = recsOf(e).filter(g => g.in || g.out), last = rs[rs.length - 1];
       const status = e.deny ? (rs.length ? "DENY LIST (entered)" : "DENY LIST") : !rs.length ? "Not arrived" : last.out ? "Left" : "Inside";
-      return { e, r: [e.name, status, last ? last.in : "", last ? last.out : "", last ? last.badge || "" : "", rs.length > 1 ? String(rs.length) : ""] };
+      return { e, r: [e.name, status, last ? last.in : "", last ? last.out : "", last ? last.badge || "" : "", last ? back(last) : "", rs.length > 1 ? String(rs.length) : ""] };
     });
-    sheets.push({ name: "Guest list", widths: [34, 18, 21, 21, 14, 8],
-      rows: [["Name, Surname", "Status", "Arrived Time", "Departure Time", "Badge number", "Visits"]].concat(rows.map(x => x.r)),
-      fills: [""].concat(rows.map(x => (x.e.deny ? "FF0000" : (x.e.color || "").replace("#", "")))) });
-  }
-  sheets.forEach(s => s.fills = s.fills.map(c => (c || "").replace("#", "")));
+    sheets.push({ name: n2, widths: [34, 18, 21, 21, 14, 20, 8],
+      rows: [["Name, Surname", "Status", "Arrived Time", "Departure Time", "Badge number", "Badge", "Visits"]].concat(rows.map(x => x.r)),
+      fills: [""].concat(rows.map(x => fillOf(x.e.deny, x.e.color, false))) });
+  });
   const blob = makeXlsx(sheets);
   const d = new Date();
-  const fname = "guests_" + d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + "_" + pad2(d.getHours()) + pad2(d.getMinutes()) + ".xlsx";
+  const fname = "GuestCheck_" + d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + "_" + pad2(d.getHours()) + pad2(d.getMinutes()) + ".xlsx";
   const file = new File([blob], fname, { type: blob.type });
   const canShare = navigator.canShare && navigator.canShare({ files: [file] });
   const btns = [];
   if (canShare) btns.push({ label: "📤 Отправить (Telegram, IMO, почта…)", value: "share", cls: "main" });
   btns.push({ label: "💾 Сохранить в телефон (Загрузки)", value: "save", cls: canShare ? "" : "main" });
   btns.push({ label: "Отмена", value: 0, cls: "plain" });
-  const r = await ask("Excel-файл готов", "Записей: " + guests.length + (glist.length ? " · список: " + glist.length : "") + "\n" + fname, btns);
+  const lost = guests.filter(g => g.badge && (g.badgeBack === "НЕТ" || (g.in && !g.out))).length;
+  const r = await ask("Excel-файл готов", "Записей: " + guests.length + (lists.length ? " · списков: " + lists.length : "") + (lost ? "\n⚠️ Бейджей не возвращено: " + lost : "") + "\n" + fname, btns);
   if (r.value === "share"){
     try { await navigator.share({ files: [file], title: fname }); dirty = false; persist(); setStatus("✅ Файл отправлен: " + fname); }
     catch (e){ if (e.name !== "AbortError") setStatus("Не получилось отправить: " + e.message + ". Попробуйте «Сохранить в телефон»."); }
@@ -1281,13 +1360,13 @@ $("exportBtn").addEventListener("click", async () => {
 });
 
 $("clearBtn").addEventListener("click", async () => {
-  if (!guests.length && !glist.length){ setStatus("Всё уже пусто."); return; }
+  if (!guests.length && !lists.length){ setStatus("Всё уже пусто."); return; }
   const warn = dirty ? "⚠️ Последние изменения ещё НЕ выгружены в Excel!\nСначала нажмите «Скачать Excel»." : "Excel уже выгружен.";
   const btns = [];
-  if (guests.length) btns.push({ label: "Удалить записи (список гостей оставить)", value: "rec", cls: "red" });
-  if (glist.length) btns.push({ label: "Удалить всё: записи и список гостей", value: "all", cls: "red" });
+  if (guests.length) btns.push({ label: "Удалить записи (списки оставить)", value: "rec", cls: "red" });
+  if (lists.length) btns.push({ label: "Удалить всё: записи и списки", value: "all", cls: "red" });
   btns.push({ label: "Отмена", value: 0, cls: "plain" });
-  const r = await ask("Начать новый ивент?", "Записей: " + guests.length + (glist.length ? " · в списке: " + glist.length : "") + "\n" + warn, btns);
+  const r = await ask("Начать новый ивент?", "Записей: " + guests.length + (lists.length ? " · списков: " + lists.length : "") + "\n" + warn, btns);
   if (!r.value) return;
   if (dirty && guests.length){
     const r2 = await ask("Точно удалить без Excel?", "Восстановить будет невозможно.",
@@ -1295,7 +1374,7 @@ $("clearBtn").addEventListener("click", async () => {
     if (!r2.value) return;
   }
   guests = [];
-  if (r.value === "all"){ glist = []; glName = ""; }
+  if (r.value === "all") lists = [];
   dirty = false; persist(); tab = "rec"; render();
   setStatus("Очищено. Можно начинать новый ивент.");
 });
@@ -1306,7 +1385,7 @@ async function checkOffline(){
   if (!("serviceWorker" in navigator) || !window.caches){ L.className = "bad"; L.textContent = "● Этот браузер не умеет работать без интернета — откройте в Chrome"; return; }
   try {
     const keys = await caches.keys();
-    const name = keys.filter(k => k.startsWith("guest-scanner-")).sort().pop();
+    const name = keys.filter(k => k.startsWith("guestcheck-")).sort().pop();
     const c = name && await caches.open(name);
     const need = ["lib/tesseract.min.js", "lib/worker.min.js", "lib/core/tesseract-core-simd-lstm.wasm.js", "lib/core/tesseract-core-lstm.wasm.js", "lib/lang/eng.traineddata.gz", "index.html"];
     let ok = 0;

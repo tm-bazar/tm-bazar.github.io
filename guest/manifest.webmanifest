@@ -1,6 +1,6 @@
 {
-  "name": "Сканер гостей",
-  "short_name": "Гости",
+  "name": "GuestCheck",
+  "short_name": "GuestCheck",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
