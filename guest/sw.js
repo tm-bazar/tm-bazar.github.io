@@ -1,6 +1,6 @@
 // Сканер гостей — работа без интернета.
 // После первого открытия все файлы (вместе с распознаванием текста) хранятся в телефоне.
-const CACHE = "guest-scanner-v1";
+const CACHE = "guest-scanner-v2";
 const FILES = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png",
   "lib/tesseract.min.js", "lib/worker.min.js",
   "lib/core/tesseract-core-simd-lstm.wasm.js", "lib/core/tesseract-core-lstm.wasm.js",

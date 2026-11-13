@@ -25,14 +25,29 @@ main{padding:12px 12px 230px}
 body.out .label{color:#64b5f6} body.out .label b,body.out .camBtn{border-color:var(--blue)} body.out .camBtn svg{fill:var(--blue)}
 body.out #sendBtn{background:var(--blue)}
 .stats{display:flex;gap:8px;margin:12px 0}
-.stats div{flex:1;background:var(--card);border-radius:12px;padding:8px;text-align:center;font-size:13px;color:var(--mut)}
+.stats div{flex:1;min-width:0;background:var(--card);border-radius:12px;padding:8px;text-align:center;font-size:13px;color:var(--mut)}
 .stats b{display:block;font-size:22px;color:#fff}
+#sNoBox{display:none}
 #search{width:100%;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid #666;background:#333;color:#fff;margin-bottom:6px}
 .g{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid #555;cursor:pointer}
 .g .n{flex:1;min-width:0;font-size:17px;overflow-wrap:anywhere}
 .g .t{font-size:13px;color:var(--mut);text-align:right;white-space:nowrap;line-height:1.5}
 .g .t .i{color:#ffb74d}.g .t .o{color:#64b5f6}
 .g.inside .n::before{content:"●";color:#4caf50;margin-right:6px;font-size:12px;vertical-align:middle}
+.glbox{background:var(--card);border-radius:14px;padding:10px 12px;margin-top:12px}
+#glInfo{font-size:14px;color:var(--mut);margin-bottom:8px}
+#glInfo b{color:#fff}
+.glrow{display:flex;gap:8px;align-items:center}
+#loadBtn{flex:1;padding:10px;border-radius:10px;border:1px solid #777;background:#333;color:#fff;font-size:15px}
+.chk{display:flex;align-items:center;gap:6px;font-size:15px;white-space:nowrap}
+.chk input{width:22px;height:22px}
+.tabs{display:flex;gap:6px;margin-bottom:8px}
+.tabs button{flex:1;padding:10px;border-radius:10px;border:0;background:#333;color:var(--mut);font-size:15px;font-weight:600}
+.tabs button.on{background:#555;color:#fff}
+.g .tag{display:inline-block;font-size:12px;padding:1px 6px;border-radius:6px;margin-left:6px;vertical-align:middle}
+.tag.deny{background:#e53935;color:#fff}.tag.nil{background:#ffb300;color:#000}.tag.no{background:#555;color:#ddd}.tag.bd{background:#1565c0;color:#fff}
+.g.deny{background:rgba(229,57,53,.22)}
+.g .sw{width:12px;height:30px;border-radius:4px;flex:none}
 .empty{color:var(--mut);text-align:center;padding:24px 8px}
 .fbtns{display:flex;gap:8px;margin-top:8px}
 .fbtns button{flex:1;padding:12px 6px;border-radius:12px;border:0;font-size:15px;font-weight:600;background:#333;color:#fff}
@@ -41,6 +56,9 @@ body.out #sendBtn{background:var(--blue)}
 .modal.on{display:flex}
 .modal .box{background:#2a2a2a;width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:85vh;overflow:auto}
 #mTitle{font-size:18px;font-weight:600;margin-bottom:6px}
+.modal .box.danger{background:#4a1010;border-top:8px solid #ff1744}
+.modal .box.danger #mTitle{color:#ff5252;font-size:26px;font-weight:800}
+.modal .box.danger #mText{color:#fff;font-size:17px}
 #mText{color:var(--mut);font-size:15px;margin-bottom:12px;white-space:pre-line}
 #mBody input{width:100%;font-size:20px;padding:12px;border-radius:8px;border:1px solid #888;background:#fff;color:#000;margin-bottom:12px}
 #mBtns{display:grid;gap:8px}
@@ -108,8 +126,15 @@ footer{position:fixed;left:0;right:0;bottom:0;background:#000;padding:10px 14px 
       </button>
     </div>
   </div>
-  <div class="stats"><div><b id="sIn">0</b>внутри</div><div><b id="sAll">0</b>пришло</div><div><b id="sOut">0</b>ушло</div></div>
-  <input id="search" type="search" placeholder="🔍 Поиск по списку" autocomplete="off">
+  <div class="glbox">
+    <div id="glInfo">Список гостей не загружен</div>
+    <div class="glrow"><button id="loadBtn">📥 Загрузить список гостей</button>
+      <label class="chk"><input type="checkbox" id="askBadge"> Бейдж №</label></div>
+  </div>
+  <input id="glFile" type="file" accept=".xlsx,.xlsm,.csv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12,text/csv,text/plain" hidden>
+  <div class="stats"><div><b id="sIn">0</b>внутри</div><div><b id="sAll">0</b>пришло</div><div><b id="sOut">0</b>ушло</div><div id="sNoBox"><b id="sNo">0</b>не пришло</div></div>
+  <div class="tabs"><button id="tRec" class="on">Записи</button><button id="tList">Список гостей</button></div>
+  <input id="search" type="search" placeholder="🔍 Поиск" autocomplete="off">
   <div id="list"></div>
 </main>
 
@@ -677,15 +702,21 @@ $("accept").addEventListener("click", () => {
 });
 
 /* ===== ГОСТИ: всё хранится в этом телефоне ===== */
-const KEY = "guests_v1";
-let guests = [];
+const KEY = "guests_v1", LKEY = "glist_v1";
+let guests = [];   // записи: {id, name, scanned, listId, in, out, badge, deny, nil, color}
+let glist = [];    // список гостей: {id, row, name, color, deny}
+let glName = load("glName") || "";
 try { guests = JSON.parse(load(KEY)) || []; } catch (e) { guests = []; }
+try { glist = JSON.parse(load(LKEY)) || []; } catch (e) { glist = []; }
 let mode = load("mode") === "out" ? "out" : "in";
+let tab = "rec";
 let dirty = load("dirty") === "1";
 
 function persist(){
   try {
     localStorage.setItem(KEY, JSON.stringify(guests));
+    localStorage.setItem(LKEY, JSON.stringify(glist));
+    localStorage.setItem("glName", glName);
     localStorage.setItem("dirty", dirty ? "1" : "0");
     return true;
   } catch (e){
@@ -703,10 +734,12 @@ function stamp(d){
 }
 const hm = s => s ? s.slice(11, 16) : "";
 
-/* сравнение имён: без регистра, ü→U, ň→N, W=V и т.п., чтобы «Remezanow» и «REMEZANOV» совпали */
+/* ===== сравнение имён (как в Excel-макросе) =====
+   без регистра, ü→U, ň→N, W=V; совпадает, если: одно — часть другого, одинаковые первые 5 букв,
+   или отличается на 1–2 буквы (ошибка сканера) */
 const TR = { "Ü":"U","Ň":"N","Ý":"Y","Ş":"S","Ç":"C","Ä":"A","Ö":"O","Ž":"Z","Ё":"Е","W":"V" };
 function norm(s){
-  return String(s || "").toUpperCase().replace(/[ÜŇÝŞÇÄÖŽЁW]/g, c => TR[c]).replace(/[^A-ZА-Я]/g, "");
+  return String(s || "").toUpperCase().replace(/[ÜŇÝŞÇÄÖŽЁW]/g, c => TR[c]).replace(/[^A-ZА-Я0-9]/g, "");
 }
 function lev(a, b){
   const m = a.length, n = b.length; let prev = Array.from({length: n + 1}, (_, j) => j);
@@ -717,18 +750,40 @@ function lev(a, b){
   }
   return prev[n];
 }
-function similar(a, b){
-  const x = norm(a), y = norm(b);
-  if (!x || !y) return false;
-  if (x === y) return true;
-  if ((x.length >= 4 && y.includes(x)) || (y.length >= 4 && x.includes(y))) return true;
-  if (x.length >= 5 && y.length >= 5 && x.slice(0, 5) === y.slice(0, 5)) return true;
-  return lev(x, y) <= Math.max(1, Math.floor(Math.min(x.length, y.length) / 5));
+function tokSim(a, b){
+  if (!a || !b || a.length < 2 || b.length < 2) return false;
+  if (a === b) return true;
+  if (a.length >= 5 && b.length >= 5 && a.slice(0, 5) === b.slice(0, 5)) return true;
+  return lev(a, b) <= Math.max(1, Math.floor(Math.min(a.length, b.length) / 5));
 }
+function parts(name){
+  const n = String(name || "");
+  let s, f;
+  if (n.includes(",")){ const i = n.indexOf(","); s = n.slice(0, i); f = n.slice(i + 1); }
+  else { const w = n.trim().split(/\s+/); s = w[0] || ""; f = w.slice(1).join(" "); }
+  return { s: norm(s), f: norm(f), fw: f.trim().split(/\s+/).map(norm).filter(Boolean), all: norm(n) };
+}
+function toks(scan){ return String(scan || "").split(/[\s,.;:\/<]+/).map(norm).filter(t => t.length >= 2); }
+// насколько отсканированный текст похож на имя: null — не похож; rank меньше = лучше
+function matchName(scan, name){
+  const P = parts(name), T = toks(scan), W = norm(scan);
+  if (!W || !P.all) return null;
+  const sM = T.some(t => tokSim(t, P.s));
+  const fM = !!P.f && T.some(t => tokSim(t, P.f) || P.fw.some(w => tokSim(t, w)));
+  const near = (x, y) => lev(x, y) <= Math.max(1, Math.floor(Math.min(x.length, y.length) / 5));
+  const whole = W === P.all || W === P.f + P.s || near(W, P.all) || (!!P.f && near(W, P.f + P.s));
+  const contains = (W.length >= 4 && P.all.includes(W)) || (P.s.length >= 4 && W.includes(P.s));
+  if (!(sM || fM || whole || contains)) return null;
+  const d = Math.min(lev(W, P.all), P.f ? lev(W, P.f + P.s) : 99);
+  return { rank: (whole ? 0 : 4) + (sM ? 0 : 2) + (fM ? 0 : 1) + d / 100, strong: whole || (sM && fM) };
+}
+function similar(a, b){ return !!matchName(a, b); }
 
-/* окно с выбором (вместо системных alert/confirm) */
-function ask(title, text, buttons, input){
+/* ===== окно с выбором (вместо системных alert/confirm) ===== */
+function ask(title, text, buttons, input, opt){
+  opt = opt || {};
   return new Promise(resolve => {
+    $("modal").querySelector(".box").classList.toggle("danger", !!opt.danger);
     $("mTitle").textContent = title;
     $("mText").textContent = text || "";
     $("mBody").replaceChildren();
@@ -736,15 +791,20 @@ function ask(title, text, buttons, input){
     if (input != null){
       inp = document.createElement("input");
       inp.value = input; inp.autocomplete = "off";
+      if (opt.numeric){ inp.inputMode = "numeric"; inp.placeholder = "Например: 15"; }
       $("mBody").append(inp);
+      setTimeout(() => inp.focus(), 50);
+      inp.addEventListener("keydown", e => { if (e.key === "Enter") $("mBtns").firstChild.click(); });
     }
     $("mBtns").replaceChildren(...buttons.map(b => {
       const el = document.createElement("button");
       el.textContent = b.label; if (b.cls) el.className = b.cls;
+      if (b.color){ el.style.borderLeft = "10px solid " + b.color; }
       el.onclick = () => { $("modal").classList.remove("on"); resolve({ value: b.value, input: inp ? inp.value.trim() : null }); };
       return el;
     }));
     $("modal").classList.add("on");
+    if (opt.danger && navigator.vibrate) navigator.vibrate([300, 120, 300, 120, 300]);
   });
 }
 $("modal").addEventListener("click", e => { if (e.target === $("modal")) $("mBtns").lastChild.click(); });
@@ -755,10 +815,12 @@ function setMode(m){
   $("mIn").classList.toggle("on", m === "in");
   $("mOut").classList.toggle("on", m === "out");
   $("modeLetter").textContent = m === "in" ? "⬇" : "⬆";
-  $("modeLabel").textContent = m === "in" ? "ФАМИЛИЯ ИМЯ — ВХОД" : "ФАМИЛИЯ ИМЯ — ВЫХОД";
+  $("modeLabel").textContent = m === "in" ? "ФАМИЛИЯ ИМЯ — ВХОД" : "ФАМИЛИЯ ИМЯ / БЕЙДЖ — ВЫХОД";
 }
 $("mIn").addEventListener("click", () => setMode("in"));
 $("mOut").addEventListener("click", () => setMode("out"));
+$("askBadge").checked = load("askBadge") === "1";
+$("askBadge").addEventListener("change", () => store("askBadge", $("askBadge").checked ? "1" : "0"));
 
 function newId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 function done(msg){
@@ -767,99 +829,224 @@ function done(msg){
   setStatus(msg);
   if (navigator.vibrate) navigator.vibrate(60);
 }
+const entryById = id => glist.find(e => e.id === id);
+const recsOf = e => guests.filter(g => g.listId === e.id);
 
-async function saveNow(){
-  const name = $("text").value.trim().replace(/\s+/g, " ");
-  if (!name){ setStatus("Поле пустое: отсканируйте или впишите имя."); return; }
-  const inside = guests.filter(g => g.in && !g.out);
-
-  if (mode === "in"){
-    const dup = inside.find(g => norm(g.name) === norm(name));
-    if (dup){
-      const r = await ask("Этот гость уже внутри", dup.name + " вошёл в " + hm(dup.in) + ".\nЗаписать вход ещё раз?",
-        [{ label: "Записать ещё раз", value: 1, cls: "main" }, { label: "Отмена", value: 0, cls: "plain" }]);
-      if (!r.value) return;
+/* ===== ВХОД ===== */
+async function admit(scanned, entry){
+  // entry — гость из списка (или null, если «нет в списке»)
+  if (entry && entry.deny){
+    const r = await ask("⛔ ЧЁРНЫЙ СПИСОК", entry.name + "\nЭтот гость в чёрном списке. Не пускать!",
+      [{ label: "Не пускать", value: 0, cls: "red" }, { label: "Всё равно впустить", value: 1, cls: "plain" }], null, { danger: true });
+    if (!r.value){ setStatus("⛔ Не впущен (чёрный список): " + entry.name); $("text").value = ""; return; }
+  }
+  const prev = entry ? recsOf(entry).filter(g => g.in) : guests.filter(g => g.in && !g.listId && norm(g.name) === norm(scanned));
+  const insideNow = prev.find(g => !g.out);
+  if (prev.length){
+    const p = insideNow || prev[prev.length - 1];
+    const r = await ask(insideNow ? "Этот гость уже внутри!" : "Этот гость уже приходил",
+      p.name + "\nВошёл в " + hm(p.in) + (p.out ? ", ушёл в " + hm(p.out) : "") + (p.badge ? "\nБейдж № " + p.badge : "") + "\nЗаписать вход ещё раз?",
+      [{ label: "Записать ещё раз", value: 1, cls: "main" }, { label: "Отмена", value: 0, cls: "plain" }], null, { danger: !!insideNow });
+    if (!r.value) return;
+  }
+  let badge = "";
+  if ($("askBadge").checked){
+    const r = await ask("Номер бейджа", (entry ? entry.name : scanned), [
+      { label: "Сохранить", value: 1, cls: "main" }, { label: "Без бейджа", value: 2 }, { label: "Отмена", value: 0, cls: "plain" }], "", { numeric: true });
+    if (!r.value) return;
+    if (r.value === 1) badge = r.input;
+    const busy = badge && guests.find(g => g.badge === badge && g.in && !g.out);
+    if (busy){
+      const r2 = await ask("Бейдж № " + badge + " уже выдан", busy.name + " (вошёл " + hm(busy.in) + ") ещё внутри.",
+        [{ label: "Всё равно записать", value: 1, cls: "main" }, { label: "Отмена", value: 0, cls: "plain" }]);
+      if (!r2.value) return;
     }
-    guests.push({ id: newId(), name, in: stamp(), out: "" });
-    done("✅ Вход: " + name);
+  }
+  guests.push({ id: newId(), name: entry ? entry.name : scanned, scanned, listId: entry ? entry.id : "",
+    in: stamp(), out: "", badge, deny: !!(entry && entry.deny), nil: !entry && glist.length > 0, color: entry ? entry.color || "" : "" });
+  done("✅ Вход: " + (entry ? entry.name : scanned) + (badge ? " · бейдж " + badge : "") + (!entry && glist.length ? " (нет в списке)" : ""));
+}
+
+async function saveIn(name){
+  if (!glist.length) return admit(name, null);
+  const cands = glist.map(e => ({ e, m: matchName(name, e.name) })).filter(x => x.m).sort((a, b) => a.m.rank - b.m.rank);
+  const strong = cands.filter(x => x.m.strong);
+  if (strong.length === 1 && (cands.length === 1 || strong[0].m.rank < 1)) return admit(name, strong[0].e);
+  if (!cands.length){
+    const r = await ask("Гостя нет в списке!", "«" + name + "» не найден в списке гостей.",
+      [{ label: "Не пускать", value: 0, cls: "red" }, { label: "Всё равно впустить (отметить «нет в списке»)", value: 1, cls: "plain" }], null, { danger: true });
+    if (r.value) return admit(name, null);
+    setStatus("Не впущен (нет в списке): " + name); $("text").value = "";
     return;
   }
+  const list = cands.slice(0, 9);
+  const btns = list.map((x, i) => {
+    const rs = recsOf(x.e).filter(g => g.in), inside = rs.find(g => !g.out);
+    return { label: (i + 1) + ". " + (x.e.deny ? "⛔ " : "") + x.e.name + "   №" + x.e.row + (inside ? "  · уже внутри" : rs.length ? "  · уже был" : ""),
+      value: x.e.id, cls: x.e.deny ? "red" : "", color: x.e.color && !x.e.deny ? x.e.color : "" };
+  });
+  btns.push({ label: "Никто из них — нет в списке", value: "nil", cls: "plain" }, { label: "Отмена", value: 0, cls: "plain" });
+  const r = await ask("Похожие гости: выберите номер", "Для «" + name + "» найдено: " + cands.length, btns);
+  if (!r.value) return;
+  if (r.value === "nil") return admit(name, null);
+  return admit(name, entryById(r.value));
+}
 
-  // выход: ищем среди тех, кто внутри
-  const exact = inside.filter(g => norm(g.name) === norm(name));
-  let target = exact.length === 1 ? exact[0] : null;
+/* ===== ВЫХОД ===== */
+async function saveOut(name){
+  const inside = guests.filter(g => g.in && !g.out);
+  let target = null;
+  if (/^\d+$/.test(name)){                       // ввели номер бейджа
+    const b = inside.filter(g => g.badge === name);
+    if (b.length === 1) target = b[0];
+  }
   if (!target){
-    const cands = inside.filter(g => similar(g.name, name))
-      .sort((a, b) => lev(norm(a.name), norm(name)) - lev(norm(b.name), norm(name))).slice(0, 8);
-    const btns = cands.map(g => ({ label: "⬆ " + g.name + "   (вошёл " + hm(g.in) + ")", value: g.id }));
+    const exact = inside.filter(g => norm(g.name) === norm(name) || norm(g.scanned) === norm(name));
+    if (exact.length === 1) target = exact[0];
+  }
+  if (!target){
+    const cands = inside.map(g => ({ g, m: matchName(name, g.name) || matchName(name, g.scanned || "") || (g.badge && g.badge === name ? { rank: 0 } : null) }))
+      .filter(x => x.m).sort((a, b) => a.m.rank - b.m.rank).slice(0, 9);
+    const btns = cands.map((x, i) => ({ label: (i + 1) + ". " + x.g.name + "   (вошёл " + hm(x.g.in) + (x.g.badge ? ", бейдж " + x.g.badge : "") + ")", value: x.g.id }));
     btns.push({ label: "Нет в списке — записать выход отдельно", value: "new", cls: "blue" });
     btns.push({ label: "Отмена", value: 0, cls: "plain" });
-    const r = await ask(cands.length ? "Кто уходит?" : "Не найден среди тех, кто внутри",
+    const r = await ask(cands.length ? "Кто уходит? Выберите номер" : "Не найден среди тех, кто внутри",
       cands.length ? "Похожие гости внутри для «" + name + "»:" : "«" + name + "» не записан на вход (или уже вышел).", btns);
     if (!r.value) return;
     if (r.value === "new"){
-      guests.push({ id: newId(), name, in: "", out: stamp() });
+      guests.push({ id: newId(), name, scanned: name, listId: "", in: "", out: stamp(), badge: "", deny: false, nil: glist.length > 0, color: "" });
       done("✅ Выход (без входа): " + name);
       return;
     }
     target = guests.find(g => g.id === r.value);
   }
   target.out = stamp();
-  done("✅ Выход: " + target.name);
+  done("✅ Выход: " + target.name + (target.badge ? " · верните бейдж № " + target.badge : ""));
+}
+
+async function saveNow(){
+  const name = $("text").value.trim().replace(/\s+/g, " ");
+  if (!name){ setStatus("Поле пустое: отсканируйте или впишите имя."); return; }
+  if (mode === "in") await saveIn(name); else await saveOut(name);
 }
 $("sendBtn").addEventListener("click", saveNow);
 $("text").addEventListener("keydown", e => { if (e.key === "Enter") saveNow(); });
 
+/* ===== ЭКРАН ===== */
+function tag(cls, text){ const t = document.createElement("span"); t.className = "tag " + cls; t.textContent = text; return t; }
+function row(name, timesEl, opts){
+  const d = document.createElement("div");
+  d.className = "g" + (opts.inside ? " inside" : "") + (opts.deny ? " deny" : "");
+  const sw = document.createElement("div"); sw.className = "sw"; sw.style.background = opts.color || "transparent";
+  const n = document.createElement("div"); n.className = "n"; n.textContent = name;
+  (opts.tags || []).forEach(t => n.append(t));
+  d.append(sw, n, timesEl);
+  return d;
+}
+function timesOf(g){
+  const t = document.createElement("div"); t.className = "t";
+  if (g && g.in){ const i = document.createElement("div"); i.className = "i"; i.textContent = "⬇ " + hm(g.in); t.append(i); }
+  if (g && g.out){ const o = document.createElement("div"); o.className = "o"; o.textContent = "⬆ " + hm(g.out); t.append(o); }
+  return t;
+}
 function render(){
   const inside = guests.filter(g => g.in && !g.out).length;
   $("sIn").textContent = inside;
   $("sAll").textContent = guests.filter(g => g.in).length;
   $("sOut").textContent = guests.filter(g => g.out).length;
-  const q = norm($("search").value);
-  let rows = guests.slice().sort((a, b) => ((b.out > b.in ? b.out : b.in) || "").localeCompare((a.out > a.in ? a.out : a.in) || ""));
-  if (q) rows = rows.filter(g => norm(g.name).includes(q));
-  const more = rows.length > 300 ? rows.length - 300 : 0;
-  rows = rows.slice(0, 300);
-  const list = $("list");
-  if (!rows.length){
-    list.innerHTML = "";
-    const e = document.createElement("div"); e.className = "empty";
-    e.textContent = q ? "Никого не найдено." : "Пока никого. Отсканируйте первого гостя.";
-    list.append(e); return;
+  const came = new Set(guests.filter(g => g.in && g.listId).map(g => g.listId));
+  $("sNoBox").style.display = glist.length ? "block" : "none";
+  $("sNo").textContent = glist.filter(e => !came.has(e.id) && !e.deny).length;
+  if (glist.length){
+    const dn = glist.filter(e => e.deny).length;
+    $("glInfo").innerHTML = "";
+    $("glInfo").append("Список: ", Object.assign(document.createElement("b"), { textContent: glist.length + " гостей" }),
+      dn ? " · ⛔ чёрный список: " + dn : "", glName ? " · " + glName : "");
+    $("loadBtn").textContent = "📥 Заменить список";
+  } else {
+    $("glInfo").textContent = "Список гостей не загружен — приложение просто записывает всех. Загрузите Guest list (.xlsm / .xlsx), чтобы проверять гостей.";
+    $("loadBtn").textContent = "📥 Загрузить список гостей";
   }
-  list.replaceChildren(...rows.map(g => {
-    const d = document.createElement("div");
-    d.className = "g" + (g.in && !g.out ? " inside" : "");
-    const n = document.createElement("div"); n.className = "n"; n.textContent = g.name;
-    const t = document.createElement("div"); t.className = "t";
-    if (g.in){ const i = document.createElement("div"); i.className = "i"; i.textContent = "⬇ " + hm(g.in); t.append(i); }
-    if (g.out){ const o = document.createElement("div"); o.className = "o"; o.textContent = "⬆ " + hm(g.out); t.append(o); }
-    d.append(n, t);
-    d.onclick = () => editGuest(g.id);
-    return d;
-  }));
+  $("tRec").classList.toggle("on", tab === "rec");
+  $("tList").classList.toggle("on", tab === "list");
+  $("tList").style.display = glist.length ? "" : "none";
+  if (!glist.length) tab = "rec";
+
+  const q = norm($("search").value);
+  const list = $("list");
+  let items = [];
+  if (tab === "rec"){
+    let rows = guests.slice().sort((a, b) => ((b.out > b.in ? b.out : b.in) || "").localeCompare((a.out > a.in ? a.out : a.in) || ""));
+    if (q) rows = rows.filter(g => norm(g.name).includes(q) || norm(g.scanned).includes(q) || g.badge === $("search").value.trim());
+    items = rows.map(g => {
+      const tags = [];
+      if (g.deny) tags.push(tag("deny", "чёрный список"));
+      if (g.nil) tags.push(tag("nil", "нет в списке"));
+      if (g.badge) tags.push(tag("bd", "№ " + g.badge));
+      const d = row(g.name, timesOf(g), { inside: g.in && !g.out, deny: g.deny, color: g.color, tags });
+      d.onclick = () => editGuest(g.id);
+      return d;
+    });
+    if (!items.length){ const e = document.createElement("div"); e.className = "empty"; e.textContent = q ? "Никого не найдено." : "Пока никого. Отсканируйте первого гостя."; items = [e]; }
+  } else {
+    let rows = glist.slice();
+    if (q) rows = rows.filter(e => norm(e.name).includes(q));
+    items = rows.map(e => {
+      const rs = recsOf(e), last = rs[rs.length - 1], inside = rs.some(g => g.in && !g.out);
+      const tags = [];
+      if (e.deny) tags.push(tag("deny", "чёрный список"));
+      if (!rs.some(g => g.in) && !e.deny) tags.push(tag("no", "не пришёл"));
+      if (last && last.badge) tags.push(tag("bd", "№ " + last.badge));
+      const d = row(e.name, timesOf(last), { inside, deny: e.deny, color: e.color, tags });
+      d.onclick = () => editEntry(e.id);
+      return d;
+    });
+    if (!items.length){ const e = document.createElement("div"); e.className = "empty"; e.textContent = "Никого не найдено."; items = [e]; }
+  }
+  const more = items.length > 300 ? items.length - 300 : 0;
+  list.replaceChildren(...items.slice(0, 300));
   if (more){ const e = document.createElement("div"); e.className = "empty"; e.textContent = "…и ещё " + more + ". Используйте поиск."; list.append(e); }
 }
 $("search").addEventListener("input", render);
+$("tRec").addEventListener("click", () => { tab = "rec"; render(); });
+$("tList").addEventListener("click", () => { tab = "list"; render(); });
 
 async function editGuest(id){
   const g = guests.find(x => x.id === id); if (!g) return;
-  const info = (g.in ? "Вход: " + g.in : "Без входа") + "\n" + (g.out ? "Выход: " + g.out : "Ещё внутри");
+  const info = (g.in ? "Вход: " + g.in : "Без входа") + "\n" + (g.out ? "Выход: " + g.out : "Ещё внутри") +
+    (g.badge ? "\nБейдж № " + g.badge : "") + (g.scanned && g.scanned !== g.name ? "\nОтсканировано: " + g.scanned : "");
   const btns = [{ label: "Сохранить имя", value: "save", cls: "main" }];
   if (g.in && !g.out) btns.push({ label: "⬆ Отметить выход сейчас", value: "out", cls: "blue" });
   if (g.out && g.in) btns.push({ label: "Отменить выход (снова внутри)", value: "unout" });
+  btns.push({ label: g.badge ? "Изменить номер бейджа" : "Добавить номер бейджа", value: "badge" });
   btns.push({ label: "Удалить запись", value: "del", cls: "red" }, { label: "Отмена", value: 0, cls: "plain" });
-  const r = await ask("Гость", info, btns, g.name);
+  const r = await ask("Запись", info, btns, g.name);
   if (r.value === "save" && r.input){ g.name = r.input; done("Имя исправлено: " + g.name); }
   else if (r.value === "out"){ g.out = stamp(); done("✅ Выход: " + g.name); }
   else if (r.value === "unout"){ g.out = ""; done("Выход отменён: " + g.name); }
+  else if (r.value === "badge"){
+    const b = await ask("Номер бейджа", g.name, [{ label: "Сохранить", value: 1, cls: "main" }, { label: "Отмена", value: 0, cls: "plain" }], g.badge || "", { numeric: true });
+    if (b.value){ g.badge = b.input; done("Бейдж сохранён: " + g.name + (g.badge ? " № " + g.badge : "")); }
+  }
   else if (r.value === "del"){
     const c = await ask("Удалить «" + g.name + "»?", "", [{ label: "Да, удалить", value: 1, cls: "red" }, { label: "Отмена", value: 0, cls: "plain" }]);
     if (c.value){ guests = guests.filter(x => x.id !== id); done("Удалено: " + g.name); }
   }
 }
+async function editEntry(id){
+  const e = entryById(id); if (!e) return;
+  const rs = recsOf(e).filter(g => g.in);
+  const info = "№ " + e.row + " в списке" + (rs.length ? "\n" + rs.map(g => "Вход " + hm(g.in) + (g.out ? ", выход " + hm(g.out) : " — внутри") + (g.badge ? ", бейдж " + g.badge : "")).join("\n") : "\nЕщё не приходил");
+  const btns = [];
+  if (!rs.some(g => !g.out)) btns.push({ label: "⬇ Отметить вход вручную", value: "in", cls: "main" });
+  btns.push({ label: e.deny ? "Убрать из чёрного списка" : "⛔ Добавить в чёрный список", value: "deny", cls: e.deny ? "" : "red" });
+  btns.push({ label: "Отмена", value: 0, cls: "plain" });
+  const r = await ask(e.name, info, btns, null, { danger: e.deny });
+  if (r.value === "in") await admit(e.name, e);
+  else if (r.value === "deny"){ e.deny = !e.deny; done((e.deny ? "⛔ В чёрном списке: " : "Убран из чёрного списка: ") + e.name); }
+}
 
-/* ===== Excel (.xlsx) без интернета ===== */
+/* ===== ZIP / Excel без интернета ===== */
 const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++){ let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
 function crc32(b){ let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
 function zipStore(files){
@@ -882,27 +1069,195 @@ function zipStore(files){
   end.setUint32(12, size, true); end.setUint32(16, off, true);
   return new Blob([...parts, ...central, end], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
 }
-function xe(s){ return String(s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "").replace(/[<>&"]/g, c => ({ "<":"&lt;", ">":"&gt;", "&":"&amp;", '"':"&quot;" }[c])); }
-function makeXlsx(rows){
+function xe(s){ return String(s == null ? "" : s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "").replace(/[<>&"]/g, c => ({ "<":"&lt;", ">":"&gt;", "&":"&amp;", '"':"&quot;" }[c])); }
+// sheets: [{name, widths:[..], rows:[[..]], fills:[hex|""] (по строкам)}]
+function makeXlsx(sheets){
   const NS = 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"';
   const H = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-  const data = rows.map((r, ri) => '<row r="' + (ri + 1) + '">' + r.map((v, ci) =>
-    '<c r="' + String.fromCharCode(65 + ci) + (ri + 1) + '" t="inlineStr"' + (ri === 0 ? ' s="1"' : '') + '><is><t xml:space="preserve">' + xe(v) + '</t></is></c>').join("") + '</row>').join("");
-  return zipStore({
-    "[Content_Types].xml": H + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>',
+  const colors = [];
+  sheets.forEach(sh => (sh.fills || []).forEach(c => { if (c && !colors.includes(c)) colors.push(c); }));
+  const fillXml = colors.map(c => '<fill><patternFill patternType="solid"><fgColor rgb="FF' + c.replace("#", "").toUpperCase() + '"/><bgColor indexed="64"/></patternFill></fill>').join("");
+  const xfXml = colors.map((c, i) => '<xf numFmtId="0" fontId="0" fillId="' + (i + 2) + '" borderId="0" xfId="0" applyFill="1"/>').join("");
+  const files = {
+    "[Content_Types].xml": H + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+      sheets.map((s, i) => '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join("") +
+      '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>',
     "_rels/.rels": H + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
-    "xl/workbook.xml": H + '<workbook ' + NS + ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="SCAN" sheetId="1" r:id="rId1"/></sheets></workbook>',
-    "xl/_rels/workbook.xml.rels": H + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>',
-    "xl/styles.xml": H + '<styleSheet ' + NS + '><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>',
-    "xl/worksheets/sheet1.xml": H + '<worksheet ' + NS + '><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols><col min="1" max="1" width="34" customWidth="1"/><col min="2" max="3" width="21" customWidth="1"/></cols><sheetData>' + data + '</sheetData></worksheet>'
+    "xl/workbook.xml": H + '<workbook ' + NS + ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>' +
+      sheets.map((s, i) => '<sheet name="' + xe(s.name) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>').join("") + '</sheets></workbook>',
+    "xl/_rels/workbook.xml.rels": H + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      sheets.map((s, i) => '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>').join("") +
+      '<Relationship Id="rIdS" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>',
+    "xl/styles.xml": H + '<styleSheet ' + NS + '><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="' + (2 + colors.length) + '"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>' + fillXml + '</fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="' + (2 + colors.length) + '"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>' + xfXml + '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>'
+  };
+  sheets.forEach((sh, si) => {
+    const data = sh.rows.map((r, ri) => {
+      const c = ri === 0 ? 1 : (sh.fills && sh.fills[ri] ? colors.indexOf(sh.fills[ri]) + 2 : 0);
+      return '<row r="' + (ri + 1) + '">' + r.map((v, ci) => '<c r="' + String.fromCharCode(65 + ci) + (ri + 1) + '"' + (c ? ' s="' + c + '"' : '') +
+        ' t="inlineStr"><is><t xml:space="preserve">' + xe(v) + '</t></is></c>').join("") + '</row>';
+    }).join("");
+    files["xl/worksheets/sheet" + (si + 1) + ".xml"] = H + '<worksheet ' + NS + '><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>' +
+      sh.widths.map((w, i) => '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>').join("") + '</cols><sheetData>' + data + '</sheetData></worksheet>';
   });
+  return zipStore(files);
 }
 
+/* чтение .xlsx / .xlsm (список гостей) — без интернета */
+async function readZip(buf){
+  const dv = new DataView(buf), u8 = new Uint8Array(buf);
+  let e = -1;
+  for (let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 70000); i--) if (dv.getUint32(i, true) === 0x06054b50){ e = i; break; }
+  if (e < 0) throw new Error("это не Excel-файл");
+  const n = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true);
+  const dec = new TextDecoder(), files = {};
+  for (let k = 0; k < n; k++){
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+    const nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), lo = dv.getUint32(p + 42, true);
+    const name = dec.decode(u8.subarray(p + 46, p + 46 + nl));
+    const start = lo + 30 + dv.getUint16(lo + 26, true) + dv.getUint16(lo + 28, true);
+    files[name] = { method, data: u8.subarray(start, start + csize) };
+    p += 46 + nl + el + cl;
+  }
+  return async name => {
+    const f = files[name] || files[Object.keys(files).find(k => k.toLowerCase() === name.toLowerCase())];
+    if (!f) return null;
+    if (f.method === 0) return dec.decode(f.data);
+    if (!window.DecompressionStream) throw new Error("обновите Chrome, чтобы открыть Excel");
+    const out = await new Response(new Blob([f.data]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer();
+    return dec.decode(out);
+  };
+}
+const xml = s => new DOMParser().parseFromString(s, "application/xml");
+const kids = (el, tag) => Array.from(el.getElementsByTagNameNS("*", tag));
+function colIdx(ref){ const m = /^[A-Z]+/.exec(ref || "A")[0]; let n = 0; for (const ch of m) n = n * 26 + ch.charCodeAt(0) - 64; return n - 1; }
+const INDEXED = { 2:"FF0000", 3:"00FF00", 4:"0000FF", 5:"FFFF00", 6:"FF00FF", 7:"00FFFF", 10:"FF0000", 11:"00FF00", 12:"0000FF", 13:"FFFF00", 14:"FF00FF", 15:"00FFFF", 16:"800000", 17:"008000", 22:"C0C0C0", 45:"FF9900", 51:"FFCC00", 52:"FF9900", 53:"FF6600", 43:"99CC00" };
+function tint(hex, t){
+  if (!t) return hex;
+  const c = [0, 2, 4].map(i => parseInt(hex.substr(i, 2), 16)).map(v => Math.round(t > 0 ? v + (255 - v) * t : v * (1 + t)));
+  return c.map(v => v.toString(16).padStart(2, "0")).join("").toUpperCase();
+}
+function isRed(hex){
+  if (!hex) return false;
+  const r = parseInt(hex.substr(0, 2), 16), g = parseInt(hex.substr(2, 2), 16), b = parseInt(hex.substr(4, 2), 16);
+  return r >= 180 && g <= 110 && b <= 110 && r - Math.max(g, b) >= 100;
+}
+async function parseExcel(buf){
+  const get = await readZip(buf);
+  const wb = xml(await get("xl/workbook.xml"));
+  const rels = xml(await get("xl/_rels/workbook.xml.rels") || "<r/>");
+  const relMap = {}; kids(rels, "Relationship").forEach(r => relMap[r.getAttribute("Id")] = r.getAttribute("Target"));
+  const sheets = kids(wb, "sheet").map(s => ({ name: s.getAttribute("name"),
+    target: relMap[s.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id") || s.getAttribute("r:id")] }));
+  const pick = sheets.find(s => /guest|гост|vendor|list|спис/i.test(s.name) && !/^scan$/i.test(s.name)) || sheets.find(s => !/^scan$/i.test(s.name)) || sheets[0];
+  if (!pick) throw new Error("в файле нет листов");
+  const path = pick.target.startsWith("/") ? pick.target.slice(1) : "xl/" + pick.target.replace(/^\.\//, "");
+  const sst = xml(await get("xl/sharedStrings.xml") || "<sst/>");
+  const strings = kids(sst, "si").map(si => kids(si, "t").map(t => t.textContent).join(""));
+  // цвета заливки
+  const theme = [];
+  const th = await get("xl/theme/theme1.xml");
+  if (th){
+    const cs = kids(xml(th), "clrScheme")[0];
+    if (cs){
+      const cols = Array.from(cs.children).map(c => { const x = c.firstElementChild; return x ? (x.getAttribute("lastClr") || x.getAttribute("val") || "") : ""; });
+      [1, 0, 3, 2, 4, 5, 6, 7, 8, 9, 10, 11].forEach((src, i) => theme[i] = cols[src] || "");
+    }
+  }
+  const st = xml(await get("xl/styles.xml") || "<s/>");
+  const fills = kids(st, "fill").map(f => {
+    const pf = kids(f, "patternFill")[0];
+    if (!pf || (pf.getAttribute("patternType") || "none") === "none") return "";
+    const fg = kids(pf, "fgColor")[0]; if (!fg) return "";
+    let hex = "";
+    if (fg.getAttribute("rgb")) hex = fg.getAttribute("rgb").slice(-6);
+    else if (fg.getAttribute("indexed")) hex = INDEXED[+fg.getAttribute("indexed")] || "";
+    else if (fg.getAttribute("theme")) hex = theme[+fg.getAttribute("theme")] || "";
+    return hex ? tint(hex.toUpperCase(), +(fg.getAttribute("tint") || 0)) : "";
+  });
+  const cellXfs = kids(st, "cellXfs")[0];
+  const xfFill = cellXfs ? kids(cellXfs, "xf").map(x => fills[+(x.getAttribute("fillId") || 0)] || "") : [];
+  const sh = xml(await get(path));
+  const rows = kids(sh, "row").map(r => {
+    const cells = {};
+    kids(r, "c").forEach(c => {
+      const t = c.getAttribute("t"), v = kids(c, "v")[0];
+      let val = t === "s" ? (strings[+(v && v.textContent)] || "") : t === "inlineStr" ? kids(c, "t").map(x => x.textContent).join("") : (v ? v.textContent : "");
+      cells[colIdx(c.getAttribute("r"))] = { val: String(val).trim(), color: xfFill[+(c.getAttribute("s") || 0)] || "" };
+    });
+    return { n: +r.getAttribute("r"), cells };
+  });
+  if (!rows.length) throw new Error("лист «" + pick.name + "» пустой");
+  let col = 0, first = 0;
+  const head = rows[0].cells;
+  const hc = Object.keys(head).find(k => /name|имя|фамил|ady|familiýa/i.test(head[k].val));
+  if (hc != null){ col = +hc; first = 1; }
+  const out = [];
+  rows.slice(first).forEach(r => {
+    const c = r.cells[col]; if (!c || !c.val) return;
+    out.push({ id: "L" + r.n + "_" + norm(c.val).slice(0, 12), row: r.n, name: c.val, color: c.color ? "#" + c.color : "", deny: isRed(c.color) });
+  });
+  return { sheet: pick.name, items: out };
+}
+function parseText(text){
+  const out = [];
+  text.split(/\r?\n/).forEach((line, i) => {
+    let v = line.split(/\t|;/)[0].replace(/^"|"$/g, "").trim();
+    if (!v || (i === 0 && /name|имя|фамил/i.test(v))) return;
+    out.push({ id: "L" + (i + 1) + "_" + norm(v).slice(0, 12), row: i + 1, name: v, color: "", deny: false });
+  });
+  return { sheet: "", items: out };
+}
+
+$("loadBtn").addEventListener("click", () => $("glFile").click());
+$("glFile").addEventListener("change", async e => {
+  const f = e.target.files[0]; e.target.value = "";
+  if (!f) return;
+  setStatus("Читаю " + f.name + "…");
+  let res;
+  try {
+    const buf = await f.arrayBuffer();
+    const u = new Uint8Array(buf, 0, 2);
+    res = u[0] === 0x50 && u[1] === 0x4B ? await parseExcel(buf) : parseText(new TextDecoder().decode(buf));
+  } catch (err){ setStatus("⚠️ Не получилось прочитать файл: " + err.message); return; }
+  if (!res.items.length){ setStatus("⚠️ В файле не нашлось имён."); return; }
+  const dn = res.items.filter(x => x.deny).length;
+  const r = await ask("Загрузить список?", f.name + (res.sheet ? " · лист «" + res.sheet + "»" : "") + "\nГостей: " + res.items.length + (dn ? "\n⛔ Чёрный список (красные): " + dn : "") +
+    "\n\nПервые: " + res.items.slice(0, 3).map(x => x.name).join("; ") + (glist.length ? "\n\nТекущий список (" + glist.length + ") будет заменён. Записи входа/выхода останутся." : ""),
+    [{ label: "Загрузить", value: 1, cls: "main" }, { label: "Отмена", value: 0, cls: "plain" }]);
+  if (!r.value){ setStatus(""); return; }
+  glist = res.items; glName = f.name;
+  // привязать уже сделанные записи к новому списку
+  guests.forEach(g => {
+    if (!g.listId && !g.name) return;
+    const m = glist.find(x => norm(x.name) === norm(g.name));
+    g.listId = m ? m.id : ""; if (m){ g.deny = m.deny; g.color = m.color; g.nil = false; }
+  });
+  persist(); tab = "list"; render();
+  setStatus("✅ Список загружен: " + glist.length + " гостей" + (dn ? ", в чёрном списке " + dn : ""));
+});
+
+/* ===== ВЫГРУЗКА ===== */
 $("exportBtn").addEventListener("click", async () => {
-  if (!guests.length){ setStatus("Список пуст — нечего выгружать."); return; }
-  const rows = [["Name, Surname", "Arrived Time", "Departure Time"]].concat(
-    guests.slice().sort((a, b) => ((a.in || a.out) || "").localeCompare((b.in || b.out) || "")).map(g => [g.name, g.in, g.out]));
-  const blob = makeXlsx(rows);
+  if (!guests.length && !glist.length){ setStatus("Список пуст — нечего выгружать."); return; }
+  const recs = guests.slice().sort((a, b) => ((a.in || a.out) || "").localeCompare((b.in || b.out) || ""));
+  const note = g => g.deny ? "DENY LIST" : g.nil ? "Not in guest list" : "";
+  const sheets = [{
+    name: "SCAN", widths: [34, 21, 21, 14, 18],
+    rows: [["Name, Surname", "Arrived Time", "Departure Time", "Badge number", "Note"]].concat(recs.map(g => [g.name, g.in, g.out, g.badge || "", note(g)])),
+    fills: [""].concat(recs.map(g => g.deny ? "#FF0000" : (g.color || "").replace("#", "") ? g.color.replace("#", "") : g.nil ? "FFC000" : ""))
+  }];
+  if (glist.length){
+    const rows = glist.map(e => {
+      const rs = recsOf(e).filter(g => g.in || g.out), last = rs[rs.length - 1];
+      const status = e.deny ? (rs.length ? "DENY LIST (entered)" : "DENY LIST") : !rs.length ? "Not arrived" : last.out ? "Left" : "Inside";
+      return { e, r: [e.name, status, last ? last.in : "", last ? last.out : "", last ? last.badge || "" : "", rs.length > 1 ? String(rs.length) : ""] };
+    });
+    sheets.push({ name: "Guest list", widths: [34, 18, 21, 21, 14, 8],
+      rows: [["Name, Surname", "Status", "Arrived Time", "Departure Time", "Badge number", "Visits"]].concat(rows.map(x => x.r)),
+      fills: [""].concat(rows.map(x => (x.e.deny ? "FF0000" : (x.e.color || "").replace("#", "")))) });
+  }
+  sheets.forEach(s => s.fills = s.fills.map(c => (c || "").replace("#", "")));
+  const blob = makeXlsx(sheets);
   const d = new Date();
   const fname = "guests_" + d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + "_" + pad2(d.getHours()) + pad2(d.getMinutes()) + ".xlsx";
   const file = new File([blob], fname, { type: blob.type });
@@ -911,7 +1266,7 @@ $("exportBtn").addEventListener("click", async () => {
   if (canShare) btns.push({ label: "📤 Отправить (Telegram, IMO, почта…)", value: "share", cls: "main" });
   btns.push({ label: "💾 Сохранить в телефон (Загрузки)", value: "save", cls: canShare ? "" : "main" });
   btns.push({ label: "Отмена", value: 0, cls: "plain" });
-  const r = await ask("Excel-файл готов", guests.length + " записей · " + fname, btns);
+  const r = await ask("Excel-файл готов", "Записей: " + guests.length + (glist.length ? " · список: " + glist.length : "") + "\n" + fname, btns);
   if (r.value === "share"){
     try { await navigator.share({ files: [file], title: fname }); dirty = false; persist(); setStatus("✅ Файл отправлен: " + fname); }
     catch (e){ if (e.name !== "AbortError") setStatus("Не получилось отправить: " + e.message + ". Попробуйте «Сохранить в телефон»."); }
@@ -926,18 +1281,23 @@ $("exportBtn").addEventListener("click", async () => {
 });
 
 $("clearBtn").addEventListener("click", async () => {
-  if (!guests.length){ setStatus("Список уже пуст."); return; }
+  if (!guests.length && !glist.length){ setStatus("Всё уже пусто."); return; }
   const warn = dirty ? "⚠️ Последние изменения ещё НЕ выгружены в Excel!\nСначала нажмите «Скачать Excel»." : "Excel уже выгружен.";
-  const r = await ask("Начать новый ивент?", "Будут удалены все " + guests.length + " записей из телефона.\n" + warn,
-    [{ label: "Удалить всё и начать заново", value: 1, cls: "red" }, { label: "Отмена", value: 0, cls: "plain" }]);
+  const btns = [];
+  if (guests.length) btns.push({ label: "Удалить записи (список гостей оставить)", value: "rec", cls: "red" });
+  if (glist.length) btns.push({ label: "Удалить всё: записи и список гостей", value: "all", cls: "red" });
+  btns.push({ label: "Отмена", value: 0, cls: "plain" });
+  const r = await ask("Начать новый ивент?", "Записей: " + guests.length + (glist.length ? " · в списке: " + glist.length : "") + "\n" + warn, btns);
   if (!r.value) return;
-  if (dirty){
+  if (dirty && guests.length){
     const r2 = await ask("Точно удалить без Excel?", "Восстановить будет невозможно.",
       [{ label: "Да, удалить", value: 1, cls: "red" }, { label: "Нет, сначала скачаю", value: 0, cls: "plain" }]);
     if (!r2.value) return;
   }
-  guests = []; dirty = false; persist(); render();
-  setStatus("Список очищен. Можно начинать новый ивент.");
+  guests = [];
+  if (r.value === "all"){ glist = []; glName = ""; }
+  dirty = false; persist(); tab = "rec"; render();
+  setStatus("Очищено. Можно начинать новый ивент.");
 });
 
 /* ===== работа без интернета ===== */
@@ -946,7 +1306,7 @@ async function checkOffline(){
   if (!("serviceWorker" in navigator) || !window.caches){ L.className = "bad"; L.textContent = "● Этот браузер не умеет работать без интернета — откройте в Chrome"; return; }
   try {
     const keys = await caches.keys();
-    const name = keys.find(k => k.startsWith("guest-scanner-"));
+    const name = keys.filter(k => k.startsWith("guest-scanner-")).sort().pop();
     const c = name && await caches.open(name);
     const need = ["lib/tesseract.min.js", "lib/worker.min.js", "lib/core/tesseract-core-simd-lstm.wasm.js", "lib/core/tesseract-core-lstm.wasm.js", "lib/lang/eng.traineddata.gz", "index.html"];
     let ok = 0;
