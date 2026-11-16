@@ -1502,7 +1502,7 @@ const SUBS = {
   personal:    ["womenclothes","menclothes","national","fabrics","jewels","cosmetics","bags","backpacks"],
   appliances:  ["bigapp","kitchenapp","climate","smallapp","otherapp"],
   jobs:        ["vacancy","resume"],
-  rent:        ["rentcars","rentequip","renttools","rentevent","rentclothes","other"],
+  rent:        ["rentevent","rentclothes","rentkids","rentequip","rentcars","renttools","other"],
   kids:        ["toys","kidsclothes","strollers","babycare","school","kidsfurn"],
   build:       ["materials","tools","plumbing","electrics","doors","paint"],
   sport:       ["fitness","football","bicycles","sportwear","hunting","music","books","tourism","collect"],
@@ -1728,7 +1728,8 @@ const SUBT = {
   garden:["Сад и огород","Bag we bakja","Garden"], food:["Продукты питания","Azyk önümleri","Food"], furniture:["Мебель","Mebel","Furniture"],
   imported:["Привозимые авто (в дороге)","Getirilýän awtoulaglar (ýolda)","Imported cars (on the way)"], moto:["Мотоциклы и мопеды","Motosikl we mopedler","Motorbikes & mopeds"],
   water:["Водный транспорт","Suw ulaglary","Water transport"], vacancy:["Вакансии","Iş orunlary","Vacancies"], resume:["Резюме (ищу работу)","Rezýume (iş gözleýärin)","CVs (looking for work)"],
-  rentcars:["Аренда авто","Awtoulag kärendesi","Car rental"], rentequip:["Аренда техники","Tehnika kärendesi","Equipment rental"], renttools:["Прокат инструментов","Gural kärendesi","Tool rental"],
+  rentcars:["Автотехника","Awtoulaglar","Vehicles"], rentequip:["Техника и электроника","Tehnika we elektronika","Appliances & electronics"], renttools:["Строительные инструменты","Gurluşyk gurallary","Construction tools"],
+  rentkids:["Детские товары","Çagalar harytlary","Kids' items"],
   rentevent:["Для свадеб и праздников","Toý we baýramlar üçin","Weddings & events"], rentclothes:["Прокат одежды","Eşik kärendesi","Clothing rental"],
   paint:["Краски и отделка","Boýag we bezeg","Paint & finishing"], hunting:["Охота и рыбалка","Aw we balyk tutmak","Hunting & fishing"],
   music:["Музыкальные инструменты","Saz gurallary","Musical instruments"], tourism:["Туризм и отдых","Syýahat we dynç alyş","Travel & outdoors"],
@@ -2524,7 +2525,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "105";   // номер версии — виден внизу профиля
+const APP_VER = "106";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -3159,6 +3160,7 @@ const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","specia
   .concat(["furniture","kitchenware","textile","carpets","lighting","other"].map(k => ["home:"+k, 1]))
   .concat(["bigapp","kitchenapp","climate","smallapp","otherapp"].map(k => ["appliances:"+k, 1]))
   .concat(["vacancy","resume"].map(k => ["jobs:"+k, 1]))
+  .concat(["rentevent","rentclothes","rentkids","rentequip","rentcars","renttools"].map(k => ["rent:"+k, 1]))
   .concat(["womenclothes","menclothes","national","fabrics","jewels","cosmetics","bags","backpacks"].map(k => ["personal:"+k, ["womenclothes","national","fabrics"].includes(k) ? 3 : 2])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
