@@ -2528,7 +2528,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "108";   // номер версии — виден внизу профиля
+const APP_VER = "109";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -6660,7 +6660,7 @@ intro();
    Пальцем листать можно как раньше: после касания автопрокрутка ждёт 4 сек.
    Дошли до конца — пауза и плавно обратно в начало. ===== */
 (function autoScroll(){
-  const SEL = ".cat-scroll, .cats, .pt-row.big:not(.sell)";
+  const SEL = ".cat-scroll, .cats, .pt-row.big:not(.sell), .sc-row";   // v109: + VIP-магазины на главной
   const SPEED = 28;                         // пикселей в секунду
   const WAIT_TOUCH = 4000, WAIT_END = 1500, WAIT_START = 1500;
   try { if (matchMedia("(prefers-reduced-motion: reduce)").matches) return; } catch (e) {}
