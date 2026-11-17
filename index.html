@@ -1503,7 +1503,7 @@ const SUBS = {
   appliances:  ["bigapp","kitchenapp","climate","smallapp","otherapp"],
   jobs:        ["vacancy","resume"],
   rent:        ["rentevent","rentclothes","rentkids","rentequip","rentcars","renttools","other"],
-  kids:        ["toys","kidsclothes","strollers","babycare","school","kidsfurn"],
+  kids:        ["girlclothes","boyclothes","strollers","kidstransport","toys","school","babyfood","kidsother"],
   build:       ["materials","tools","plumbing","electrics","doors","paint"],
   sport:       ["fitness","football","bicycles","sportwear","hunting","music","books","tourism","collect"],
   business:    ["readybiz","bizequip","production","agroequip","other"],
@@ -1598,9 +1598,9 @@ const FIELDS = {
     {k:"weight", type:"num", unit:"g", step:"0.01", when:(s) => s === "jewels"}
   ],
   kids: [
-    {k:"size", type:"multi", raw:true, filter:"main", opts:["0-1","1-2","2-3","3-4","4-6","6-8","8-10","10-12","12-14","14+"], when:(s) => s === "kidsclothes"},
-    {k:"age", type:"sel", raw:true, filter:"more", opts:["0-1","1-3","3-7","7-12","12+"], when:(s) => s === "toys" || s === "babycare"},
-    {k:"gender", type:"sel", filter:"more", opts:["boy","girl","unisex"]}
+    {k:"size", type:"multi", raw:true, filter:"main", opts:["0-1","1-2","2-3","3-4","4-6","6-8","8-10","10-12","12-14","14+"], when:(s) => s === "girlclothes" || s === "boyclothes" || s === "kidsclothes"},
+    {k:"age", type:"sel", raw:true, filter:"more", opts:["0-1","1-3","3-7","7-12","12+"], when:(s) => s === "toys" || s === "babycare" || s === "babyfood" || s === "kidstransport"},
+    {k:"gender", type:"sel", filter:"more", opts:["boy","girl","unisex"], when:(s) => s !== "girlclothes" && s !== "boyclothes"}
   ],
   home: [
     {k:"material", type:"text", max:30, when:(s) => s === "furniture"},
@@ -1745,7 +1745,10 @@ const SUBT = {
   women:["Женская","Aýal","Women"], men:["Мужская","Erkek","Men"], kids:["Детская","Çaga","Kids"],
   toys:["Игрушки","Oýunjaklar","Toys"], kidsclothes:["Детская одежда","Çaga eşikleri","Kids' clothes"],
   strollers:["Коляски и автокресла","Arabajyk we awtokreslo","Strollers & car seats"],
-  babycare:["Уход за малышом","Bäbek idegi","Baby care"], school:["Для школы","Mekdep üçin","School"],
+  babycare:["Уход за малышом","Bäbek idegi","Baby care"], school:["Школьные товары","Mekdep harytlary","School supplies"],
+  girlclothes:["Одежда для девочек","Gyzlar üçin eşikler","Girls' clothes"], boyclothes:["Одежда для мальчиков","Oglanlar üçin eşikler","Boys' clothes"],
+  kidstransport:["Детский транспорт","Çaga ulaglary","Kids' vehicles"], babyfood:["Детское питание","Çaga iýmiti","Baby food"],
+  kidsother:["Всё для детей","Çagalar üçin hemme zat","Everything for kids"],
   smartphones:["Смартфоны","Smartfonlar","Smartphones"], tablets:["Планшеты","Planşetler","Tablets"],
   mobiles:["Мобильные телефоны","Mobil telefonlar","Mobile phones"], players:["Плееры","Pleýerler","Players"],
   headphones:["Наушники","Nauşnikler","Headphones"], speakers:["Аудиоколонки","Audio kolonkalar","Speakers"],
@@ -2525,7 +2528,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "106";   // номер версии — виден внизу профиля
+const APP_VER = "107";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2702,6 +2705,10 @@ function migrateProduct(p){
   if (p.cat === "personal" && ["gold","silver","watches","bijou","accessories"].includes(p.sub)) p.sub = "jewels"; // v102: украшения
   if (p.cat === "personal" && p.sub === "perfume") p.sub = "cosmetics";
   if (p.cat === "appliances" && p.sub === "other") p.sub = "otherapp"; // v104
+  if (p.cat === "kids"){ // v107: новые разделы детского мира
+    if (p.sub === "kidsclothes") p.sub = (p.attrs || {}).gender === "boy" ? "boyclothes" : "girlclothes";
+    else if (p.sub === "babycare" || p.sub === "kidsfurn" || p.sub === "other") p.sub = "kidsother";
+  }
   if (SUBS[p.cat] && p.sub && !SUBS[p.cat].includes(p.sub)) p.sub = "";
   return p;
 }
@@ -3161,6 +3168,7 @@ const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","specia
   .concat(["bigapp","kitchenapp","climate","smallapp","otherapp"].map(k => ["appliances:"+k, 1]))
   .concat(["vacancy","resume"].map(k => ["jobs:"+k, 1]))
   .concat(["rentevent","rentclothes","rentkids","rentequip","rentcars","renttools"].map(k => ["rent:"+k, 1]))
+  .concat(["girlclothes","boyclothes","strollers","kidstransport","toys","school","babyfood","kidsother"].map(k => ["kids:"+k, 1]))
   .concat(["womenclothes","menclothes","national","fabrics","jewels","cosmetics","bags","backpacks"].map(k => ["personal:"+k, ["womenclothes","national","fabrics"].includes(k) ? 3 : 2])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
