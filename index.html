@@ -2528,7 +2528,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "107";   // номер версии — виден внизу профиля
+const APP_VER = "108";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -6655,6 +6655,59 @@ async function intro(){
 })();
 start();
 intro();
+
+/* ===== v108: полосы категорий и разделов сами плавно едут вправо.
+   Пальцем листать можно как раньше: после касания автопрокрутка ждёт 4 сек.
+   Дошли до конца — пауза и плавно обратно в начало. ===== */
+(function autoScroll(){
+  const SEL = ".cat-scroll, .cats, .pt-row.big:not(.sell)";
+  const SPEED = 28;                         // пикселей в секунду
+  const WAIT_TOUCH = 4000, WAIT_END = 1500, WAIT_START = 1500;
+  try { if (matchMedia("(prefers-reduced-motion: reduce)").matches) return; } catch (e) {}
+  const mem = new WeakMap();
+  function state(el){
+    let s = mem.get(el);
+    if (s) return s;
+    s = { acc: 0, hold: performance.now() + WAIT_START, expect: null, back: false };
+    mem.set(el, s);
+    const touch = () => { s.hold = performance.now() + WAIT_TOUCH; s.back = false; s.expect = null; };
+    ["pointerdown", "touchstart", "wheel"].forEach(ev => el.addEventListener(ev, touch, { passive: true }));
+    el.addEventListener("scroll", () => {
+      if (s.back){ if (el.scrollLeft <= 1){ s.back = false; s.hold = performance.now() + WAIT_START; } return; }
+      if (s.expect != null && Math.abs(el.scrollLeft - s.expect) <= 2) return;   // это мы сами
+      s.hold = Math.max(s.hold, performance.now() + WAIT_TOUCH);                  // листает человек или сайт
+    }, { passive: true });
+    return s;
+  }
+  let els = [], last = 0;
+  const refresh = () => { els = Array.from(document.querySelectorAll(SEL)); };
+  function tick(now){
+    const dt = Math.min(64, now - (last || now)); last = now;
+    if (!document.hidden) for (const el of els){
+      if (!el.isConnected) continue;
+      const max = el.scrollWidth - el.clientWidth;
+      if (max < 4) continue;
+      const r = el.getBoundingClientRect();
+      if (!r.width || r.bottom < 0 || r.top > innerHeight) continue;
+      const s = state(el);
+      if (s.back || now < s.hold) continue;
+      if (el.scrollLeft >= max - 1){
+        s.hold = now + WAIT_END;
+        setTimeout(() => { if (!el.isConnected || performance.now() < s.hold - 50) return; s.back = true; el.scrollTo({ left: 0, behavior: "smooth" }); }, WAIT_END);
+        continue;
+      }
+      s.acc += SPEED * dt / 1000;
+      if (s.acc >= 1){
+        const step = Math.floor(s.acc); s.acc -= step;
+        s.expect = Math.min(max, el.scrollLeft + step);
+        el.scrollTo({ left: s.expect, behavior: "instant" });
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+  refresh(); setInterval(refresh, 700);
+  requestAnimationFrame(tick);
+})();
 </script>
 </body>
 </html>
