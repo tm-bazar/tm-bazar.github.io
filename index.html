@@ -707,6 +707,23 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .pk-sz i,.pk-vr i{font-style:normal;position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;font-size:12px;display:none;place-items:center}
 .pk-sz.on,.pk-vr.on{border-color:var(--red);background:#fff4f2}
 .pk-sz.on i,.pk-vr.on i{display:grid}
+.pr-wrap{display:flex;flex-direction:column;gap:1px;min-width:0}
+.pr-old{display:flex;align-items:center;gap:6px;font-size:12.5px;line-height:1.2}
+.pr-old s{color:#111;font-weight:600;text-decoration-thickness:1.5px}
+.pr-off{background:var(--red);color:#fff;font-weight:800;font-size:11px;border-radius:6px;padding:1px 5px}
+.price.is-disc{color:var(--red)}
+.pr-unit{font-size:11.5px;color:var(--mut2);line-height:1.25}
+.ph-tags{position:absolute;right:6px;top:6px;z-index:2;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.ph-tags .ph-vip{position:static}
+.ph-disc{background:var(--red);color:#fff;font-size:11px;font-weight:800;border-radius:5px;padding:2px 6px}
+.ph-opt{background:#1565c0;color:#fff;font-size:10.5px;font-weight:800;border-radius:5px;padding:2px 6px;letter-spacing:.3px}
+.ws-bar{padding:0 2px 8px}
+.ws-tg{border:1.5px solid #1565c0;background:#fff;color:#1565c0;border-radius:20px;padding:7px 14px;font-weight:700;font-size:14px}
+.ws-tg.on{background:#1565c0;color:#fff}
+.ds-box .check{display:flex;align-items:center;gap:10px;font-weight:600;margin:4px 0 10px}
+.ds-box .check input{width:22px;height:22px;accent-color:var(--red)}
+.ds-f{margin:-2px 0 12px 32px}
+.ds-prev{background:#fff4f2;border-radius:10px;padding:8px 10px;font-size:13.5px;font-weight:600;color:#b3261e;display:grid;gap:3px}
 .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;padding:14px 14px 6px}
 .dl-card{border:0;background:none;padding:0;text-align:left;color:var(--fg);display:flex;flex-direction:column;gap:3px}
 .dl-card img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block;background:#f2f3f5;box-shadow:0 1px 4px rgba(0,0,0,.08)}
@@ -1130,7 +1147,7 @@ ru: {
   imoCopied:"Номер {n} скопирован. В IMO нажмите поиск и вставьте номер.",
   forgotPinQ:"Забыли PIN?", forgotPinHow:"Напишите администратору в IMO или позвоните: назовите свой номер телефона, и вам поставят новый PIN.",
   contactAdmin:"Связаться с администрацией", contactAdminSub:"Вопросы, забытый PIN, проблемы с продавцом — напишите в чат приложения, в IMO или позвоните.",
-  tCart:"Корзина", allListings:"Все объявления", oColor:"Цвет", oSizeL:"Размер / цвет", oNoteL:"Комментарий", oSizeReq:"Размер, цвет или что нужно *", e_size:"Напишите размер, цвет или что нужно — продавцу должно быть понятно", orderSend:"Отправить заказ", orderSending:"Отправляем заказ…", orderDone:"Заказ отправлен продавцу", orderDoneSub:"Он пришёл в чат приложения. Отправьте продавцу SMS, чтобы он скорее увидел заказ.", orderDoneSms:"Он пришёл в чат приложения, продавцу отправлено SMS.", smsSeller:"Отправить SMS продавцу", openChat:"Открыть чат", yes:"Да", no:"Нет", clearCart:"Очистить корзину", clearCartQ:"Очистить корзину?", oSizePh:"Напр.: 41 размер, чёрный", buyNow:"Купить", toCart:"В корзину", inCart:"В корзине", cartAdded:"Добавлено в корзину", cartEmpty:"Корзина пуста", cartEmptySub:"Нажмите «В корзину» на странице товара", cartPickSize:"Выберите размер", pickDone:"Готово ✓", pickSize:"Размер", pickSel:"Выбрано:", pickTitle:"Выберите", pickVariantNeed:"Выберите цвет / вариант", oSizeOpt:"Размер, цвет или что нужно (если нужно)", nItems:"{n} товар(ов)", total:"Итого", checkout:"Оформить заказ", orderTitle:"Оформление заказа", oName:"Имя и фамилия", oPhone:"Телефон", oFixed:"Берётся из вашего аккаунта — изменить нельзя", oAddr:"Адрес доставки", oAddrPh:"Велаят, этрап, улица, дом", oNote:"Комментарий (необязательно)", e_addr:"Укажите адрес доставки", orderImo:"Заказать через IMO", oSeller:"Продавец", oCopyNum:"Копировать номер", orderHow:"Заказ с фото, размером, вашим именем, телефоном и адресом придёт продавцу в чат приложения TM Bazar.", orderCopied:"Заказ скопирован. В IMO найдите продавца {n} и вставьте текст.", orderSent:"Заказ отправлен продавцу?", clearSent:"Убрать из корзины", oNew:"Новый заказ", oSize:"размер", oPhoto:"Фото", oProduct:"Товар", remove:"Удалить", 
+  tCart:"Корзина", allListings:"Все объявления", oColor:"Цвет", oSizeL:"Размер / цвет", oNoteL:"Комментарий", oSizeReq:"Размер, цвет или что нужно *", e_size:"Напишите размер, цвет или что нужно — продавцу должно быть понятно", orderSend:"Отправить заказ", orderSending:"Отправляем заказ…", orderDone:"Заказ отправлен продавцу", orderDoneSub:"Он пришёл в чат приложения. Отправьте продавцу SMS, чтобы он скорее увидел заказ.", orderDoneSms:"Он пришёл в чат приложения, продавцу отправлено SMS.", smsSeller:"Отправить SMS продавцу", openChat:"Открыть чат", yes:"Да", no:"Нет", clearCart:"Очистить корзину", clearCartQ:"Очистить корзину?", oSizePh:"Напр.: 41 размер, чёрный", buyNow:"Купить", toCart:"В корзину", inCart:"В корзине", cartAdded:"Добавлено в корзину", cartEmpty:"Корзина пуста", cartEmptySub:"Нажмите «В корзину» на странице товара", cartPickSize:"Выберите размер", pickDone:"Готово ✓", pickSize:"Размер", perPack:"за {n} шт", wsUnit:"{p} TMT за 1 шт · упаковка {n} шт", wsBadge:"ОПТОМ", wsOnly:"📦 Только оптом", wsDetail:"Оптом: упаковка {n} шт", dsLabel:"Скидка", dsPct:"Скидка, %", opLabel:"Продаю только оптом", opQty:"Сколько штук в упаковке (серии)", pcs:"шт", e_disc:"Скидка — от 1 до 90 %", e_opt:"Укажите, сколько штук в упаковке (от 2)", pvPack:"Цена за упаковку: {n} × {u} = {s} TMT", pvDisc:"Со скидкой {d}%: {s} TMT (было {b} TMT)", pickSel:"Выбрано:", pickTitle:"Выберите", pickVariantNeed:"Выберите цвет / вариант", oSizeOpt:"Размер, цвет или что нужно (если нужно)", nItems:"{n} товар(ов)", total:"Итого", checkout:"Оформить заказ", orderTitle:"Оформление заказа", oName:"Имя и фамилия", oPhone:"Телефон", oFixed:"Берётся из вашего аккаунта — изменить нельзя", oAddr:"Адрес доставки", oAddrPh:"Велаят, этрап, улица, дом", oNote:"Комментарий (необязательно)", e_addr:"Укажите адрес доставки", orderImo:"Заказать через IMO", oSeller:"Продавец", oCopyNum:"Копировать номер", orderHow:"Заказ с фото, размером, вашим именем, телефоном и адресом придёт продавцу в чат приложения TM Bazar.", orderCopied:"Заказ скопирован. В IMO найдите продавца {n} и вставьте текст.", orderSent:"Заказ отправлен продавцу?", clearSent:"Убрать из корзины", oNew:"Новый заказ", oSize:"размер", oPhoto:"Фото", oProduct:"Товар", remove:"Удалить", 
   tHome:"Главная", tCats:"Категории", tPhoto:"По фото", tChats:"Чаты", tMe:"Профиль",
   back:"Назад", searchPh:"Искать товары", find:"Найти",
   demo:"Демо-режим: товары для примера. Вход продавца: 65 000000, PIN 1234",
@@ -1279,7 +1296,7 @@ tm: {
   imoCopied:"{n} belgi göçürildi. IMO-da gözlegi basyp, belgini goýuň.",
   forgotPinQ:"PIN ýatdan çykdymy?", forgotPinHow:"Administratora IMO-da ýazyň ýa-da jaň ediň: telefon belgiňizi aýdyň, size täze PIN goýarlar.",
   contactAdmin:"Administrasiýa bilen habarlaşmak", contactAdminSub:"Soraglar, ýatdan çykan PIN, satyjy bilen meseleler — programmadaky çata, IMO-da ýazyň ýa-da jaň ediň.",
-  tCart:"Sebet", allListings:"Ähli bildirişler", oColor:"Reňk", oSizeL:"Ölçeg / reňk", oNoteL:"Bellik", oSizeReq:"Ölçeg, reňk ýa-da näme gerek *", e_size:"Ölçegi, reňki ýa-da näme gerekdigini ýazyň — satyja düşnükli bolsun", orderSend:"Sargydy iber", orderSending:"Sargyt iberilýär…", orderDone:"Sargyt satyja iberildi", orderDoneSub:"Ol programmanyň hatyna geldi. Satyjy tizräk görer ýaly, oňa SMS iberiň.", orderDoneSms:"Ol programmanyň hatyna geldi, satyja SMS iberildi.", smsSeller:"Satyja SMS iber", openChat:"Haty aç", yes:"Hawa", no:"Ýok", clearCart:"Sebedi arassala", clearCartQ:"Sebedi arassalamalymy?", oSizePh:"Mysal: 41 ölçeg, gara", buyNow:"Satyn al", toCart:"Sebede", inCart:"Sebetde", cartAdded:"Sebede goşuldy", cartEmpty:"Sebet boş", cartEmptySub:"Haryt sahypasynda «Sebede» basyň", cartPickSize:"Ölçegi saýlaň", pickDone:"Taýýar ✓", pickSize:"Ölçeg", pickSel:"Saýlandy:", pickTitle:"Saýlaň", pickVariantNeed:"Reňki / görnüşi saýlaň", oSizeOpt:"Ölçeg, reňk ýa-da näme gerek (gerek bolsa)", nItems:"{n} haryt", total:"Jemi", checkout:"Sargyt etmek", orderTitle:"Sargydy resmileşdirmek", oName:"Ady we familiýasy", oPhone:"Telefon", oFixed:"Hasabyňyzdan alynýar — üýtgedip bolmaýar", oAddr:"Eltip berme salgysy", oAddrPh:"Welaýat, etrap, köçe, jaý", oNote:"Bellik (islege bagly)", e_addr:"Salgyny giriziň", orderImo:"IMO arkaly sargyt et", oSeller:"Satyjy", oCopyNum:"Belgini göçür", orderHow:"Surat, ölçeg, adyňyz, telefonyňyz we salgyňyz bilen sargyt satyja TM Bazar programmasynyň hatyna geler.", orderCopied:"Sargyt göçürildi. IMO-da satyjyny {n} tapyp, teksti goýuň.", orderSent:"Sargyt satyja iberildimi?", clearSent:"Sebetden aýyr", oNew:"Täze sargyt", oSize:"ölçeg", oPhoto:"Surat", oProduct:"Haryt", remove:"Aýyr", 
+  tCart:"Sebet", allListings:"Ähli bildirişler", oColor:"Reňk", oSizeL:"Ölçeg / reňk", oNoteL:"Bellik", oSizeReq:"Ölçeg, reňk ýa-da näme gerek *", e_size:"Ölçegi, reňki ýa-da näme gerekdigini ýazyň — satyja düşnükli bolsun", orderSend:"Sargydy iber", orderSending:"Sargyt iberilýär…", orderDone:"Sargyt satyja iberildi", orderDoneSub:"Ol programmanyň hatyna geldi. Satyjy tizräk görer ýaly, oňa SMS iberiň.", orderDoneSms:"Ol programmanyň hatyna geldi, satyja SMS iberildi.", smsSeller:"Satyja SMS iber", openChat:"Haty aç", yes:"Hawa", no:"Ýok", clearCart:"Sebedi arassala", clearCartQ:"Sebedi arassalamalymy?", oSizePh:"Mysal: 41 ölçeg, gara", buyNow:"Satyn al", toCart:"Sebede", inCart:"Sebetde", cartAdded:"Sebede goşuldy", cartEmpty:"Sebet boş", cartEmptySub:"Haryt sahypasynda «Sebede» basyň", cartPickSize:"Ölçegi saýlaň", pickDone:"Taýýar ✓", pickSize:"Ölçeg", perPack:"{n} sany üçin", wsUnit:"1 sany {p} TMT · gapda {n} sany", wsBadge:"LOMAÝ", wsOnly:"📦 Diňe lomaý", wsDetail:"Lomaý: gapda {n} sany", dsLabel:"Arzanladyş", dsPct:"Arzanladyş, %", opLabel:"Diňe lomaý satýaryn", opQty:"Bir gapda (seriýada) näçe sany", pcs:"sany", e_disc:"Arzanladyş — 1-den 90 % çenli", e_opt:"Bir gapda näçe sanydygyny ýazyň (2-den)", pvPack:"Bir gabyň bahasy: {n} × {u} = {s} TMT", pvDisc:"{d}% arzanladyş bilen: {s} TMT (öň {b} TMT)", pickSel:"Saýlandy:", pickTitle:"Saýlaň", pickVariantNeed:"Reňki / görnüşi saýlaň", oSizeOpt:"Ölçeg, reňk ýa-da näme gerek (gerek bolsa)", nItems:"{n} haryt", total:"Jemi", checkout:"Sargyt etmek", orderTitle:"Sargydy resmileşdirmek", oName:"Ady we familiýasy", oPhone:"Telefon", oFixed:"Hasabyňyzdan alynýar — üýtgedip bolmaýar", oAddr:"Eltip berme salgysy", oAddrPh:"Welaýat, etrap, köçe, jaý", oNote:"Bellik (islege bagly)", e_addr:"Salgyny giriziň", orderImo:"IMO arkaly sargyt et", oSeller:"Satyjy", oCopyNum:"Belgini göçür", orderHow:"Surat, ölçeg, adyňyz, telefonyňyz we salgyňyz bilen sargyt satyja TM Bazar programmasynyň hatyna geler.", orderCopied:"Sargyt göçürildi. IMO-da satyjyny {n} tapyp, teksti goýuň.", orderSent:"Sargyt satyja iberildimi?", clearSent:"Sebetden aýyr", oNew:"Täze sargyt", oSize:"ölçeg", oPhoto:"Surat", oProduct:"Haryt", remove:"Aýyr", 
   tHome:"Baş sahypa", tCats:"Bölümler", tPhoto:"Surat bilen", tChats:"Hatlar", tMe:"Profil",
   back:"Yza", searchPh:"Haryt gözle", find:"Gözle",
   demo:"Demo: mysal harytlar. Satyjy girişi: 65 000000, PIN 1234",
@@ -1428,7 +1445,7 @@ en: {
   imoCopied:"Number {n} copied. In IMO, tap search and paste the number.",
   forgotPinQ:"Forgot your PIN?", forgotPinHow:"Message the administrator on IMO or call: tell them your phone number and they'll set a new PIN.",
   contactAdmin:"Contact the administration", contactAdminSub:"Questions, forgotten PIN, problems with a seller — use the in-app chat, IMO, or call.",
-  tCart:"Cart", allListings:"All listings", oColor:"Colour", oSizeL:"Size / colour", oNoteL:"Note", oSizeReq:"Size, colour or what you need *", e_size:"Write the size, colour or what you need so the seller understands", orderSend:"Send order", orderSending:"Sending the order…", orderDone:"Order sent to the seller", orderDoneSub:"It is in the app chat. Send the seller an SMS so they see it sooner.", orderDoneSms:"It is in the app chat and the seller got an SMS.", smsSeller:"SMS the seller", openChat:"Open chat", yes:"Yes", no:"No", clearCart:"Clear cart", clearCartQ:"Clear the cart?", oSizePh:"E.g. size 41, black", buyNow:"Buy now", toCart:"Add to cart", inCart:"In cart", cartAdded:"Added to cart", cartEmpty:"Your cart is empty", cartEmptySub:"Tap «Add to cart» on a product page", cartPickSize:"Choose a size", pickDone:"Done ✓", pickSize:"Size", pickSel:"Selected:", pickTitle:"Choose", pickVariantNeed:"Choose a colour / option", oSizeOpt:"Size, colour or what you need (optional)", nItems:"{n} item(s)", total:"Total", checkout:"Checkout", orderTitle:"Checkout", oName:"Full name", oPhone:"Phone", oFixed:"Taken from your account — cannot be changed", oAddr:"Delivery address", oAddrPh:"Region, district, street, house", oNote:"Note (optional)", e_addr:"Enter a delivery address", orderImo:"Order via IMO", oSeller:"Seller", oCopyNum:"Copy number", orderHow:"The order with photos, size, your name, phone and address goes to the seller's TM Bazar app chat.", orderCopied:"Order copied. In IMO find the seller {n} and paste the text.", orderSent:"Order sent to the seller?", clearSent:"Remove from cart", oNew:"New order", oSize:"size", oPhoto:"Photo", oProduct:"Product", remove:"Remove", 
+  tCart:"Cart", allListings:"All listings", oColor:"Colour", oSizeL:"Size / colour", oNoteL:"Note", oSizeReq:"Size, colour or what you need *", e_size:"Write the size, colour or what you need so the seller understands", orderSend:"Send order", orderSending:"Sending the order…", orderDone:"Order sent to the seller", orderDoneSub:"It is in the app chat. Send the seller an SMS so they see it sooner.", orderDoneSms:"It is in the app chat and the seller got an SMS.", smsSeller:"SMS the seller", openChat:"Open chat", yes:"Yes", no:"No", clearCart:"Clear cart", clearCartQ:"Clear the cart?", oSizePh:"E.g. size 41, black", buyNow:"Buy now", toCart:"Add to cart", inCart:"In cart", cartAdded:"Added to cart", cartEmpty:"Your cart is empty", cartEmptySub:"Tap «Add to cart» on a product page", cartPickSize:"Choose a size", pickDone:"Done ✓", pickSize:"Size", perPack:"per {n} pcs", wsUnit:"{p} TMT per piece · pack of {n}", wsBadge:"WHOLESALE", wsOnly:"📦 Wholesale only", wsDetail:"Wholesale: pack of {n}", dsLabel:"Discount", dsPct:"Discount, %", opLabel:"I sell wholesale only", opQty:"How many pieces per pack (series)", pcs:"pcs", e_disc:"Discount must be 1 to 90 %", e_opt:"Enter how many pieces per pack (2 or more)", pvPack:"Pack price: {n} × {u} = {s} TMT", pvDisc:"With {d}% off: {s} TMT (was {b} TMT)", pickSel:"Selected:", pickTitle:"Choose", pickVariantNeed:"Choose a colour / option", oSizeOpt:"Size, colour or what you need (optional)", nItems:"{n} item(s)", total:"Total", checkout:"Checkout", orderTitle:"Checkout", oName:"Full name", oPhone:"Phone", oFixed:"Taken from your account — cannot be changed", oAddr:"Delivery address", oAddrPh:"Region, district, street, house", oNote:"Note (optional)", e_addr:"Enter a delivery address", orderImo:"Order via IMO", oSeller:"Seller", oCopyNum:"Copy number", orderHow:"The order with photos, size, your name, phone and address goes to the seller's TM Bazar app chat.", orderCopied:"Order copied. In IMO find the seller {n} and paste the text.", orderSent:"Order sent to the seller?", clearSent:"Remove from cart", oNew:"New order", oSize:"size", oPhoto:"Photo", oProduct:"Product", remove:"Remove", 
   tHome:"Home", tCats:"Categories", tPhoto:"Photo", tChats:"Chats", tMe:"Profile",
   back:"Back", searchPh:"Search products", find:"Search",
   demo:"Demo mode: sample products. Seller login: 65 000000, PIN 1234",
@@ -2549,7 +2566,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "113";   // номер версии — виден внизу профиля
+const APP_VER = "114";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2589,6 +2606,21 @@ function lsGet(k, d){ try{ const v = localStorage.getItem("bz_"+k); return v == 
 function lsSet(k, v){ try{ if (v == null) localStorage.removeItem("bz_"+k); else localStorage.setItem("bz_"+k, JSON.stringify(v)); }catch(e){} }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 function fmt(n){ return (Math.round((+n||0)*100)/100).toLocaleString("ru-RU",{maximumFractionDigits:2}).replace(/ /g," "); }
+// v114: скидка (attrs.disc — %) и «только оптом» (attrs.opt — штук в упаковке)
+function discOf(p){ const d = Math.round(+((p && p.attrs) || {}).disc || 0); return d > 0 && d < 100 ? d : 0; }
+function packOf(p){ const n = Math.round(+((p && p.attrs) || {}).opt || 0); return n >= 2 ? n : 0; }
+function basePrice(p){ const u = +p.price || 0, n = packOf(p); return n ? Math.round(u * n * 100) / 100 : u; }
+function finalPrice(p){ const b = basePrice(p), d = discOf(p); return d ? Math.round(b * (100 - d)) / 100 : b; }
+function priceP(p, suf, cls){
+  if (!(+p.price > 0)) return priceEl(p.price, cls, suf, p.cat);
+  const d = discOf(p), n = packOf(p);
+  const main = priceEl(finalPrice(p), [cls, d ? "is-disc" : ""].filter(Boolean).join(" "), n ? t("perPack",{n}) : suf, p.cat);
+  if (!d && !n) return main;
+  return h("div",{class:"pr-wrap"},
+    d ? h("div",{class:"pr-old"}, h("s",{text:fmt(basePrice(p))+" TMT"}), h("span",{class:"pr-off",text:"−"+d+"%"})) : null,
+    main,
+    n ? h("div",{class:"pr-unit",text:t("wsUnit",{p: fmt(Math.round(finalPrice(p) / n * 100) / 100), n})}) : null);
+}
 function priceEl(n, cls, suf, cat){
   if (!(+n > 0)) return h("div",{class:"price"+(cls?" "+cls:"")+" nego"}, cat && PRICE_FREE[cat] ? t("freePrice") : t("negotiable"));
   return h("div",{class:"price"+(cls?" "+cls:"")}, fmt(n), h("small",{text:"TMT"}), suf ? h("small",{class:"suf",text:" "+suf}) : null);
@@ -3416,7 +3448,7 @@ function cartItem(p, size){
   const variant = S.pickVariant && S.pickVariant.product === p.id ? S.pickVariant.label : "";
   const vph = variant && (p.photos || []).find(x => x.label === variant);
   const s = p.seller || {};
-  const it = {id: p.id, title: p.title, price: +p.price || 0, cat: p.cat,
+  const it = {id: p.id, title: p.title, price: finalPrice(p) || 0, cat: p.cat,
     thumb: (vph && (vph.thumb || vph.url)) || (ph ? (ph.thumb || ph.url) : p.thumb) || "",
     photo: (vph && (vph.url || vph.thumb)) || (ph ? (ph.url || ph.thumb) : p.thumb) || "",
     variant, size: size || "", qty: 1,
@@ -3491,6 +3523,7 @@ async function cartPick(p){
   const AUTO = ["color","memory","ram","screensz","probe","tiresize","csize"];
   const auto = fieldsFor(p.cat, p.sub, A).filter(f => AUTO.includes(f.k) && A[f.k] && !(f.k === "color" && variant))
     .map(f => { const v = A[f.k]; return f.k === "color" ? optLabel(f, v) : fieldLabel(f) + " " + (f.raw ? v : optLabel(f, v)) + (f.unit ? " " + f.unit : ""); });
+  if (packOf(p)) auto.unshift(t("wsDetail",{n: packOf(p)}));
   return {p, size: [sizeTxt(size), variant, ...auto].filter(Boolean).join(" · ")};
 }
 function cartBtn(p){
@@ -3927,7 +3960,9 @@ function heartBtn(id, cls){
 // v74: на фото логотип продавца (слева сверху), VIP (справа сверху) и «Видео» (слева снизу); остальное — под фото
 function phMarks(p){
   // v75: логотип продавца больше не накладываем — он теперь на самом фото справа внизу, а слева сверху на фото — логотип TM Bazar
-  return [isVip(p) ? h("span",{class:"ph-vip",text:"VIP"}) : null,
+  const d = discOf(p), n = packOf(p);
+  return [isVip(p) || d || n ? h("div",{class:"ph-tags"}, isVip(p) ? h("span",{class:"ph-vip",text:"VIP"}) : null,
+      d ? h("span",{class:"ph-disc",text:"−"+d+"%"}) : null, n ? h("span",{class:"ph-opt",text:t("wsBadge")}) : null) : null,
     p.hasVideo ? h("span",{class:"ph-vid",text:"▶ "+t("video")}) : null];
 }
 function infoChips(p){
@@ -3949,7 +3984,7 @@ function card(p, extra){
       h("div",{class:"c-sub"}, extra || null,
         p.rating ? h("span",{class:"rt",text:"★ "+p.rating.toFixed(1)+" "}) : null,
         h("span",{text:sub})),
-      h("div",{class:"c-pr"}, priceEl(p.price, null, priceSuffix(p), p.cat),
+      h("div",{class:"c-pr"}, priceP(p, priceSuffix(p)),
         S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")),
       cardCartBtn(p)));
 }
@@ -3958,7 +3993,7 @@ function listCard(p){
   return h("a",{class:"lcard"+(isVip(p)?" vip":""),href:"#/p/"+p.id},
     h("div",{class:"lph"}, p.thumb ? h("img",{src:p.thumb,alt:p.title,loading:"lazy",decoding:"async"}) : null, ...phMarks(p)),
     h("div",{class:"lbd"},
-      h("div",{class:"lrow"}, priceEl(p.price, null, priceSuffix(p), p.cat), shareBtn(p), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")),
+      h("div",{class:"lrow"}, priceP(p, priceSuffix(p)), shareBtn(p), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")),
       h("div",{class:"ltt",text:p.title}),
       infoChips(p),
       cardLine(p) ? h("div",{class:"car-line",text:cardLine(p)}) : null,
@@ -3992,7 +4027,7 @@ function bigCard(p){
   const el = h("div",{class:"bcard"+(isVip(p)?" vip":"")},
     h("div",{class:"bc-gal"}, track, ...phMarks(p)),
     h("a",{class:"bc-bd",href:"#/p/"+p.id},
-      h("div",{class:"lrow"}, priceEl(p.price, null, priceSuffix(p), p.cat), shareBtn(p), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")),
+      h("div",{class:"lrow"}, priceP(p, priceSuffix(p)), shareBtn(p), S.cardExtra ? S.cardExtra(p) : heartBtn(p.id, "lheart")),
       h("div",{class:"bc-tt",text:p.title}),
       infoChips(p),
       cardLine(p) ? h("div",{class:"car-line",text:cardLine(p)}) : null,
@@ -4055,8 +4090,8 @@ function emptyBox(emoji, title, sub, btn){
 }
 function sortList(list){
   let l = S.city ? list.filter(p => p.city === S.city) : list.slice();
-  if (S.sort === "cheap") l.sort((a,b) => a.price - b.price);
-  else if (S.sort === "exp") l.sort((a,b) => b.price - a.price);
+  if (S.sort === "cheap") l.sort((a,b) => finalPrice(a) - finalPrice(b));
+  else if (S.sort === "exp") l.sort((a,b) => finalPrice(b) - finalPrice(a));
   else if (S.sort === "new") l.sort((a,b) => a.at < b.at ? 1 : -1);
   else l = recommend(l);
   if (S.sort === "rec" || S.sort === "new") l = l.filter(isVip).concat(l.filter(p => !isVip(p)));
@@ -4200,7 +4235,7 @@ function forYouStrip(list){
   return h("div",{class:"sec foryou"}, h("div",{class:"sub-h",text:"✨ "+t("forYou")}),
     h("div",{class:"hscroll"}, ...top.map(x => h("a",{class:"mini-card",href:"#/p/"+x.id},
       h("img",{src:x.thumb,alt:x.title,loading:"lazy"}),
-      h("div",{class:"tt",text:x.title}), priceEl(x.price, null, null, x.cat)))));
+      h("div",{class:"tt",text:x.title}), priceP(x)))));
 }
 // главная: велаят и торговый центр / рынок (ТЦ — из выбранного велаята или все)
 function placePick(onChange){
@@ -4427,7 +4462,8 @@ function viewBrowse(catId, listMode){
     if (S.city && p.city !== S.city) return false;
     for (const k in st.f) if (k !== skip && st.f[k] && !hasVal(p, k, st.f[k])) return false;
     const r = st.r;
-    if (r.pmin && p.price < +r.pmin) return false; if (r.pmax && p.price > +r.pmax) return false;
+    if (r.pmin && finalPrice(p) < +r.pmin) return false; if (r.pmax && finalPrice(p) > +r.pmax) return false;
+    if (st.ws && !packOf(p)) return false;
     const a = p.attrs || {};
     if (r.ymin && !(+a.year >= +r.ymin)) return false; if (r.ymax && !(+a.year <= +r.ymax)) return false;
     if (r.amin && !(+a.area >= +r.amin)) return false; if (r.amax && !(+a.area <= +r.amax)) return false;
@@ -4548,6 +4584,8 @@ function viewBrowse(catId, listMode){
     const title = st.f.brand ? brandName(st.f.brand) + (st.f.model ? " " + modelLabel(st.f.model) : "") : st.sub ? subName(st.sub) : catId ? catName(catId) : t("allGoods");
     body.replaceChildren(
       h("div",{class:"sec-h list-h"}, h("h2",null, title, h("small",{text:"  "+list.length}))),
+      st.ws || base().some(packOf) ? h("div",{class:"ws-bar"},
+        h("button",{type:"button",class:"ws-tg"+(st.ws?" on":""),onclick:()=>{ st.ws = !st.ws; drawList(); }}, t("wsOnly"), st.ws ? " ✓" : "")) : null,
       filterBar(drawList, compact),
       feed(sortList(list), !S.catalog.length && S.catalogLoading ? h("div",{class:"empty"}, h("div",{class:"spin"})) : null, null, mode));
   };
@@ -4757,7 +4795,7 @@ function shareProduct(p){
     box.append(h("h2",{text:t("forward")}),
       h("div",{class:"shr-card"},
         thumb ? h("img",{src:thumb,alt:p.title}) : h("div",{class:"shr-noimg"}),
-        h("div",{class:"shr-bd"}, priceEl(p.price, null, priceSuffix(p), p.cat), h("b",{text:p.title}), h("small",{text:url}))),
+        h("div",{class:"shr-bd"}, priceP(p, priceSuffix(p)), h("b",{text:p.title}), h("small",{text:url}))),
       h("div",{class:"shr-grid"},
         opt("imo", "imo", "IMO", async () => { if (await sysShare()) return close(); await copy(); toast(t("pasteImo")); }),
         opt("wa", "✆", "WhatsApp", () => { close(); open("https://wa.me/?text=" + enc(full)); }),
@@ -4818,7 +4856,7 @@ function renderProduct(root, p){
 
   root.replaceChildren(gal,
     h("div",{class:"pd"},
-      priceEl(p.price, null, priceSuffix(p), p.cat),
+      priceP(p, priceSuffix(p)),
       h("h1",{text:p.title}),
       p.rating ? h("a",{class:"rt-line",href:"#rev",onclick:e=>{ e.preventDefault(); revBox.scrollIntoView({behavior:"smooth"}); }},
         stars(p.rating), h("b",{text:p.rating.toFixed(1)}), h("span",{text:t("nReviews",{n:p.reviews})})) : null,
@@ -4874,7 +4912,7 @@ function drawShopStrip(p, box){
   box.replaceChildren(h("div",{class:"sub-h",style:{marginTop:"14px"},text:t("moreFromShop")}),
     h("div",{class:"hscroll"}, ...list.slice(0, 12).map(x => h("a",{class:"mini-card",href:"#/p/"+x.id},
       h("img",{src:x.thumb,alt:x.title,loading:"lazy"}),
-      h("div",{class:"tt",text:x.title}), priceEl(x.price))),
+      h("div",{class:"tt",text:x.title}), priceP(x))),
       list.length > 12 ? h("a",{class:"mini-card more-card",href:"#/u/"+p.user}, h("b",{text:"+"+(list.length-12)}), t("all")) : null));
 }
 async function showSimilar(p, box){
@@ -5604,7 +5642,7 @@ function myRow(p, u, onBal){
       h("div",{class:"my-top"},
         p.thumb ? h("img",{src:p.thumb,alt:""}) : h("div",{class:"noimg"}),
         h("a",{class:"in",href:"#/p/"+p.id}, h("div",{class:"t",text:p.title}),
-          h("div",{class:"s"}, priceEl(p.price), stChip()),
+          h("div",{class:"s"}, priceP(p), stChip()),
           h("div",{class:"where",text:[catName(p.cat), p.sub ? subName(p.sub) : "", [(p.attrs||{}).brand ? brandName(p.attrs.brand) : "", modelLabel((p.attrs||{}).model)].filter(Boolean).join(" ")].filter(Boolean).join(" · ")})), acts),
       vip || expAt(p) ? h("div",{class:"my-bot"}, vip, more, timer) : null,
       // старое объявление без раздела — покупатели не найдут его в разделе и фильтрах
@@ -5812,6 +5850,26 @@ async function viewSell(editId){
   const descIn = h("textarea",{class:"inp",maxlength:"2000",placeholder:t("descPh")}); descIn.value = prod.desc || "";
   descIn.oninput = () => prod.desc = descIn.value;
   const priceIn = h("input",{type:"number",inputmode:"decimal",min:"0",step:"0.01",placeholder:"0",value:+prod.price > 0 ? prod.price : "","aria-label":t("price")});
+  // v114: скидка и опт
+  const discOn = h("input",{type:"checkbox"}), discIn = h("input",{class:"inp",type:"number",inputmode:"numeric",min:"1",max:"90",step:"1",placeholder:"10"});
+  const optOn = h("input",{type:"checkbox"}), optIn = h("input",{class:"inp",type:"number",inputmode:"numeric",min:"2",max:"10000",step:"1",placeholder:"6"});
+  { const a0 = prod.attrs || {}; if (discOf(prod)){ discOn.checked = true; discIn.value = discOf(prod); } if (packOf(prod)){ optOn.checked = true; optIn.value = packOf(prod); } }
+  const dsPrev = h("div",{class:"ds-prev"});
+  const dsUpd = () => {
+    const u = parseFloat(String(priceIn.value).replace(",", ".")) || 0;
+    const n = optOn.checked ? Math.round(+optIn.value || 0) : 0, d = discOn.checked ? Math.round(+discIn.value || 0) : 0;
+    const fd = discIn.closest(".ds-f"), fo = optIn.closest(".ds-f");
+    if (fd) fd.hidden = !discOn.checked;
+    if (fo) fo.hidden = !optOn.checked;
+    const lines = [];
+    if (u > 0 && n >= 2) lines.push(t("pvPack",{n, u: fmt(u), s: fmt(Math.round(u * n * 100) / 100)}));
+    const b = u > 0 ? (n >= 2 ? u * n : u) : 0;
+    if (b > 0 && d > 0 && d < 100) lines.push(t("pvDisc",{d, s: fmt(Math.round(b * (100 - d)) / 100), b: fmt(Math.round(b * 100) / 100)}));
+    dsPrev.replaceChildren(...lines.map(x => h("div",{text:x})));
+    dsPrev.hidden = !lines.length;
+  };
+  [priceIn, discIn, optIn].forEach(x => x.addEventListener("input", dsUpd));
+  [discOn, optOn].forEach(x => x.addEventListener("change", () => { dsUpd(); if (x.checked) (x === discOn ? discIn : optIn).focus(); }));
   priceIn.oninput = () => prod.price = priceIn.value;
   const shotsBox = h("div"), guessEl = h("div",{class:"guess",hidden:true});
   const content = h("div",{class:"wrap wiz"});
@@ -6064,6 +6122,7 @@ async function viewSell(editId){
       h("label",{class:"field",style:{marginBottom:0}}, h("span",{text:t("descOpt")}), descIn))];
   }
   function step5(){
+    setTimeout(dsUpd, 0);
     nextBtn.textContent = editId ? t("save") : t("publish");
     nextBtn.onclick = publish;
     const free = PRICE_FREE[prod.cat], optional = PRICE_OPTIONAL[prod.cat];
@@ -6076,6 +6135,12 @@ async function viewSell(editId){
       free ? h("div",{class:"box"}, h("div",{class:"price nego",text:"🎁 "+t("freePrice")})) :
         h("div",{class:"box"}, h("label",{class:"field",style:{marginBottom:0}}, h("span",null, optional ? t("priceOpt") : t("price"), optional ? null : reqStar()),
           h("div",{class:"price-in"}, priceIn, h("b",{text:"TMT"})))),
+      free ? null : h("div",{class:"box ds-box"},
+        h("label",{class:"check ds-ck"}, discOn, h("span",{text:t("dsLabel")})),
+        h("label",{class:"field ds-f"}, h("span",{text:t("dsPct")}), h("div",{class:"price-in"}, discIn, h("b",{text:"%"}))),
+        cartable({cat: prod.cat, sub: prod.sub}) ? h("label",{class:"check ds-ck"}, optOn, h("span",{text:t("opLabel")})) : null,
+        cartable({cat: prod.cat, sub: prod.sub}) ? h("label",{class:"field ds-f"}, h("span",{text:t("opQty")}), h("div",{class:"price-in"}, optIn, h("b",{text:t("pcs")}))) : null,
+        dsPrev),
       h("div",{class:"box"},
         h("div",{class:"field",style:{marginBottom:0}}, h("span",{text:t("w_contact")}),
           h("div",{class:"phone-ro"}, h("b",{text:phoneFmt(u.phone)}), u.imo ? h("span",{class:"st ok",text:"IMO"}) : null),
@@ -6093,6 +6158,10 @@ async function viewSell(editId){
     const price = PRICE_FREE[prod.cat] ? 0 : parseFloat(String(priceIn.value).replace(",", ".")) || 0;
     if (!(price > 0) && !PRICE_OPTIONAL[prod.cat] && !PRICE_FREE[prod.cat]) return fail(t("e_noPrice"));
     if (videoIn.value.trim() && !videoUrl(videoIn.value)) { goStep(1); return fail(t("e_video")); }
+    const dPct = discOn.checked ? Math.round(+discIn.value || 0) : 0;
+    const oQty = optOn.checked && cartable({cat: prod.cat, sub: prod.sub}) ? Math.round(+optIn.value || 0) : 0;
+    if (discOn.checked && !(dPct >= 1 && dPct <= 90)) return fail(t("e_disc"));
+    if (optOn.checked && cartable({cat: prod.cat, sub: prod.sub}) && !(oQty >= 2 && oQty <= 10000)) return fail(t("e_opt"));
     const flds = fieldsFor(prod.cat, prod.sub, prod.attrs);
     const b = busy(t("saving"));
     try{
@@ -6105,7 +6174,8 @@ async function viewSell(editId){
         place: (prod.place||"").trim(), video: videoUrl(videoIn.value), sub: SUBS[prod.cat] ? prod.sub : "",
         attrs: Object.fromEntries(flds.map(f => [f.k, prod.attrs[f.k]]).filter(([k, v]) => v != null && v !== "" && !(Array.isArray(v) && !v.length))
           .map(([k, v]) => [k, typeof v === "string" ? v.trim() : v])
-          .concat(prod.attrs.mall ? [["mall", String(prod.attrs.mall).trim().slice(0, 60)]] : [])),
+          .concat(prod.attrs.mall ? [["mall", String(prod.attrs.mall).trim().slice(0, 60)]] : [])
+          .concat(dPct ? [["disc", String(dPct)]] : []).concat(oQty ? [["opt", String(oQty)]] : [])),
         photoOrder: editId ? shots.filter(x => x.existing).map(x => x.id) : [],
         photoLabels: Object.fromEntries(shots.filter(x => x.existing).map(x => [x.id, (x.label||"").trim()]))};
       if (editId) data.id = editId;
@@ -6485,7 +6555,7 @@ async function viewAdmin(){
       p.thumb ? h("img",{src:p.thumb,alt:""}) : h("div",{class:"noimg"}),
       h("div",{class:"in"},
         h("a",{class:"t link",href:"#/p/"+p.id,text:p.title+"  ·  "+p.id}),
-        h("div",{class:"s"}, priceEl(p.price), "· "+catName(p.cat)+" · "+p.city, h("span",{class:"st "+st[0],text:st[1]})),
+        h("div",{class:"s"}, priceP(p), "· "+catName(p.cat)+" · "+p.city, h("span",{class:"st "+st[0],text:st[1]})),
         h("div",{class:"kv"}, "Продавец: "+(u.name||"?")+" ", sellerChip(u.seller),
           isVip(p) ? h("span",{class:"vip-pill",text:"⭐ VIP до "+new Date(p.vip).toLocaleDateString("ru-RU")}) : null,
           p.exp ? h("span",{style:{color:"var(--mut)"},text:" · удалится "+new Date(p.exp).toLocaleDateString("ru-RU")}) : null)),
