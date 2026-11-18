@@ -1630,12 +1630,13 @@ const isRent = a => a.deal === "rent" || a.deal === "roomrent";
    unit: единица, list: подсказки для текста, step: шаг числа */
 const FIELDS = {
   shoes: [
+    {k:"season", type:"sel", filter:"main", showAll:true, opts:["summer","demi","winter","allseason"]},   // v116: ряд «Сезон» над размерами
     {k:"size", type:"multi", raw:true, filter:"main", opts:(s) => s === "kidsshoes" ? range(18, 36) : range(35, 47), unitKey:"sizeHint"},
-    {k:"season", type:"sel", filter:"more", opts:["summer","demi","winter","allseason"]},
     {k:"brandt", type:"text", max:30},
     {k:"color", type:"sel", filter:"more", opts:["black","white","silver","gray","gold","blue","red","green","purple","pink","other"]}
   ],
   personal: [
+    {k:"season", type:"sel", filter:"main", showAll:true, opts:["summer","demi","winter","allseason"], when:(s) => s === "womenclothes" || s === "menclothes" || s === "national"},
     {k:"size", type:"multi", raw:true, filter:"main", opts:["XS","S","M","L","XL","XXL","3XL","4XL+"],
       when:(s) => s === "womenclothes" || s === "menclothes", unitKey:"sizeHint"},
     {k:"brandt", type:"text", max:30, when:(s) => s !== "jewels"},
@@ -1644,6 +1645,7 @@ const FIELDS = {
     {k:"weight", type:"num", unit:"g", step:"0.01", when:(s) => s === "jewels"}
   ],
   kids: [
+    {k:"season", type:"sel", filter:"main", showAll:true, opts:["summer","demi","winter","allseason"], when:(s) => s === "girlclothes" || s === "boyclothes" || s === "kidsclothes"},
     {k:"size", type:"multi", raw:true, filter:"main", opts:["0-1","1-2","2-3","3-4","4-6","6-8","8-10","10-12","12-14","14+"], when:(s) => s === "girlclothes" || s === "boyclothes" || s === "kidsclothes"},
     {k:"age", type:"sel", raw:true, filter:"more", opts:["0-1","1-3","3-7","7-12","12+"], when:(s) => s === "toys" || s === "babycare" || s === "babyfood" || s === "kidstransport"},
     {k:"gender", type:"sel", filter:"more", opts:["boy","girl","unisex"], when:(s) => s !== "girlclothes" && s !== "boyclothes"}
@@ -2575,7 +2577,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "115";   // номер версии — виден внизу профиля
+const APP_VER = "116";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -4513,10 +4515,10 @@ function viewBrowse(catId, listMode){
   const valueChips = (f, list, onPick) => {
     const counts = {};
     list.forEach(p => { const v = fval(p, f.k); (Array.isArray(v) ? v : v ? [v] : []).forEach(x => counts[x] = (counts[x] || 0) + 1); });
-    let vals = optsOf(f, st.sub, ctxA()).filter(v => counts[v]);
+    let vals = optsOf(f, st.sub, ctxA()).filter(v => counts[v] || f.showAll);
     Object.keys(counts).forEach(v => { if (!vals.includes(v)) vals.push(v); });
     return vals.map(v => h("button",{class:"chip"+(st.f[f.k]===v?" on":""),onclick:()=>onPick(st.f[f.k]===v ? "" : v)},
-      optLabel(f, v)+(f.unit && f.type==="sel" ? " "+f.unit : ""), h("small",{text:" "+counts[v]})));
+      optLabel(f, v)+(f.unit && f.type==="sel" ? " "+f.unit : ""), h("small",{text:" "+(counts[v] || 0)})));
   };
   const drawSubs = () => {
     const rows = [];
