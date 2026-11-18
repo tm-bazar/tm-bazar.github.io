@@ -687,6 +687,16 @@ b.ci:not(.ph){background:var(--soft)!important;color:#5a5a62!important;box-shado
 .mk-logo.mono b{color:#2b2f36}
 
 /* недвижимость: продажа / аренда — фото-карточки */
+.browse-head.rl{position:sticky;top:0}
+.dl-strip{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:2px 10px 6px;max-height:120px;transition:max-height .25s ease,opacity .2s ease,padding .25s ease}
+.dl-strip::-webkit-scrollbar{display:none}
+.browse-head.dl-hid .dl-strip{max-height:0;opacity:0;padding-top:0;padding-bottom:0;overflow:hidden}
+.dl-mini{flex:none;width:88px;border:0;background:none;padding:0;text-align:left;color:var(--fg);display:flex;flex-direction:column;gap:1px;cursor:pointer}
+.dl-mini img{width:88px;height:60px;object-fit:cover;border-radius:10px;background:#f2f3f5;display:block;box-shadow:0 1px 3px rgba(0,0,0,.1);margin-bottom:3px}
+.dl-mini b{font-size:12px;line-height:1.2;font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dl-mini small{font-size:11px;color:var(--mut2)}
+.dl-mini.on img{outline:2.5px solid var(--red);outline-offset:1px}
+.dl-mini.on b{color:var(--red)}
 .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;padding:14px 14px 6px}
 .dl-card{border:0;background:none;padding:0;text-align:left;color:var(--fg);display:flex;flex-direction:column;gap:3px}
 .dl-card img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block;background:#f2f3f5;box-shadow:0 1px 4px rgba(0,0,0,.08)}
@@ -1854,7 +1864,7 @@ const ATTRT = {
   o_fuel_petrol:["Бензин","Benzin","Petrol"], o_fuel_gas:["Газ","Gaz","Gas"], o_fuel_diesel:["Дизель","Dizel","Diesel"], o_fuel_hybrid:["Гибрид","Gibrid","Hybrid"], o_fuel_electric:["Электро","Elektrik","Electric"],
   o_drive_fwd:["Передний","Öň","FWD"], o_drive_rwd:["Задний","Yz","RWD"], o_drive_awd:["Полный","Doly","AWD/4WD"],
   o_exchange_yes:["Возможен","Bolýar","Possible"], o_f_exchange:["Обмен","Çalyşyk","Trade-in"], o_exchange_no:["Нет","Ýok","No"],
-  dl_all:["Все объявления","Ähli bildirişler","All listings"],
+  dl_all:["Все объявления","Ähli bildirişler","All listings"], dlAll:["Все","Hemmesi","All"],
   dl_ads:["объявл.","bildiriş","listings"], dl_none:["пока нет объявлений","häzirlikçe bildiriş ýok","no listings yet"],
   dl_flat_sale:["Продажа квартир","Kwartira satlyk","Flats for sale"], dl_flat_rent:["Аренда квартир","Kwartira kärendesi","Flats for rent"], dl_flat_roomrent:["Аренда комнат","Otag kärendesi","Rooms for rent"],
   dl_house_sale:["Продажа домов","Jaý satlyk","Houses for sale"], dl_house_rent:["Аренда домов","Jaý kärendesi","Houses for rent"], dl_house_roomrent:["Аренда комнат","Otag kärendesi","Rooms for rent"],
@@ -2529,7 +2539,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "111";   // номер версии — виден внизу профиля
+const APP_VER = "112";   // номер версии — виден внизу профиля
 
 // Нейросеть для поиска по фото (загружается в браузере только когда нужна)
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
@@ -2940,7 +2950,7 @@ const ROUTES = [
   [/^\/c\/(\w+)\/list$/, m => viewBrowse(m[1], true)],
   [/^\/c\/(\w+)$/, m => viewBrowse(m[1])],
   [/^\/brands\/(\w+)\/(\w+)$/, m => viewMakes(m[1], m[2])],
-  [/^\/deal\/(\w+)\/(\w+)$/, m => viewDeals(m[1], m[2])],
+  [/^\/deal\/(\w+)\/(\w+)$/, m => { S.browse = {cat: m[1], sub: m[2], f: {}, r: {}}; viewBrowse(m[1], true); }],
   [/^\/models\/(\w+)\/(\w+)\/(.+)$/, m => viewModels(m[1], m[2], decodeURIComponent(m[3]))],
   [/^\/cats$/, () => viewBrowse("")],
   [/^\/shops$/, () => viewShops(false)],
@@ -4355,10 +4365,12 @@ function viewBrowse(catId, listMode){
       catTile(c.id), h("span",{text:catName(c.id)}))));
   const qBox = h("div",{class:"qchips"});
   const cTitle = h("div",{class:"bh-title"});
-  const head = compact ? h("div",{class:"browse-head cmp"}, h("div",{class:"wrap"},
+  const realtyDeals = compact && catId === "realty";
+  const dealBox = realtyDeals ? h("div",{class:"dl-strip"}) : null;
+  const head = compact ? h("div",{class:"browse-head cmp"+(realtyDeals?" rl":"")}, h("div",{class:"wrap"},
       h("div",{class:"top-row bh-row"},
         h("button",{class:"icon-btn","aria-label":t("back"),html:IC.back,onclick:()=>{ st.f = {}; go("/c/"+catId); }}), cTitle, topFilt),
-      qBox)) :
+      dealBox, qBox)) :
     h("div",{class:"browse-head"},
     h("div",{class:"wrap"},
       h("div",{class:"top-row bh-row"}, catId ? h("button",{class:"icon-btn","aria-label":t("back"),html:IC.back,onclick:()=>go("/cats")}) : null,
@@ -4402,7 +4414,7 @@ function viewBrowse(catId, listMode){
         ...SUBS[catId].map(k => { const n = list.filter(p => p.sub === k).length;
           return photoTile("sub:"+catId+":"+k, subName(k), st.sub===k, ()=>{
             if (catId === "auto" && VEHICLE_SUBS[k]){ st.sub = k; st.f = {}; go("/brands/auto/"+k); return; }
-            if (catId === "realty"){ st.sub = k; st.f = {}; go("/deal/realty/"+k); return; }
+            if (catId === "realty"){ st.sub = k; st.f = {}; go("/c/realty/list"); return; } // v112: сразу объявления, сверху — маленькие фото продажа/аренда
             st.sub = k; st.f = {}; go("/c/"+catId+"/list"); }, n, catId); })));
     }
     filterFields("main").forEach(f => {
@@ -4519,7 +4531,7 @@ function viewBrowse(catId, listMode){
     if (catId === "auto" && st.f.brand && st.f.brand !== "other" && modelsOf(st.sub, st.f.brand).length)
       chips.push(qchip(t("f_model"), modelLabel(st.f.model), () => go(modelsHref("auto", st.sub, st.f.brand))));
     // основные фильтры раздела (размер, комнаты, тип сделки, марка телефона и т.п.)
-    fieldsFor(catId, st.sub, Object.assign({}, st.f)).filter(f => f.filter === "main" && f.k !== "model" && !(vehicle && f.k === "brand")).forEach(f => {
+    fieldsFor(catId, st.sub, Object.assign({}, st.f)).filter(f => f.filter === "main" && f.k !== "model" && !(vehicle && f.k === "brand") && !(realtyDeals && f.k === "deal")).forEach(f => {
       const cur = st.f[f.k];
       chips.push(qchip(fieldLabel(f), cur ? optLabel(f, cur) + (f.unit && f.type === "sel" ? " " + f.unit : "") : "", () => sheet((box, close) => {
         const counts = {};
@@ -4549,8 +4561,42 @@ function viewBrowse(catId, listMode){
       })));
     qBox.replaceChildren(...chips);
   };
+  // v112: недвижимость — маленькие фото «Все / Продажа / Аренда…» сверху, сразу под ними объявления
+  const drawDeals = () => {
+    if (!dealBox) return;
+    const fd = fieldsFor(catId, st.sub, {}).find(x => x.k === "deal");
+    const opts = fd ? optsOf(fd, st.sub, {}) : ["sale","rent"];
+    const all = applyF(base(), "deal");
+    const cnt = d => all.filter(p => !d || (p.attrs || {}).deal === d).length;
+    const cur = st.f.deal || "";
+    const tile = (d, img, name) => h("button",{type:"button",class:"dl-mini"+(cur===d?" on":""),onclick:()=>{
+        if (d) st.f.deal = d; else delete st.f.deal; draw(); window.scrollTo({top: 0}); }},
+      h("img",{src:img,alt:"",loading:"lazy",onerror:e=>{ e.target.style.visibility="hidden"; }}),
+      h("b",{text:name}), h("small",{text:String(cnt(d))}));
+    dealBox.replaceChildren(tile("", "subs/realty-"+st.sub+".jpg", t("dlAll")),
+      ...opts.map(d => tile(d, "deals/"+st.sub+"-"+d+".jpg", dealName(st.sub, d))));
+  };
+  if (realtyDeals){
+    // листаем вниз — фото прячутся, листаем вверх — появляются
+    let lastY = window.scrollY, lockTill = 0;
+    const setHid = on => {
+      if (head.classList.contains("dl-hid") === on) return;
+      head.classList.toggle("dl-hid", on);
+      lockTill = performance.now() + 450;          // страница сдвигается, пока полоса прячется — это не прокрутка
+      setTimeout(() => { lastY = window.scrollY; }, 460);
+    };
+    const onScroll = () => {
+      if (!head.isConnected){ window.removeEventListener("scroll", onScroll); return; }
+      const y = window.scrollY;
+      if (performance.now() < lockTill){ lastY = y; return; }
+      if (y > lastY + 8 && y > 60) setHid(true);
+      else if (y < lastY - 8 || y < 30) setHid(false);
+      lastY = y;
+    };
+    window.addEventListener("scroll", onScroll, {passive: true});
+  }
   if (compact && !MODELS) loadModels().then(() => drawQuick());
-  const draw = () => { if (compact) drawQuick(); else drawSubs(); drawList(); };
+  const draw = () => { if (compact){ drawDeals(); drawQuick(); } else drawSubs(); drawList(); };
   draw(); loadCatalog().then(draw);
   // показать выбранную категорию в ленте
   const on = catScroll.querySelector(".cs.on");
