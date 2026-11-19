@@ -2585,7 +2585,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "117";   // номер версии — виден внизу профиля
+const APP_VER = "118";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -2595,32 +2595,33 @@ const APP_VER = "117";   // номер версии — виден внизу п
      "=вино|вина"    — только эти слова ЦЕЛИКОМ (чтобы «виноград» не попадал)
      "электрон сигар" — два слова подряд (фраза)
      {w:"сигар", not:["прикурив"]} — не считать, если в тексте есть слово-исключение
-   Хитрости вроде «в.о.д.к.а», «в о д к а», «вoдка» (латинская o), «вооодка» тоже ловятся. */
+   Хитрости вроде «в.о.д.к.а», «в о д к а», «вoдка» (латинская o), «вооодка» тоже ловятся,
+   и русские слова латиницей: vodka, kalyan, pivo, sigarety, çilim (v118). */
 const BAD_WORDS = [
   // оружие и взрывчатка
-  "оружи", "огнестрел", {w:"пистолет", not:["клея","клеев","герметик","мойк","краск","покрас","монтаж","пен","продув","подкач","накач","заправ","смазк","паяль","термо","фен"]},
+  "оружи", "огнестрел", {w:"пистолет|pistol", not:["клея","клеев","герметик","мойк","краск","покрас","монтаж","пен","продув","подкач","накач","заправ","смазк","паяль","термо","фен"]},
   "револьвер", "ружь", "винтовк", "калашник", "ак47", "=ак 47", "=обрез|обреза|обрезы", "травмат", "боеприпас", "кастет", "шокер",
   "взрывчат", "тротил", "динамит", "детонатор", "гранатомет", "порох",
-  "yarag", "tapanca", "tupen", "=gun|guns", "pistol", "rifle", "weapon", "ammo",
+  "yarag", "tapancha", "tupen", "=gun|guns", "rifle", "weapon", "=ammo",
   // наркотики
-  "наркот", "марихуан", "гашиш", "анаш", "кокаин", "героин", "амфетамин", "метамфетамин", "мефедрон", "=меф", "спайс", "экстази", "=лсд",
-  "конопл", "каннабис", "насвай", "насыбай", "nasybay", "nasvay", "=nas", "nese", "weed", "cannabis", "cocaine", "heroin",
+  "наркот", "марихуан", "гашиш", "анаш", "кокаин", "=героин|героина|героином", "амфетамин", "метамфетамин", "мефедрон", "=меф", "спайс", "экстази", "=лсд",
+  "конопл", "каннабис", "насвай", "насыбай", "nasybay", "nasvay", "=nas", "neshe", "=weed", "cannabis", "cocaine", "=heroin",
   // сильные лекарства и лекарства вообще
   "трамадол", "трамал", "прегабалин", "=лирика|лирики|лирику", "феназепам", "гидазепам", "диазепам", "клоназепам", "реланиум", "тропикамид",
   "кодеин", "метадон", "морфин", "сибутрамин", "редуксин", "антибиотик", "лекарств", "=укол|уколы|уколов",
-  {w:"таблетк", not:["посудомо","посуд","стирк","стирал","бассейн","унитаз","туалет","аквариум"]},
+  {w:"таблетк|tabletk", not:["посудомо","посуд","стирк","стирал","бассейн","унитаз","туалет","аквариум"]},
   "tramadol", "lyrica", "derman", "tabletka", "pills",
   // алкоголь
-  "водк", "=вино|вина|вином|вине", "коньяк", "=пиво|пива|пивом|пиве", "виски", "=ром|рома", "текил", "шампанск", "ликер", "самогон",
-  "=спирт|спирта|спиртом", "алкогол", "брага", "=джин|джина", "вермут", "=arak|araky", "piwo", "serap", "konyak", "vodka", "=beer", "whiskey", "whisky", "cakyr", "=wine|wines",
+  "водк", "=вино|вина|вином|вине", "коньяк", "=пиво|пива|пивом|пиве", "виски", "текил", "шампанск", "ликер", "самогон",
+  "=спирт|спирта|спиртом", "алкогол", "брага", "=джин|джина", "вермут", "=arak|araky", "=piwo|pivo", "sherap", "konyak", "vodka", "=beer", "whiskey", "whisky", "chakyr", "=wine|wines",
   // табак, сигареты, вейпы
-  {w:"сигар", not:["прикурив"]}, "табак", "вейп", "=под систем", "кальян", "kalyan", "айкос", "=iqos", "heets", "temmaki", "cilim", "sigaret", "cigar", "tobacco", "vape",
+  {w:"сигар|sigaret|cigar", not:["прикурив","prikuriv","lighter"]}, "табак", "вейп", "=под систем", "кальян", "kalyan", "айкос", "=iqos", "heets", "temmaki", "chilim", "tobacco", "vape",
   // документы, интим
   "поддельн", "фальшив", "=паспорт купить", "права без экзамен", {w:"интим", not:["гигиен"]}, "эскорт", "=секс"
 ];
 function modTokens(text){
   let s = String(text || "").toLowerCase().replace(/ё/g, "е")
-    .replace(/[ýÿ]/g, "y").replace(/ç/g, "c").replace(/ş/g, "s").replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ň/g, "n").replace(/ž/g, "z");
+    .replace(/[ýÿ]/g, "y").replace(/ç/g, "ch").replace(/ş/g, "sh").replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ň/g, "n").replace(/ž/g, "zh");
   s = s.replace(/([a-zа-я0-9])[.\-_*·'’`"|\/\\+~]+(?=[a-zа-я0-9])/g, "$1");     // в.о.д.к.а → водка
   const out = []; let run = "";                                                  // в о д к а → водка
   s.split(/[^a-zа-я0-9]+/).filter(Boolean).forEach(w => {
@@ -2633,16 +2634,26 @@ function modTokens(text){
     return w.replace(/(.)\1{2,}/g, "$1");                                         // вооодка → водка
   });
 }
+// v118: «скелет» слова латиницей — чтобы русские слова, написанные латинскими буквами, тоже ловились:
+// «водка» = vodka, «кальян» = kalyan = kalian, «сигареты» = sigarety, «чилим» = çilim, «марихуана» = marikhuana
+const MOD_C2L = {а:"a",б:"b",в:"v",г:"g",д:"d",е:"e",ж:"zh",з:"z",и:"i",й:"i",к:"k",л:"l",м:"m",н:"n",о:"o",п:"p",р:"r",с:"s",т:"t",у:"u",ф:"f",
+  х:"h",ц:"ts",ч:"ch",ш:"sh",щ:"sh",ъ:"",ы:"i",ь:"",э:"e",ю:"iu",я:"ia"};
+function modSkel(w){
+  w = String(w).replace(/[а-я]/g, ch => MOD_C2L[ch] != null ? MOD_C2L[ch] : ch);
+  w = w.replace(/shch|sch/g, "sh").replace(/kh/g, "h").replace(/tz/g, "ts").replace(/ph/g, "f")
+    .replace(/[yj]a/g, "ia").replace(/[yj]u/g, "iu").replace(/[yj][oe]/g, "e").replace(/[yj]/g, "i").replace(/w/g, "v").replace(/q/g, "k");
+  return w.replace(/(.)\1+/g, "$1");
+}
 // какие запрещённые слова нашлись в тексте (пустой список — всё чисто)
 function badWords(text){
-  const toks = modTokens(text), hits = [];
+  const raw = modTokens(text), toks = raw.map(modSkel), hits = [];
   BAD_WORDS.forEach(e => {
     const w = typeof e === "string" ? e : e.w;
-    if (e.not && toks.some(tk => e.not.some(n => tk.startsWith(n)))) return;
-    const parts = w.split(" ").map(x => x[0] === "=" ? {eq:true, v:x.slice(1).split("|")} : {eq:false, v:x.split("|")});
+    if (e.not && toks.some(tk => e.not.some(n => tk.startsWith(modSkel(n))))) return;
+    const parts = w.split(" ").map(x => x[0] === "=" ? {eq:true, v:x.slice(1).split("|").map(modSkel)} : {eq:false, v:x.split("|").map(modSkel)});
     const fits = (tk, p) => p.v.some(v => p.eq ? tk === v : tk.startsWith(v));
     for (let i = 0; i + parts.length <= toks.length; i++){
-      if (parts.every((p, j) => fits(toks[i+j], p))){ hits.push(toks.slice(i, i + parts.length).join(" ")); break; }
+      if (parts.every((p, j) => fits(toks[i+j], p))){ hits.push(raw.slice(i, i + parts.length).join(" ")); break; }
     }
   });
   return [...new Set(hits)];
