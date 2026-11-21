@@ -2640,7 +2640,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "120";   // номер версии — виден внизу профиля
+const APP_VER = "121";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -2850,7 +2850,14 @@ async function call(action, data){
     }
   }catch(e){ console.error(e); return {ok:false, error:"net"}; }
   if (r && r.error === "auth" && d.token && action !== "adminData") logout(true);
+  if (r && r.ok){ (Array.isArray(r.products) ? r.products : []).concat(r.product && typeof r.product === "object" ? [r.product] : []).forEach(modFix); }
   return r || {ok:false, error:"net"};
+}
+// v121: товар с запрещёнными словами, который сервер смог только скрыть (hidden + attrs.mod), показываем как «На проверке»
+function modFix(p){
+  if (!p || p.status !== "hidden") return;
+  let a = p.attrs; if (typeof a === "string"){ try{ a = JSON.parse(a); }catch(e){ a = null; } }
+  if (a && a.mod === "1") p.status = "review";
 }
 function errText(r){ return t("e_"+(r && r.error || "net")) || t("e_net"); }
 
@@ -6035,6 +6042,13 @@ async function viewSell(editId){
 
   // --- общие элементы ---
   const picker = h("input",{type:"file",accept:"image/*",multiple:true,hidden:true});
+  const camIn = h("input",{type:"file",accept:"image/*",capture:"environment",hidden:true});   // v121: сразу камера
+  // v121: нажали «Добавить фото» — снизу выбор: сфотографировать или взять из галереи
+  const choosePhoto = () => sheet((box, close) => box.append(
+    h("h2",{text:"📷 "+t("addPhotos")}),
+    h("div",{style:{display:"flex",flexDirection:"column",gap:"10px",marginTop:"6px"}},
+      h("button",{class:"btn block",onclick:()=>{ camIn.click(); close(); }}, icon("cam"), t("psCam")),
+      h("button",{class:"btn block ghost",onclick:()=>{ picker.click(); close(); }}, icon("img"), t("psGal")))));
   const titleIn = h("input",{class:"inp",maxlength:"60",placeholder:t("titlePh"),value:prod.title||""});
   const titleCnt = h("div",{class:"cnt-r"});
   const updCnt = () => titleCnt.textContent = t("titleCounter",{n:titleIn.value.length});
@@ -6086,9 +6100,9 @@ async function viewSell(editId){
           i === 0 ? h("div",{class:"main",text:t("mainPhoto")}) : null),
         lab));
     });
-    if (shots.length < MAX_PHOTOS) grid.append(h("div",{class:"shot-w"}, h("button",{class:"add-shot",onclick:()=>picker.click()}, h("span",{html:IC.cam}), t("addPhoto"))));
+    if (shots.length < MAX_PHOTOS) grid.append(h("div",{class:"shot-w"}, h("button",{class:"add-shot",onclick:choosePhoto}, h("span",{html:IC.cam}), t("addPhoto"))));
     shotsBox.replaceChildren(shots.length ? grid :
-      h("button",{class:"add-big",onclick:()=>picker.click()}, h("span",{style:{fontSize:"34px"},text:"📷"}), t("addPhotos"), h("span",{text:t("addPhotosSub")})),
+      h("button",{class:"add-big",onclick:choosePhoto}, h("span",{style:{fontSize:"34px"},text:"📷"}), t("addPhotos"), h("span",{text:t("addPhotosSub")})),
       shots.length ? h("div",{class:"hint",text:t("variantHint")}) : null);
   };
   async function addFiles(files){
@@ -6110,6 +6124,7 @@ async function viewSell(editId){
     }
   }
   picker.onchange = () => { addFiles(picker.files); picker.value = ""; };
+  camIn.onchange = () => { addFiles(camIn.files); camIn.value = ""; };
 
   // --- поля категории ---
   const reqFields = () => prod.cat ? fieldsFor(prod.cat, prod.sub, prod.attrs).filter(f => f.req) : [];
@@ -6193,7 +6208,7 @@ async function viewSell(editId){
       goStep(2);
     };
     return [
-      h("div",{class:"box"}, editId ? null : h("p",{class:"ai-note",text:"✨ "+t("w_ai")}), shotsBox, guessEl, picker),
+      h("div",{class:"box"}, editId ? null : h("p",{class:"ai-note",text:"✨ "+t("w_ai")}), shotsBox, guessEl, picker, camIn),
       h("div",{class:"box"},
         h("label",{class:"field",style:{marginBottom:0}}, h("span",null, t("title"), reqStar()), titleIn, titleCnt),
         editId ? null : h("button",{class:"btn block ghost",style:{marginTop:"12px"},text:t("w_pickSelf"),onclick:()=>{
@@ -6377,7 +6392,8 @@ async function viewSell(editId){
         attrs: Object.fromEntries(flds.map(f => [f.k, prod.attrs[f.k]]).filter(([k, v]) => v != null && v !== "" && !(Array.isArray(v) && !v.length))
           .map(([k, v]) => [k, typeof v === "string" ? v.trim() : v])
           .concat(prod.attrs.mall ? [["mall", String(prod.attrs.mall).trim().slice(0, 60)]] : [])
-          .concat(dPct ? [["disc", String(dPct)]] : []).concat(oQty ? [["opt", String(oQty)]] : [])),
+          .concat(dPct ? [["disc", String(dPct)]] : []).concat(oQty ? [["opt", String(oQty)]] : [])
+          .concat(modHits.length ? [["mod", "1"]] : [])),
         photoOrder: editId ? shots.filter(x => x.existing).map(x => x.id) : [],
         photoLabels: Object.fromEntries(shots.filter(x => x.existing).map(x => [x.id, (x.label||"").trim()]))};
       if (editId) data.id = editId;
@@ -6400,6 +6416,13 @@ async function viewSell(editId){
       if (order.join() !== serverOrder.join()){
         data.id = id; data.photoOrder = order; data.photoLabels = {}; delete data.vs; delete data.vm;
         const r2 = await call("saveProduct", {product: data}); if (!r2.ok) throw r2;
+      }
+      if (modHits.length){   // v121: запрещённые слова — точно убираем из продажи до проверки админом
+        let st = await call("setStatus", {id, status:"review"});
+        if (!st.ok && st.error === "net"){ await sleep(1500); st = await call("setStatus", {id, status:"review"}); }
+        const chk = await call("me").catch(() => null);
+        const mine = chk && chk.ok && (chk.products || []).find(x => x.id === id);
+        if (!st.ok || (mine && mine.status !== "review")) await call("setStatus", {id, status:"hidden"});
       }
       b.done();
       S.catalogAt = 0; S.vectorsAt = 0;
@@ -6671,7 +6694,10 @@ async function viewAdmin(){
   const newRep = reports.filter(x => x.status !== "done");
   // v117: на проверке — товары с запрещёнными словами (или спрятанные из-за жалоб) + товары, на которые есть новые жалобы
   const repBy = {}; newRep.forEach(x => (repBy[x.product] = repBy[x.product] || []).push(x));
-  const toCheck = prods.filter(p => p.status === "review" || (repBy[p.id] && p.status !== "banned"));
+  // v121: + товары «В продаже», в которых есть запрещённые слова и которые админ ещё не одобрял
+  const okIds = new Set(lsGet("admModOk") || []);
+  const modWait = p => p.status === "active" && !okIds.has(p.id) && !((p.attrs || {}).mod === "1") && prodBadWords(p).length > 0;
+  const toCheck = prods.filter(p => p.status === "review" || modWait(p) || (repBy[p.id] && p.status !== "banned"));
   const tabs = [["review","🛑 На проверке ("+toCheck.length+")"],["pending","Ждут одобрения ("+pending.length+")"],["users","Пользователи ("+users.length+")"],
     ["prods","Товары ("+prods.length+")"],["vip","⭐ VIP ("+prods.filter(isVip).length+")"],["topup","💬 Сообщения и пополнения"+(threads ? " ("+threads.filter(x => x.unread).length+")" : "")],["reports","Жалобы ("+newRep.length+")"],["reviews","Отзывы ("+reviews.length+")"],["malls","🏬 ТЦ и рынки"+((r.mallSug||[]).length ? " ("+r.mallSug.length+")" : "")],["tiles","Картинки"]];
   let tab = S.admTab || (toCheck.length ? "review" : threads && threads.some(x => x.unread) ? "topup" : pending.length ? "pending" : newRep.length ? "reports" : "prods");
@@ -6756,6 +6782,7 @@ async function viewAdmin(){
   function prodRow(p){
     const u = ubyId[p.user] || {};
     const st = {active:["ok","В продаже"],sold:["off","Нет в наличии"],hidden:["off","Скрыт"],banned:["bad","Снят админом"],review:["wait","На проверке"]}[p.status] || ["off",p.status];
+    if (modWait(p)) st.splice(0, 2, "wait", "В продаже — не проверен");   // v121
     const bad = prodBadWords(p), reps = repBy[p.id] || [];
     return h("div",{class:"row"},
       p.thumb ? h("img",{src:p.thumb,alt:""}) : h("div",{class:"noimg"}),
@@ -6769,7 +6796,8 @@ async function viewAdmin(){
         reps.length ? h("div",{class:"kv",style:{color:"#c62828"},text:"🚩 Жалоб: "+reps.length+" — "+[...new Set(reps.map(x => ({fraud:"мошенничество",banned:"запрещённый товар",wrong:"неверная цена/описание",other:"другое"})[x.reason] || x.reason))].join(", ")}) : null,
         tab === "review" && p.desc ? h("div",{class:"s",style:{whiteSpace:"pre-wrap",maxHeight:"6.5em",overflow:"hidden"},text:p.desc}) : null),
       h("div",{class:"acts"},
-        p.status === "review" ? h("button",{class:"btn sm green",text:"✅ Одобрить",onclick:()=>act("adminProduct",{id:p.id,status:"active"},"Одобрено — товар в продаже")}) : null,
+        p.status === "review" ? h("button",{class:"btn sm green",text:"✅ Одобрить",onclick:()=>act("adminProduct",{id:p.id,status:"active"},"Одобрено — товар в продаже")}) :
+          modWait(p) ? h("button",{class:"btn sm green",text:"✅ Одобрить",onclick:()=>{ okIds.add(p.id); lsSet("admModOk", [...okIds].slice(-2000)); toast("Одобрено — товар остаётся в продаже"); viewAdmin(); }}) : null,
         reps.length ? h("button",{class:"btn sm ghost",text:"Жалобы решены",onclick:async()=>{
           for (const x of reps){ const r2 = await call("adminReport",{id:x.id,status:"done"}); if (!r2.ok) return toast(errText(r2)); }
           toast("Жалобы закрыты"); S.catalogAt = 0; viewAdmin(); }}) : null,
