@@ -1163,7 +1163,7 @@ ru: {
   back:"Назад", searchPh:"Искать товары", find:"Найти",
   demo:"Демо-режим: товары для примера. Вход продавца: 65 000000, PIN 1234",
   cat_clothes:"Одежда", cat_shoes:"Обувь", cat_kids:"Детям", cat_phones:"Телефоны", cat_electronics:"Электроника",
-  cat_home:"Дом и кухня", cat_beauty:"Красота", cat_furniture:"Мебель", cat_auto:"Автомобили", cat_build:"Стройка и ремонт",
+  cat_home:"Дом и кухня", cat_beauty:"Красота", cat_furniture:"Мебель", cat_auto:"Автомобили", cat_build:"Стройматериалы",
   cat_sport:"Спорт", cat_food:"Продукты", cat_other:"Другое",
   sRec:"Для вас", sNew:"Новые", sCheap:"Дешевле", sExp:"Дороже", allCities:"Все велаяты",
   results:"Найдено: {n}", nothing:"Пока нет товаров", nothingSub:"Загляните позже или поищите по-другому.",
@@ -1332,7 +1332,7 @@ tm: {
   back:"Yza", searchPh:"Haryt gözle", find:"Gözle",
   demo:"Demo: mysal harytlar. Satyjy girişi: 65 000000, PIN 1234",
   cat_clothes:"Egin-eşik", cat_shoes:"Aýakgap", cat_kids:"Çagalar üçin", cat_phones:"Telefonlar", cat_electronics:"Elektronika",
-  cat_home:"Öý we aşhana", cat_beauty:"Gözellik", cat_furniture:"Mebel", cat_auto:"Awtoulaglar", cat_build:"Gurluşyk we abatlaýyş",
+  cat_home:"Öý we aşhana", cat_beauty:"Gözellik", cat_furniture:"Mebel", cat_auto:"Awtoulaglar", cat_build:"Gurluşyk materiallary",
   cat_sport:"Sport", cat_food:"Azyk", cat_other:"Beýlekiler",
   sRec:"Siziň üçin", sNew:"Täzeler", sCheap:"Arzanlar", sExp:"Gymmatlar", allCities:"Ähli welaýatlar",
   results:"Tapyldy: {n}", nothing:"Häzirlikçe haryt ýok", nothingSub:"Soňrak giriň ýa-da başgaça gözläň.",
@@ -1500,7 +1500,7 @@ en: {
   back:"Back", searchPh:"Search products", find:"Search",
   demo:"Demo mode: sample products. Seller login: 65 000000, PIN 1234",
   cat_clothes:"Clothing", cat_shoes:"Shoes", cat_kids:"Kids", cat_phones:"Phones", cat_electronics:"Electronics",
-  cat_home:"Home & kitchen", cat_beauty:"Beauty", cat_furniture:"Furniture", cat_auto:"Cars", cat_build:"Building & repair",
+  cat_home:"Home & kitchen", cat_beauty:"Beauty", cat_furniture:"Furniture", cat_auto:"Cars", cat_build:"Building materials",
   cat_sport:"Sports", cat_food:"Food", cat_other:"Other",
   sRec:"For you", sNew:"Newest", sCheap:"Cheapest", sExp:"Priciest", allCities:"All regions",
   results:"Found: {n}", nothing:"No products yet", nothingSub:"Check back later or try a different search.",
@@ -2020,7 +2020,7 @@ const CATN = {
   home:["Для дома и двора","Öý we howly üçin","Home & garden"], auto:["Транспорт","Ulaglar","Transport"],
   personal:["Личные вещи","Şahsy zatlar","Personal items"], appliances:["Бытовая техника","Öý tehnikasy","Appliances"],
   jobs:["Работа","Iş","Jobs"], rent:["Прокат и аренда","Kärende","Rentals"], kids:["Детский мир","Çagalar dünýäsi","Kids' world"],
-  build:["Ремонт и строительство","Abatlaýyş we gurluşyk","Repair & construction"], sport:["Спорт и хобби","Sport we höwes","Sport & hobbies"],
+  build:["Стройматериалы","Gurluşyk materiallary","Building materials"], sport:["Спорт и хобби","Sport we höwes","Sport & hobbies"],
   business:["Бизнес и оборудование","Biznes we enjamlar","Business & equipment"], services:["Услуги","Hyzmatlar","Services"],
   buy:["Куплю","Satyn alaryn","Wanted (I'll buy)"], med:["Медтовары","Lukmançylyk harytlary","Medical goods"],
   animals:["Животные","Haýwanlar","Animals"], free:["Отдам даром","Mugt berýärin","Free (giveaway)"]
@@ -2647,7 +2647,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "125";   // номер версии — виден внизу профиля
+const APP_VER = "126";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -3391,7 +3391,7 @@ function mallsOf(city){ const m = S.malls || MALLS_DEFAULT; return (m[city] || [
    2) иначе — фото самого нового товара этой категории / раздела / марки;
    3) иначе — значок. */
 // готовые фото верхних категорий (папка cats/ на сайте)
-const CAT_PHOTO = {shoes:1, electronics:1, realty:1, home:3, auto:1, personal:2, appliances:1, jobs:2, rent:1, kids:1, build:1, sport:1, business:1, services:1, buy:1, med:1, animals:1, free:1};
+const CAT_PHOTO = {shoes:1, electronics:1, realty:1, home:3, auto:1, personal:2, appliances:1, jobs:2, rent:1, kids:1, build:2, sport:1, business:1, services:2, buy:1, med:1, animals:1, free:1};
 // готовые фото разделов (папка subs/ на сайте)
 const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"].map(k => ["auto:"+k, 1]).concat(["flat","house","land","commercial","garage"].map(k => ["realty:"+k, 1]))
   .concat(["mobiles","computers","tv","consoles","smartwatches","speakers","printers","cameras","phoneacc","security","ups","network","phoneparts","components"].map(k => ["electronics:"+k, 1]))
@@ -3405,7 +3405,7 @@ const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","specia
   .concat([["rent:other", 1]])
   .concat(["fitness","football","bicycles","hunting","music","tourism","sportother"].map(k => ["sport:"+k, 1]))
   .concat(["readybiz","bizequip","production","shopequip","kitchenequip","agroequip","generators","bizother"].map(k => ["business:"+k, 1]))
-  .concat(["repair","plumbingsvc","electricsvc","autosvc","beautysvc","cleaningsvc","events","photovideo","itsvc","education","sportsvc","nanny","tailorsvc","transport","travelsvc","svcother"].map(k => ["services:"+k, 1]))
+  .concat(["repair","plumbingsvc","electricsvc","autosvc","beautysvc","cleaningsvc","events","photovideo","itsvc","education","sportsvc","nanny","tailorsvc","transport","travelsvc","svcother"].map(k => ["services:"+k, ["beautysvc","events"].includes(k) ? 2 : 1]))
   .concat(["womenclothes","menclothes","national","fabrics","jewels","cosmetics","bags","backpacks"].map(k => ["personal:"+k, ["womenclothes","national","fabrics"].includes(k) ? 3 : 2])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
