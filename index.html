@@ -222,6 +222,8 @@ textarea.inp{height:auto;min-height:96px;padding:12px 14px;resize:vertical;line-
 .add-shot{aspect-ratio:1;border-radius:12px;border:2px dashed #ffb6a6;background:var(--redBg);color:var(--red);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12.5px;font-weight:700}
 .add-big{width:100%;border-radius:16px;border:2px dashed #ffb6a6;background:var(--redBg);color:var(--red);padding:28px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:700;font-size:16px}
 .add-big span{font-weight:500;font-size:13px;color:var(--mut)}
+.add-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.add-two .add-big{padding:22px 8px}
+.add-two-t{font-weight:700;font-size:16px;margin:0 0 10px;text-align:center}
 .price-in{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:14px;height:60px;padding:0 16px;background:#fff}
 .price-in:focus-within{border-color:var(--red)}
 .price-in input{flex:1;border:0;outline:0;font-size:28px;font-weight:800;color:var(--red);min-width:0}
@@ -2640,7 +2642,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "121";   // номер версии — виден внизу профиля
+const APP_VER = "122";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -3275,6 +3277,19 @@ async function askNotify(btn){
 
 /* ===== ОКНА (шторки) ===== */
 let sheetEl = null, sheetResolve = null;
+// v122: выбор фото — камера (сразу открывает камеру) и галерея (можно несколько)
+function photoInputs(onFiles){
+  const gal = h("input",{type:"file",accept:"image/*",multiple:true,hidden:true});
+  const cam = h("input",{type:"file",accept:"image/*",capture:"environment",hidden:true});
+  [gal, cam].forEach(x => x.onchange = () => { const fs = [...(x.files || [])]; x.value = ""; if (fs.length) onFiles(fs); });
+  return {gal, cam};
+}
+function camGalBtns(pi){
+  return h("div",{class:"add-two"},
+    h("button",{type:"button",class:"add-big",onclick:()=>pi.cam.click()}, h("span",{style:{fontSize:"34px"},text:"📷"}), t("psCam")),
+    h("button",{type:"button",class:"add-big",onclick:()=>pi.gal.click()}, h("span",{style:{fontSize:"34px"},text:"🖼️"}), t("psGal")),
+    pi.gal, pi.cam);
+}
 function sheet(build){
   closeSheet();
   return new Promise(resolve => {
@@ -5703,15 +5718,13 @@ async function viewMe(){
   const list = h("div",{class:"rows"}, h("div",{class:"empty",style:{padding:"20px"}}, h("div",{class:"spin"})));
   const count = h("span",{style:{color:"var(--mut2)",fontWeight:"500"}});
   const statusBox = h("div"), balBox = h("div");
-  const picker = h("input",{type:"file",accept:"image/*",multiple:true,hidden:true});
-  picker.onchange = () => { S.pendingFiles = [...picker.files]; picker.value = ""; go("/sell"); };
+  const pi = photoInputs(fs => { S.pendingFiles = fs; go("/sell"); });
   page(h("div",{class:"me-head"}, avaEl(u.name, u.logo),
       h("div",{style:{flex:1,minWidth:0}}, h("div",{class:"nm",text:u.name}), h("div",{class:"sub",text:phoneFmt(u.phone)+" · "+u.city+(u.stype ? " · "+t("stype_"+u.stype) : "")})), langSwitch()),
     h("div",{class:"wrap"},
       statusBox, balBox,
       h("div",{class:"box"},
-        h("button",{class:"add-big",onclick:()=>picker.click()}, h("span",{style:{fontSize:"34px",color:"var(--red)"},text:"📷"}),
-          t("addProduct"), h("span",{text:t("addProductSub")})), picker),
+        h("div",{class:"add-two-t",text:"➕ "+t("addProduct")}), camGalBtns(pi)),
       h("a",{class:"box my-shop-big",href:"#/u/"+u.id}, h("span",{class:"ms-ic",text:"🏪"}),
         h("span",{class:"ms-in"}, h("b",null, t("myShop"), " ", count), h("small",{text:t("myShopSub")})), h("span",{class:"ar",text:"›"})),
       h("div",{class:"box menu"},
@@ -5760,8 +5773,6 @@ async function viewMyShop(uid){
   const setV = () => { list.className = "rows my-rows v-" + viewMode(); vBox.replaceChildren(h("div",{class:"ltools"}, h("div",{class:"sp"}), viewMini(setV))); };
   setV();
   const q = h("input",{type:"search",placeholder:t("searchShop"),"aria-label":t("searchShop")});
-  const picker = h("input",{type:"file",accept:"image/*",multiple:true,hidden:true});
-  picker.onchange = () => { S.pendingFiles = [...picker.files]; picker.value = ""; go("/sell"); };
   page(topBar("🏪 "+t("myShop"), {right: h("a",{class:"btn sm ghost",href:"#/u/"+uid+"/view",text:"👀 "+t("asBuyer")})}),
     h("div",{class:"wrap"},
       h("div",{class:"shop-head"}, h("div",{class:"seller"}, avaEl(u.name, u.logo, "big"),
@@ -5770,7 +5781,7 @@ async function viewMyShop(uid){
       h("div",{class:"box"},
         h("div",{class:"ms-tools"},
           h("div",{class:"search",style:{border:"1px solid var(--line)"}}, h("span",{html:IC.search}), q),
-          h("button",{class:"btn sm",onclick:()=>picker.click()}, icon("plus"), t("tAdd")), picker),
+          h("button",{class:"btn sm",onclick:()=>go("/sell")}, icon("plus"), t("tAdd"))),
         catBox, vBox, list)));
   const r = await call("me");
   if (location.hash !== "#/u/"+uid) return;
@@ -6043,12 +6054,6 @@ async function viewSell(editId){
   // --- общие элементы ---
   const picker = h("input",{type:"file",accept:"image/*",multiple:true,hidden:true});
   const camIn = h("input",{type:"file",accept:"image/*",capture:"environment",hidden:true});   // v121: сразу камера
-  // v121: нажали «Добавить фото» — снизу выбор: сфотографировать или взять из галереи
-  const choosePhoto = () => sheet((box, close) => box.append(
-    h("h2",{text:"📷 "+t("addPhotos")}),
-    h("div",{style:{display:"flex",flexDirection:"column",gap:"10px",marginTop:"6px"}},
-      h("button",{class:"btn block",onclick:()=>{ camIn.click(); close(); }}, icon("cam"), t("psCam")),
-      h("button",{class:"btn block ghost",onclick:()=>{ picker.click(); close(); }}, icon("img"), t("psGal")))));
   const titleIn = h("input",{class:"inp",maxlength:"60",placeholder:t("titlePh"),value:prod.title||""});
   const titleCnt = h("div",{class:"cnt-r"});
   const updCnt = () => titleCnt.textContent = t("titleCounter",{n:titleIn.value.length});
@@ -6100,9 +6105,14 @@ async function viewSell(editId){
           i === 0 ? h("div",{class:"main",text:t("mainPhoto")}) : null),
         lab));
     });
-    if (shots.length < MAX_PHOTOS) grid.append(h("div",{class:"shot-w"}, h("button",{class:"add-shot",onclick:choosePhoto}, h("span",{html:IC.cam}), t("addPhoto"))));
+    if (shots.length < MAX_PHOTOS) grid.append(
+      h("div",{class:"shot-w"}, h("button",{type:"button",class:"add-shot",onclick:()=>camIn.click()}, h("span",{style:{fontSize:"26px"},text:"📷"}), t("psCam"))),
+      h("div",{class:"shot-w"}, h("button",{type:"button",class:"add-shot",onclick:()=>picker.click()}, h("span",{style:{fontSize:"26px"},text:"🖼️"}), t("psGal"))));
     shotsBox.replaceChildren(shots.length ? grid :
-      h("button",{class:"add-big",onclick:choosePhoto}, h("span",{style:{fontSize:"34px"},text:"📷"}), t("addPhotos"), h("span",{text:t("addPhotosSub")})),
+      h("div",null, h("div",{class:"add-two-t",text:"📷 "+t("addPhotos")}),
+        h("div",{class:"add-two"},
+          h("button",{type:"button",class:"add-big",onclick:()=>camIn.click()}, h("span",{style:{fontSize:"34px"},text:"📷"}), t("psCam")),
+          h("button",{type:"button",class:"add-big",onclick:()=>picker.click()}, h("span",{style:{fontSize:"34px"},text:"🖼️"}), t("psGal")))),
       shots.length ? h("div",{class:"hint",text:t("variantHint")}) : null);
   };
   async function addFiles(files){
