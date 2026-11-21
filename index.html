@@ -1612,7 +1612,7 @@ const SUBS = {
   kids:        ["girlclothes","boyclothes","strollers","kidstransport","toys","school","babyfood","kidsother"],
   build:       ["materials","builddecor","doors","tools","plumbing","electrics","paint","buildother"],
   sport:       ["fitness","football","bicycles","hunting","music","tourism","sportother"],
-  business:    ["readybiz","bizequip","production","shopequip","bakeryequip","kitchenequip","agroequip","generators","bizother"],
+  business:    ["readybiz","bizequip","production","shopequip","kitchenequip","agroequip","generators","bizother"],
   services:    ["repair","construction","transport","beautysvc","education","cleaningsvc","events","itsvc","other"],
   buy:         ["buyelec","buyauto","buyrealty","buyother"],
   med:         ["medequip","rehab","optics","other"],
@@ -2644,7 +2644,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "123";   // номер версии — виден внизу профиля
+const APP_VER = "124";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -2919,6 +2919,7 @@ function migrateProduct(p){
   if (p.cat === "build" && p.sub === "other") p.sub = "buildother"; // v110
   if (p.cat === "sport"){ if (p.sub === "sportwear") p.sub = "football"; else if (p.sub === "collect" || p.sub === "other" || p.sub === "books") p.sub = "sportother"; } // v120, v123: книги убраны
   if (p.cat === "business" && p.sub === "other") p.sub = "bizother"; // v123
+  if (p.cat === "business" && p.sub === "bakeryequip") p.sub = "production"; // v124: пекарня убрана
   if (p.cat === "kids"){ // v107: новые разделы детского мира
     if (p.sub === "kidsclothes") p.sub = (p.attrs || {}).gender === "boy" ? "boyclothes" : "girlclothes";
     else if (p.sub === "babycare" || p.sub === "kidsfurn" || p.sub === "other") p.sub = "kidsother";
@@ -3399,7 +3400,7 @@ const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","specia
   .concat(["materials","builddecor","doors","tools","plumbing","electrics","paint","buildother"].map(k => ["build:"+k, 1]))
   .concat([["rent:other", 1]])
   .concat(["fitness","football","bicycles","hunting","music","tourism","sportother"].map(k => ["sport:"+k, 1]))
-  .concat(["readybiz","bizequip","production","shopequip","bakeryequip","kitchenequip","agroequip","generators"].map(k => ["business:"+k, 1]))
+  .concat(["readybiz","bizequip","production","shopequip","kitchenequip","agroequip","generators","bizother"].map(k => ["business:"+k, 1]))
   .concat(["womenclothes","menclothes","national","fabrics","jewels","cosmetics","bags","backpacks"].map(k => ["personal:"+k, ["womenclothes","national","fabrics"].includes(k) ? 3 : 2])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
