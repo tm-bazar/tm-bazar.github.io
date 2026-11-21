@@ -1611,8 +1611,8 @@ const SUBS = {
   rent:        ["rentevent","rentclothes","rentkids","rentequip","rentcars","renttools","other"],
   kids:        ["girlclothes","boyclothes","strollers","kidstransport","toys","school","babyfood","kidsother"],
   build:       ["materials","builddecor","doors","tools","plumbing","electrics","paint","buildother"],
-  sport:       ["fitness","football","bicycles","hunting","music","books","tourism","sportother"],
-  business:    ["readybiz","bizequip","production","agroequip","other"],
+  sport:       ["fitness","football","bicycles","hunting","music","tourism","sportother"],
+  business:    ["readybiz","bizequip","production","shopequip","bakeryequip","kitchenequip","agroequip","generators","bizother"],
   services:    ["repair","construction","transport","beautysvc","education","cleaningsvc","events","itsvc","other"],
   buy:         ["buyelec","buyauto","buyrealty","buyother"],
   med:         ["medequip","rehab","optics","other"],
@@ -1839,9 +1839,11 @@ const SUBT = {
   rentcars:["Автотехника","Awtoulaglar","Vehicles"], rentequip:["Техника и электроника","Tehnika we elektronika","Appliances & electronics"], renttools:["Строительные инструменты","Gurluşyk gurallary","Construction tools"],
   rentkids:["Детские товары","Çagalar harytlary","Kids' items"],
   rentevent:["Для свадеб и праздников","Toý we baýramlar üçin","Weddings & events"], rentclothes:["Прокат одежды","Eşik kärendesi","Clothing rental"],
-  paint:["Краски и отделка","Boýag we bezeg","Paint & finishing"], hunting:["Рыбалка и охота","Balyk tutmak we aw","Fishing & hunting"], sportother:["Другое для спорта и хобби","Sport we hobbi üçin beýlekiler","Other sports & hobby"],
+  paint:["Краски и отделка","Boýag we bezeg","Paint & finishing"], hunting:["Рыбалка","Balyk tutmak","Fishing"], sportother:["Другое для спорта и хобби","Sport we hobbi üçin beýlekiler","Other sports & hobby"],
   music:["Музыкальные инструменты","Saz gurallary","Musical instruments"], tourism:["Туризм и отдых","Syýahat we dynç alyş","Travel & outdoors"],
-  collect:["Коллекционирование","Kolleksiýa","Collecting"], readybiz:["Готовый бизнес","Taýýar biznes","Ready business"],
+  collect:["Коллекционирование","Kolleksiýa","Collecting"], readybiz:["Готовый бизнес","Taýýar biznes","Ready business"], shopequip:["Оборудование для магазина","Dükan enjamlary","Shop equipment"],
+  bakeryequip:["Оборудование для пекарни","Çörekhana enjamlary","Bakery equipment"], kitchenequip:["Оборудование для кафе и ресторанов","Kafe we restoran enjamlary","Café & restaurant equipment"],
+  generators:["Генераторы","Generatorlar","Generators"], bizother:["Другое оборудование","Beýleki enjamlar","Other equipment"],
   bizequip:["Оборудование для бизнеса","Biznes üçin enjamlar","Business equipment"], production:["Производство","Önümçilik","Production"],
   agroequip:["Сельхозтехника","Oba hojalyk tehnikasy","Farm machinery"], construction:["Строительство и ремонт","Gurluşyk we abatlaýyş","Construction"],
   cleaningsvc:["Уборка","Arassaçylyk","Cleaning"], events:["Праздники и фото","Baýramlar we surat","Events & photo"], itsvc:["Компьютеры и IT","Kompýuter we IT","IT services"],
@@ -2642,7 +2644,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "122";   // номер версии — виден внизу профиля
+const APP_VER = "123";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -2915,7 +2917,8 @@ function migrateProduct(p){
   if (p.cat === "personal" && p.sub === "perfume") p.sub = "cosmetics";
   if (p.cat === "appliances" && p.sub === "other") p.sub = "otherapp"; // v104
   if (p.cat === "build" && p.sub === "other") p.sub = "buildother"; // v110
-  if (p.cat === "sport"){ if (p.sub === "sportwear") p.sub = "football"; else if (p.sub === "collect" || p.sub === "other") p.sub = "sportother"; } // v120
+  if (p.cat === "sport"){ if (p.sub === "sportwear") p.sub = "football"; else if (p.sub === "collect" || p.sub === "other" || p.sub === "books") p.sub = "sportother"; } // v120, v123: книги убраны
+  if (p.cat === "business" && p.sub === "other") p.sub = "bizother"; // v123
   if (p.cat === "kids"){ // v107: новые разделы детского мира
     if (p.sub === "kidsclothes") p.sub = (p.attrs || {}).gender === "boy" ? "boyclothes" : "girlclothes";
     else if (p.sub === "babycare" || p.sub === "kidsfurn" || p.sub === "other") p.sub = "kidsother";
@@ -3395,7 +3398,8 @@ const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","specia
   .concat(["girlclothes","boyclothes","strollers","kidstransport","toys","school","babyfood","kidsother"].map(k => ["kids:"+k, 1]))
   .concat(["materials","builddecor","doors","tools","plumbing","electrics","paint","buildother"].map(k => ["build:"+k, 1]))
   .concat([["rent:other", 1]])
-  .concat(["fitness","football","bicycles","hunting","music","tourism"].map(k => ["sport:"+k, 1]))
+  .concat(["fitness","football","bicycles","hunting","music","tourism","sportother"].map(k => ["sport:"+k, 1]))
+  .concat(["readybiz","bizequip","production","shopequip","bakeryequip","kitchenequip","agroequip","generators"].map(k => ["business:"+k, 1]))
   .concat(["womenclothes","menclothes","national","fabrics","jewels","cosmetics","bags","backpacks"].map(k => ["personal:"+k, ["womenclothes","national","fabrics"].includes(k) ? 3 : 2])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
