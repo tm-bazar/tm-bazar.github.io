@@ -222,6 +222,16 @@ textarea.inp{height:auto;min-height:96px;padding:12px 14px;resize:vertical;line-
 .add-shot{aspect-ratio:1;border-radius:12px;border:2px dashed #ffb6a6;background:var(--redBg);color:var(--red);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12.5px;font-weight:700}
 .add-big{width:100%;border-radius:16px;border:2px dashed #ffb6a6;background:var(--redBg);color:var(--red);padding:28px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:700;font-size:16px}
 .add-big span{font-weight:500;font-size:13px;color:var(--mut)}
+.qr{position:fixed;inset:0;z-index:300;background:var(--bg,#fff);display:flex;flex-direction:column;max-width:720px;margin:0 auto}
+.qr-top{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+.qr-pics{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:6px;background:#111;flex:0 0 auto;height:46vh}
+.qr-pics img{height:100%;width:100%;flex:0 0 100%;object-fit:contain;scroll-snap-align:center}
+.qr-pics .noimg{width:100%;height:100%}
+.qr-info{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.qr-t{font-weight:800;font-size:18px}.qr-d{white-space:pre-wrap;color:var(--mut);margin-top:6px;font-size:14px}
+.qr-btns{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);align-items:center}
+.qr-btns .btn{padding:16px 6px;font-size:16px}.qr-no{background:#fde8e8;color:#c62828}
+.qr-end{margin:auto;text-align:center;padding:30px;display:grid;gap:12px;min-width:260px}
 .add-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.add-two .add-big{padding:22px 8px}
 .add-two-t{font-weight:700;font-size:16px;margin:0 0 10px;text-align:center}
 .price-in{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:14px;height:60px;padding:0 16px;background:#fff}
@@ -1222,7 +1232,8 @@ ru: {
   myGoods:"Мои товары", noGoods:"У вас пока нет товаров. Нажмите «Добавить товар».",
   profile:"Мои данные", logout:"Выйти",
   pendingNote:"Ваши товары появятся у покупателей после проверки администратором (обычно в течение дня).",
-  reviewTitle:"Отправлено на проверку", reviewNote:"В тексте есть слова, которые администратор должен проверить. Объявление появится у покупателей после проверки (обычно в течение дня). Запрещены оружие, лекарства, алкоголь, табак и наркотики.", e_review:"Объявление на проверке у администратора.",
+  reviewTitle:"Отправлено на проверку", reviewNew:"Вы новый продавец, поэтому первые {n} товара проверяет администратор (обычно в течение дня). После этого ваши товары будут появляться сразу.",
+  reviewNote:"Объявление должен проверить администратор (слова в тексте или то, что на фото). Объявление появится у покупателей после проверки (обычно в течение дня). Запрещены оружие, лекарства, алкоголь, табак и наркотики.", e_review:"Объявление на проверке у администратора.",
   blockedNote:"Продажа для вашего аккаунта запрещена. Напишите администратору.",
   removeSale:"Нет в наличии — убрать", backSale:"Вернуть", removedOk:"Убрано из продажи", undo:"Отменить", backOk:"Снова в продаже",
   delete:"Удалить", delQ:"Удалить товар навсегда?", cancel:"Отмена", deleted:"Удалено",
@@ -1391,7 +1402,8 @@ tm: {
   myGoods:"Meniň harytlarym", noGoods:"Häzirlikçe harydyňyz ýok. «Haryt goşmak» basyň.",
   profile:"Maglumatlarym", logout:"Çykmak",
   pendingNote:"Harytlaryňyz administrator barlandan soň alyjylara görüner (adatça bir günüň dowamynda).",
-  reviewTitle:"Barlaga iberildi", reviewNote:"Tekstde administratoryň barlamaly sözleri bar. Bildiriş barlagdan soň alyjylara görüner (adatça bir günüň dowamynda). Ýarag, derman, alkogol, temmäki we neşe gadagan.", e_review:"Bildiriş administratoryň barlagynda.",
+  reviewTitle:"Barlaga iberildi", reviewNew:"Siz täze satyjy, şonuň üçin ilkinji {n} harydyňyzy administrator barlaýar (adatça bir günüň dowamynda). Soňra harytlaryňyz derrew görüner.",
+  reviewNote:"Bildirişi administrator barlamaly (tekstdäki sözler ýa-da suratdaky zat). Bildiriş barlagdan soň alyjylara görüner (adatça bir günüň dowamynda). Ýarag, derman, alkogol, temmäki we neşe gadagan.", e_review:"Bildiriş administratoryň barlagynda.",
   blockedNote:"Hasabyňyz üçin satuw gadagan. Administratora ýazyň.",
   removeSale:"Ýok — aýyrmak", backSale:"Gaýtarmak", removedOk:"Satuwdan aýryldy", undo:"Yza al", backOk:"Ýene satuwda",
   delete:"Pozmak", delQ:"Harydy hemişelik pozmalymy?", cancel:"Ýatyr", deleted:"Pozuldy",
@@ -1559,7 +1571,8 @@ en: {
   myGoods:"My products", noGoods:"You have no products yet. Tap “Add a product”.",
   profile:"My details", logout:"Sign out",
   pendingNote:"Your products will be visible to buyers after the administrator reviews them (usually within a day).",
-  reviewTitle:"Sent for review", reviewNote:"The text contains words the administrator needs to check. The listing will be visible to buyers after review (usually within a day). Weapons, medicines, alcohol, tobacco and drugs are prohibited.", e_review:"This listing is under review by the administrator.",
+  reviewTitle:"Sent for review", reviewNew:"You are a new seller, so the administrator checks your first {n} items (usually within a day). After that your items will appear right away.",
+  reviewNote:"The administrator needs to check this listing (words in the text or what is in the photo). The listing will be visible to buyers after review (usually within a day). Weapons, medicines, alcohol, tobacco and drugs are prohibited.", e_review:"This listing is under review by the administrator.",
   blockedNote:"Selling is disabled for your account. Contact the administrator.",
   removeSale:"Out of stock — remove", backSale:"Put back", removedOk:"Taken off sale", undo:"Undo", backOk:"Back on sale",
   delete:"Delete", delQ:"Delete this product for good?", cancel:"Cancel", deleted:"Deleted",
@@ -2115,8 +2128,29 @@ const ML_LABELS = {
   food:["banana","orange","lemon","granny smith","strawberry","pineapple","pizza","french loaf","bagel","meat loaf","cucumber","bell pepper","corn","mushroom","pomegranate","fig","pretzel","cheeseburger","hotdog","ice cream","chocolate sauce","trifle","burrito","guacamole","head cabbage","broccoli","cauliflower","zucchini","acorn squash","butternut squash","artichoke","jackfruit","custard apple","dough","carbonara","consomme","potpie","espresso","red wine","eggnog","menu","grocery store"]
 };
 
+// v127: что на фото может быть запрещённым (классы MobileNet / ImageNet) → товар на проверку
+const RISK_LABELS = {
+  "revolver":"оружие", "six-gun":"оружие", "rifle":"оружие", "assault rifle":"оружие", "assault gun":"оружие", "holster":"оружие",
+  "bulletproof vest":"оружие", "cannon":"оружие", "missile":"оружие", "projectile":"оружие",
+  "wine bottle":"алкоголь", "beer bottle":"алкоголь", "red wine":"алкоголь", "beer glass":"алкоголь", "whiskey jug":"алкоголь", "goblet":"алкоголь",
+  "pill bottle":"лекарства", "syringe":"лекарства", "pipe":"табак"
+};
 const Vision = {
   ml: null, mlLoading: null, mlFailed: false,
+  // v127: ищет на фото оружие/алкоголь/лекарства/табак. Возвращает список найденного (на русском) или []
+  async risk(img){
+    const m = await this.timeout(this.loadML(), 20000);
+    if (!m) return [];
+    try{
+      const preds = await m.classify(this.square(img, 224), 5), out = new Set();
+      for (const p of preds){
+        if (p.probability < 0.15) continue;
+        for (const part of p.className.toLowerCase().split(",").map(x => x.trim()))
+          if (RISK_LABELS[part]) out.add(RISK_LABELS[part]);
+      }
+      return [...out];
+    }catch(e){ return []; }
+  },
 
   loadScript(src){
     return new Promise((res, rej) => {
@@ -2647,7 +2681,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "126";   // номер версии — виден внизу профиля
+const APP_VER = "127";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -6128,7 +6162,10 @@ async function viewSell(editId){
   async function addFiles(files){
     if (files.length > MAX_PHOTOS - shots.length) toast(t("e_too_many"));
     files = [...files].slice(0, MAX_PHOTOS - shots.length);
-    for (const f of files){ try{ shots.push(Object.assign({file:f}, await compress(f, 1280, true))); }catch(e){ toast(t("e_photo")); } }
+    for (const f of files){ try{
+      const sh = Object.assign({file:f}, await compress(f, 1280, true)); shots.push(sh);
+      sh.riskP = (async () => { try{ sh.risk = await Vision.risk(sh.img || await loadImg(sh.dataUrl)); }catch(e){ sh.risk = []; } })();   // v127
+    }catch(e){ toast(t("e_photo")); } }
     drawShots(); analyzeMain();
   }
   async function analyzeMain(){
@@ -6407,13 +6444,27 @@ async function viewSell(editId){
       else if (main.id !== origMain){ try{ vec = await Vision.describe(await loadImg(main.url || main.thumb, true), 8000); }catch(e){} }
       if (prod.attrs.model && prod.attrs.brand) prod.attrs.model = canonName([...new Set([...modelsOf(prod.sub, prod.attrs.brand), ...(CAR_MODELS[prod.attrs.brand] || [])])], prod.attrs.model, prod.attrs.brand);
       const modHits = badWords(prod.title + " \n " + descIn.value);   // v117: запрещённые слова → на проверку
-      const data = {title: prod.title.trim(), price, cat: prod.cat, cond: NO_COND[prod.cat] ? "new" : prod.cond, desc: descIn.value, city: prod.city, status: modHits.length ? "review" : editId ? prod.status : "active",
+      // v127: фото с оружием/алкоголем/лекарствами/табаком → на проверку
+      const fresh0 = shots.filter(x => !x.existing);
+      await Promise.race([Promise.all(fresh0.map(x => x.riskP)), sleep(12000)]);
+      const riskHits = [...new Set(fresh0.flatMap(x => x.risk || []))];
+      // v127: новый продавец — первые 3 товара проверяет админ; после одобрения публикует сразу
+      let newSeller = false;
+      if (!editId){
+        const me0 = await call("me").catch(() => null);
+        const mp = (me0 && me0.ok && me0.products) || [];
+        const good = mp.filter(x => x.status === "active" || x.status === "sold").length;
+        newSeller = !!(me0 && me0.ok) && (good < TRUST_AFTER || mp.some(x => x.status === "banned"));
+      }
+      const why = [].concat(modHits.length ? ["words"] : [], riskHits.length ? ["photo"] : [], newSeller ? ["new"] : []);
+      const needRev = why.length > 0;
+      const data = {title: prod.title.trim(), price, cat: prod.cat, cond: NO_COND[prod.cat] ? "new" : prod.cond, desc: descIn.value, city: prod.city, status: needRev ? "review" : editId ? prod.status : "active",
         place: (prod.place||"").trim(), video: videoUrl(videoIn.value), sub: SUBS[prod.cat] ? prod.sub : "",
         attrs: Object.fromEntries(flds.map(f => [f.k, prod.attrs[f.k]]).filter(([k, v]) => v != null && v !== "" && !(Array.isArray(v) && !v.length))
           .map(([k, v]) => [k, typeof v === "string" ? v.trim() : v])
           .concat(prod.attrs.mall ? [["mall", String(prod.attrs.mall).trim().slice(0, 60)]] : [])
           .concat(dPct ? [["disc", String(dPct)]] : []).concat(oQty ? [["opt", String(oQty)]] : [])
-          .concat(modHits.length ? [["mod", "1"]] : [])),
+          .concat(needRev ? [["mod", "1"], ["modWhy", why.join(",")]] : []).concat(riskHits.length ? [["modPh", riskHits.join(", ")]] : [])),
         photoOrder: editId ? shots.filter(x => x.existing).map(x => x.id) : [],
         photoLabels: Object.fromEntries(shots.filter(x => x.existing).map(x => [x.id, (x.label||"").trim()]))};
       if (editId) data.id = editId;
@@ -6437,7 +6488,7 @@ async function viewSell(editId){
         data.id = id; data.photoOrder = order; data.photoLabels = {}; delete data.vs; delete data.vm;
         const r2 = await call("saveProduct", {product: data}); if (!r2.ok) throw r2;
       }
-      if (modHits.length){   // v121: запрещённые слова — точно убираем из продажи до проверки админом
+      if (needRev){   // v121/v127: точно убираем из продажи до проверки админом
         let st = await call("setStatus", {id, status:"review"});
         if (!st.ok && st.error === "net"){ await sleep(1500); st = await call("setStatus", {id, status:"review"}); }
         const chk = await call("me").catch(() => null);
@@ -6447,7 +6498,7 @@ async function viewSell(editId){
       b.done();
       S.catalogAt = 0; S.vectorsAt = 0;
       if (r.seller && S.user){ S.user.seller = r.seller; lsSet("user", S.user); }
-      sellDone(id, r.seller, !!editId, data.status === "review");
+      sellDone(id, r.seller, !!editId, needRev ? why : null);
     }catch(e){ b.done(); console.error(e); fail(errText(e && e.error ? e : {error:"net"})); }
   }
 
@@ -6464,12 +6515,14 @@ async function viewSell(editId){
   render();
   if (S.pendingFiles){ const f = S.pendingFiles; S.pendingFiles = null; addFiles(f); }
 }
+const TRUST_AFTER = 3;   // v127: столько одобренных товаров — и продавец публикует без проверки
 function sellDone(id, sellerSt, edited, review){
+  const onlyNew = review && review.length === 1 && review[0] === "new";
   setTab("me");
   page(h("div",{class:"wrap"}, h("div",{class:"done"},
     h("div",{class:"ok",text:review ? "⏳" : "✓"}),
     h("h2",{style:{margin:"0 0 8px"},text:review ? t("reviewTitle") : edited ? t("savedGood") : t("published")}),
-    h("p",{style:{color:"var(--mut)",margin:"0 0 22px"},text:review ? t("reviewNote") : sellerSt === "pending" ? t("pendingNote") : t("publishedSub")}),
+    h("p",{style:{color:"var(--mut)",margin:"0 0 22px"},text:onlyNew ? t("reviewNew",{n:TRUST_AFTER}) : review ? t("reviewNote") : sellerSt === "pending" ? t("pendingNote") : t("publishedSub")}),
     h("div",{style:{display:"grid",gap:"10px",maxWidth:"320px",margin:"0 auto"}},
       h("a",{class:"btn block",href:"#/sell",onclick:e=>{ if (location.hash === "#/sell"){ e.preventDefault(); viewSell(); } }}, icon("plus"), t("addMore")),
       h("a",{class:"btn block ghost",href:"#/p/"+id,text:t("viewIt")}),
@@ -6799,6 +6852,67 @@ async function viewAdmin(){
       h("label",{style:{fontSize:"13px",fontWeight:"600",display:"block",marginTop:"8px"}}, "Одно объявление ("+(pr.itemDays||7)+" дн)", item),
       h("button",{class:"btn block",style:{marginTop:"10px"},text:"Сохранить цены",onclick:()=>act("adminPrices",{prices:{shop:{7:ins[7].value,15:ins[15].value,30:ins[30].value}, item:item.value}},"Цены сохранены")}));
   }
+  // v127: почему товар на проверке
+  function whyOf(p){
+    const a = p.attrs || {}, w = String(a.modWhy || "").split(",").filter(Boolean), out = [];
+    if (w.includes("photo")) out.push("🖼 На фото похоже: " + (a.modPh || "запрещённое"));
+    if (w.includes("new")) out.push("🆕 Новый продавец");
+    return out;
+  }
+  function whyLine(p){ const w = whyOf(p); return w.length ? h("div",{class:"kv",style:{color:"#8a6200"},text:w.join(" · ")}) : null; }
+  // v127: быстрая проверка — по одному товару, большое фото, две кнопки
+  async function quickReview(){
+    const list = toCheck.slice();
+    if (!list.length) return toast("Нечего проверять");
+    let i = 0, done = 0;
+    const ov = h("div",{class:"qr"}), close = () => { ov.remove(); document.body.style.overflow = ""; S.catalogAt = 0; viewAdmin(); };
+    document.body.append(ov); document.body.style.overflow = "hidden";
+    const show = async () => {
+      if (i >= list.length){
+        ov.replaceChildren(h("div",{class:"qr-end"}, h("div",{style:{fontSize:"54px"},text:"✅"}), h("h2",{text:"Готово! Проверено: "+done}),
+          h("button",{class:"btn block",text:"Закрыть",onclick:close})));
+        return;
+      }
+      const p = list[i], u = ubyId[p.user] || {}, bad = prodBadWords(p), reps = repBy[p.id] || [];
+      const pics = h("div",{class:"qr-pics"}, p.thumb ? h("img",{src:p.thumb,alt:""}) : h("div",{class:"noimg"}));
+      const busy = b => ov.querySelectorAll(".qr-btns button").forEach(x => x.disabled = b);
+      const decide = async status => {
+        busy(true);
+        let ok = true;
+        if (status === "ok"){
+          if (p.status === "review" || p.status === "hidden"){ const r2 = await call("adminProduct",{id:p.id,status:"active"}); ok = r2.ok; if (!ok) toast(errText(r2)); }
+          else { okIds.add(p.id); lsSet("admModOk", [...okIds].slice(-2000)); }
+          if (ok) for (const x of reps) await call("adminReport",{id:x.id,status:"done"});
+        } else {
+          const r2 = await call("adminProduct",{id:p.id,status:"banned"}); ok = r2.ok; if (!ok) toast(errText(r2));
+        }
+        busy(false);
+        if (ok){ done++; i++; show(); }
+      };
+      ov.replaceChildren(
+        h("div",{class:"qr-top"}, h("b",{text:(i+1)+" из "+list.length}), h("button",{class:"btn sm ghost",text:"✕ Закрыть",onclick:close})),
+        pics,
+        h("div",{class:"qr-info"},
+          h("div",{class:"qr-t",text:p.title}),
+          h("div",{class:"s"}, priceP(p), " · "+catName(p.cat)+" · "+(p.city||"")),
+          h("div",{class:"kv",text:"Продавец: "+(u.name||"?")+(u.phone ? " · "+phoneFmt(u.phone) : "")}),
+          bad.length ? h("div",{class:"kv",style:{color:"#c62828"},text:"🚫 Слова: "+bad.join(", ")}) : null,
+          whyLine(p),
+          reps.length ? h("div",{class:"kv",style:{color:"#c62828"},text:"🚩 Жалоб: "+reps.length}) : null,
+          p.desc ? h("div",{class:"qr-d",text:p.desc}) : null),
+        h("div",{class:"qr-btns"},
+          h("button",{class:"btn qr-no",text:"❌ Снять",onclick:()=>decide("no")}),
+          h("button",{class:"btn sm ghost",text:"Пропустить",onclick:()=>{ i++; show(); }}),
+          h("button",{class:"btn green qr-ok",text:"✅ Одобрить",onclick:()=>decide("ok")})));
+      // все фото товара
+      const pr = await call("product",{id:p.id, adminToken:S.adminToken}).catch(() => null);
+      if (list[i] === p && pr && pr.ok && pr.product && (pr.product.photos || []).length){
+        pics.replaceChildren(...pr.product.photos.map(x => h("img",{src:x.url || x.thumb,alt:"",loading:"lazy"})));
+        if (!p.desc && pr.product.desc) ov.querySelector(".qr-info").append(h("div",{class:"qr-d",text:pr.product.desc}));
+      }
+    };
+    show();
+  }
   function prodRow(p){
     const u = ubyId[p.user] || {};
     const st = {active:["ok","В продаже"],sold:["off","Нет в наличии"],hidden:["off","Скрыт"],banned:["bad","Снят админом"],review:["wait","На проверке"]}[p.status] || ["off",p.status];
@@ -6813,6 +6927,7 @@ async function viewAdmin(){
           isVip(p) ? h("span",{class:"vip-pill",text:"⭐ VIP до "+new Date(p.vip).toLocaleDateString("ru-RU")}) : null,
           p.exp ? h("span",{style:{color:"var(--mut)"},text:" · удалится "+new Date(p.exp).toLocaleDateString("ru-RU")}) : null),
         bad.length ? h("div",{class:"kv",style:{color:"#c62828"},text:"🚫 Слова: "+bad.join(", ")}) : null,
+        p.status === "review" ? whyLine(p) : null,
         reps.length ? h("div",{class:"kv",style:{color:"#c62828"},text:"🚩 Жалоб: "+reps.length+" — "+[...new Set(reps.map(x => ({fraud:"мошенничество",banned:"запрещённый товар",wrong:"неверная цена/описание",other:"другое"})[x.reason] || x.reason))].join(", ")}) : null,
         tab === "review" && p.desc ? h("div",{class:"s",style:{whiteSpace:"pre-wrap",maxHeight:"6.5em",overflow:"hidden"},text:p.desc}) : null),
       h("div",{class:"acts"},
@@ -6970,11 +7085,12 @@ async function viewAdmin(){
           h("div",{class:"s"}, phoneFmt(x.phone), "· баланс: "+coins(x.balance), x.amount ? h("span",{class:"vip-pill",text:"просит "+coins(x.amount)}) : null),
           h("div",{class:"kv",text:(x.last.from === "admin" ? "Вы: " : "") + (x.last.photo && !x.last.text ? "📷 Скриншот" : (x.last.photo ? "📷 " : "") + (x.last.text || (x.last.amount ? coins(x.last.amount) : "")))})),
         h("span",{class:"ar",text:"›"})))];
-    const note = tab === "review" ? h("p",{class:"hint",style:{margin:"0 0 10px"},text:"Сюда попадают объявления с запрещёнными словами (покупатели их не видят, пока вы не нажмёте «Одобрить») и товары, на которые пожаловались. «Снять» — убрать товар с сайта."}) : tab === "pending" ? h("p",{class:"hint",style:{margin:"0 0 10px"},text: r.approval ?
+    const note = tab === "review" ? h("p",{class:"hint",style:{margin:"0 0 10px"},text:"Сюда попадают: объявления с запрещёнными словами, фото, где ИИ увидел оружие/алкоголь/лекарства/табак, первые "+TRUST_AFTER+" товара новых продавцов (покупатели их не видят, пока вы не нажмёте «Одобрить») и товары, на которые пожаловались. «Снять» — убрать товар с сайта."}) : tab === "pending" ? h("p",{class:"hint",style:{margin:"0 0 10px"},text: r.approval ?
       "Товары этих продавцов не видны покупателям, пока вы не нажмёте «Одобрить». Перед одобрением позвоните продавцу и посмотрите его товары." :
       "Одобрение выключено (SELLER_APPROVAL = false): товары видны сразу."}) : null;
     const prices = tab === "vip" && r.expDays && r.vipPrices ? pricesBox() : null;
-    body.replaceChildren(note, prices, ...(rows.length ? rows : [h("div",{class:"empty",text:"Пусто"})]));
+    const qbtn = tab === "review" && toCheck.length ? h("button",{class:"btn block green",style:{marginBottom:"12px"},text:"⚡ Быстрая проверка ("+toCheck.length+")",onclick:quickReview}) : null;
+    body.replaceChildren(qbtn, note, prices, ...(rows.length ? rows : [h("div",{class:"empty",text:"Пусто"})]));
   }
   drawTabs(); draw();
   root.replaceChildren(tabBar, search, body);
