@@ -2689,7 +2689,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "131";   // номер версии — виден внизу профиля
+const APP_VER = "132";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -3446,7 +3446,7 @@ const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","specia
   .concat(["materials","builddecor","doors","tools","plumbing","electrics","paint","buildother"].map(k => ["build:"+k, 1]))
   .concat([["rent:other", 1], ["buy:buygold", 1]])
   .concat(["livestock","birds","catsdogs","fish","otheranimals","petgoods"].map(k => ["animals:"+k, 1]))
-  .concat(["lostthing","foundthing","lostpets"].map(k => ["free:"+k, 1]))
+  .concat(["lostthing","foundthing","lostpets"].map(k => ["free:"+k, k === "lostpets" ? 1 : 2]))
   .concat(["fitness","football","bicycles","hunting","music","tourism","sportother"].map(k => ["sport:"+k, 1]))
   .concat(["readybiz","bizequip","production","shopequip","kitchenequip","agroequip","generators","bizother"].map(k => ["business:"+k, 1]))
   .concat(["repair","plumbingsvc","electricsvc","autosvc","beautysvc","cleaningsvc","events","photovideo","itsvc","education","sportsvc","nanny","tailorsvc","transport","travelsvc","svcother"].map(k => ["services:"+k, ["beautysvc","events"].includes(k) ? 2 : 1]))
