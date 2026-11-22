@@ -2685,7 +2685,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "128";   // номер версии — виден внизу профиля
+const APP_VER = "129";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -6907,7 +6907,7 @@ async function viewAdmin(){
         h("div",{class:"qr-info"},
           h("div",{class:"qr-t",text:p.title}),
           h("div",{class:"s"}, priceP(p), " · "+catName(p.cat)+" · "+(p.city||"")),
-          h("div",{class:"kv",text:"Продавец: "+(u.name||"?")+(u.phone ? " · "+phoneFmt(u.phone) : "")}),
+          h("div",{class:"kv"}, "Продавец: "+(u.name||"?")+" · ", u.phone ? h("a",{class:"link",href:"tel:+993"+u.phone,text:"📞 "+phoneFmt(u.phone)}) : null),
           bad.length ? h("div",{class:"kv",style:{color:"#c62828"},text:"🚫 Слова: "+bad.join(", ")}) : null,
           whyLine(p),
           reps.length ? h("div",{class:"kv",style:{color:"#c62828"},text:"🚩 Жалоб: "+reps.length}) : null,
@@ -6947,7 +6947,7 @@ async function viewAdmin(){
       h("div",{class:"in"},
         h("a",{class:"t link",href:"#/p/"+p.id,text:p.title+"  ·  "+p.id}),
         h("div",{class:"s"}, priceP(p), "· "+catName(p.cat)+" · "+p.city, h("span",{class:"st "+st[0],text:st[1]})),
-        h("div",{class:"kv"}, "Продавец: "+(u.name||"?")+" ", sellerChip(u.seller),
+        h("div",{class:"kv"}, "Продавец: "+(u.name||"?")+" ", u.phone ? h("a",{class:"link",href:"tel:+993"+u.phone,text:"📞 "+phoneFmt(u.phone)+" "}) : null, sellerChip(u.seller),
           isVip(p) ? h("span",{class:"vip-pill",text:"⭐ VIP до "+new Date(p.vip).toLocaleDateString("ru-RU")}) : null,
           p.exp ? h("span",{style:{color:"var(--mut)"},text:" · удалится "+new Date(p.exp).toLocaleDateString("ru-RU")}) : null),
         bad.length ? h("div",{class:"kv",style:{color:"#c62828"},text:"🚫 Слова: "+bad.join(", ")}) : null,
