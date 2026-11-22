@@ -1629,8 +1629,8 @@ const SUBS = {
   services:    ["repair","plumbingsvc","electricsvc","autosvc","beautysvc","cleaningsvc","events","photovideo","itsvc","education","sportsvc","nanny","tailorsvc","transport","travelsvc","svcother"],
   buy:         ["buyjunk","buygold"],   // v130
   med:         ["medequip","rehab","optics","other"],   // раздел убран из списка (CATS), оставлено для старых объявлений
-  animals:     ["livestock","birds","catsdogs","fish","petgoods"],
-  free:        ["lostthing","foundthing","lostdocs","lostpets"]   // v130: «Бюро находок»
+  animals:     ["livestock","birds","catsdogs","fish","otheranimals","petgoods"],
+  free:        ["lostthing","foundthing","lostpets"]   // v130: «Бюро находок»
 };
 // цена: в этих категориях можно не указывать («Договорная»), в «Отдам даром» — всегда бесплатно
 const PRICE_OPTIONAL = {jobs:1, services:1, buy:1, rent:1, business:1};
@@ -1865,6 +1865,7 @@ const SUBT = {
   buyjunk:["Лишние вещи","Artykmaç zatlar","Unwanted items"], buygold:["Куплю золото","Altyn satyn alýaryn","Buying gold"],
   lostthing:["Потерял","Ýitirdim","Lost"], foundthing:["Нашёл","Tapdym","Found"], lostdocs:["Документы и ключи","Resminamalar we açarlar","Documents & keys"],
   lostpets:["Потерянные животные","Ýitirilen haýwanlar","Lost & found pets"],
+  otheranimals:["Другие животные","Beýleki haýwanlar","Other animals"],
   medequip:["Медицинское оборудование","Lukmançylyk enjamlary","Medical equipment"], rehab:["Реабилитация и уход","Bejeriş we ideg","Rehab & care"],
   optics:["Оптика","Optika","Optics"], fish:["Аквариум и рыбки","Akwarium we balyklar","Aquarium & fish"],
   freethings:["Вещи","Zatlar","Things"], freefurn:["Мебель","Mebel","Furniture"], freeclothes:["Одежда","Eşikler","Clothes"], freeanimals:["Животные","Haýwanlar","Animals"],
@@ -2688,7 +2689,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "130";   // номер версии — виден внизу профиля
+const APP_VER = "131";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -3432,7 +3433,7 @@ function mallsOf(city){ const m = S.malls || MALLS_DEFAULT; return (m[city] || [
    2) иначе — фото самого нового товара этой категории / раздела / марки;
    3) иначе — значок. */
 // готовые фото верхних категорий (папка cats/ на сайте)
-const CAT_PHOTO = {shoes:1, electronics:1, realty:1, home:3, auto:1, personal:2, appliances:1, jobs:2, rent:1, kids:1, build:2, sport:1, business:1, services:2, buy:1, med:1, animals:1};
+const CAT_PHOTO = {shoes:1, electronics:1, realty:1, home:3, auto:1, personal:2, appliances:1, jobs:2, rent:1, kids:1, build:2, sport:1, business:1, services:2, buy:1, med:1, animals:1, free:2};
 // готовые фото разделов (папка subs/ на сайте)
 const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"].map(k => ["auto:"+k, 1]).concat(["flat","house","land","commercial","garage"].map(k => ["realty:"+k, 1]))
   .concat(["mobiles","computers","tv","consoles","smartwatches","speakers","printers","cameras","phoneacc","security","ups","network","phoneparts","components"].map(k => ["electronics:"+k, 1]))
@@ -3444,7 +3445,8 @@ const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","specia
   .concat(["girlclothes","boyclothes","strollers","kidstransport","toys","school","babyfood","kidsother"].map(k => ["kids:"+k, 1]))
   .concat(["materials","builddecor","doors","tools","plumbing","electrics","paint","buildother"].map(k => ["build:"+k, 1]))
   .concat([["rent:other", 1], ["buy:buygold", 1]])
-  .concat(["livestock","birds","catsdogs","fish","petgoods"].map(k => ["animals:"+k, 1]))
+  .concat(["livestock","birds","catsdogs","fish","otheranimals","petgoods"].map(k => ["animals:"+k, 1]))
+  .concat(["lostthing","foundthing","lostpets"].map(k => ["free:"+k, 1]))
   .concat(["fitness","football","bicycles","hunting","music","tourism","sportother"].map(k => ["sport:"+k, 1]))
   .concat(["readybiz","bizequip","production","shopequip","kitchenequip","agroequip","generators","bizother"].map(k => ["business:"+k, 1]))
   .concat(["repair","plumbingsvc","electricsvc","autosvc","beautysvc","cleaningsvc","events","photovideo","itsvc","education","sportsvc","nanny","tailorsvc","transport","travelsvc","svcother"].map(k => ["services:"+k, ["beautysvc","events"].includes(k) ? 2 : 1]))
