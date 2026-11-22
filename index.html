@@ -1213,7 +1213,7 @@ ru: {
   e_net:"Нет связи. Проверьте интернет и попробуйте ещё раз.", e_server:"Ошибка сервера. Попробуйте позже.",
   e_auth:"Войдите ещё раз.", e_fields:"Заполните обязательные поля.", e_phone:"Неверный номер. Пример: 65 123456",
   e_pin:"PIN — 4 цифры.", e_exists:"Этот номер уже зарегистрирован. Нажмите «Войти».", e_wrong:"Неверный номер или PIN.",
-  e_locked:"Слишком много попыток. Подождите 30 минут.", e_blocked:"Аккаунт заблокирован. Напишите администратору.",
+  e_locked:"Слишком много попыток. Подождите 30 минут.", e_blocked:"Аккаунт заблокирован. Напишите администратору.", e_review:"Товар на проверке у администратора. Он появится после одобрения.",
   e_not_found:"Не найдено.", e_own:"Это ваш товар.", e_too_many:"Максимум 10 фото.", e_banned:"Товар снят администратором.",
   e_name:"Введите имя.", e_photo:"Не получилось открыть фото.", e_noPhoto:"Добавьте хотя бы одно фото.",
   e_noPrice:"Укажите цену.", e_noTitle:"Напишите название товара.", e_noCat:"Выберите категорию.",
@@ -1383,7 +1383,7 @@ tm: {
   e_net:"Baglanyşyk ýok. Interneti barlaň we gaýtadan synanyşyň.", e_server:"Serwer ýalňyşlygy. Soňrak synanyşyň.",
   e_auth:"Täzeden giriň.", e_fields:"Hökmany meýdançalary dolduryň.", e_phone:"Belgi nädogry. Mysal: 65 123456",
   e_pin:"PIN — 4 san.", e_exists:"Bu belgi eýýäm hasaba alnan. «Girmek» basyň.", e_wrong:"Belgi ýa-da PIN nädogry.",
-  e_locked:"Synanyşyk köp boldy. 30 minut garaşyň.", e_blocked:"Hasap petiklenen. Administratora ýazyň.",
+  e_locked:"Synanyşyk köp boldy. 30 minut garaşyň.", e_blocked:"Hasap petiklenen. Administratora ýazyň.", e_review:"Haryt administratoryň barlagynda. Tassyklanandan soň görüner.",
   e_not_found:"Tapylmady.", e_own:"Bu siziň harydyňyz.", e_too_many:"Iň köp 10 surat.", e_banned:"Haryt administrator tarapyndan aýryldy.",
   e_name:"Adyňyzy ýazyň.", e_photo:"Suraty açyp bolmady.", e_noPhoto:"Iň bolmanda bir surat goşuň.",
   e_noPrice:"Bahasyny ýazyň.", e_noTitle:"Harydyň adyny ýazyň.", e_noCat:"Bölüm saýlaň.",
@@ -1552,7 +1552,7 @@ en: {
   e_net:"No connection. Check your internet and try again.", e_server:"Server error. Please try later.",
   e_auth:"Please sign in again.", e_fields:"Please fill in the required fields.", e_phone:"Invalid number. Example: 65 123456",
   e_pin:"The PIN is 4 digits.", e_exists:"This number is already registered. Tap “Sign in”.", e_wrong:"Wrong number or PIN.",
-  e_locked:"Too many attempts. Please wait 30 minutes.", e_blocked:"Account blocked. Contact the administrator.",
+  e_locked:"Too many attempts. Please wait 30 minutes.", e_blocked:"Account blocked. Contact the administrator.", e_review:"The item is being reviewed by the administrator. It will appear after approval.",
   e_not_found:"Not found.", e_own:"This is your item.", e_too_many:"Maximum 10 photos.", e_banned:"Removed by the administrator.",
   e_name:"Enter your name.", e_photo:"Couldn't open the photo.", e_noPhoto:"Add at least one photo.",
   e_noPrice:"Enter a price.", e_noTitle:"Enter the item name.", e_noCat:"Choose a category.",
@@ -2629,6 +2629,10 @@ const Mock = (() => {
       return {ok:true, balance:db.bal[u.id]}; },
     adminMallSug(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.mallSug = (db.mallSug||[]).filter(x => !(x.city === d.city && x.name === d.name));
       if (d.ok){ db.malls = db.malls || JSON.parse(JSON.stringify(MALLS_DEFAULT)); (db.malls[d.city] = db.malls[d.city] || []).push(d.name); } return {ok:true}; },
+    adminDeleteUser(d){ if (!admOk(d)) return {ok:false,error:"auth"}; const u = db.users.find(x => x.id === d.id); if (!u) return {ok:false,error:"not_found"};
+      (db.bans = db.bans || {})[u.phone] = {why:"deleted: "+u.name, at:now()}; db.products = db.products.filter(p => p.user !== u.id); db.users = db.users.filter(x => x.id !== u.id); return {ok:true}; },
+    adminBans(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.bans = db.bans || {}; if (d.unban) delete db.bans[d.unban];
+      return {ok:true, phones:Object.keys(db.bans).map(p => ({phone:p, why:db.bans[p].why, at:db.bans[p].at}))}; },
     deleteAccount(d){ const u = userByToken(d.token); if (!u) return {ok:false,error:"auth"}; const n = db.products.filter(p => p.user === u.id).length;
       db.products = db.products.filter(p => p.user !== u.id); db.users = db.users.filter(x => x.id !== u.id); return {ok:true, removed:n}; },
     adminMalls(d){ if (!admOk(d)) return {ok:false,error:"auth"}; db.malls = d.malls; return {ok:true, malls:d.malls}; },
@@ -2681,7 +2685,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "127";   // номер версии — виден внизу профиля
+const APP_VER = "128";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -6815,6 +6819,14 @@ async function viewAdmin(){
         u.seller === "active" || u.seller === "pending" ? h("button",{class:"btn sm ghost",text:"Запретить продажу",onclick:()=>act("adminUser",{id:u.id,seller:"blocked"})}) : null,
         u.status !== "blocked" ? h("button",{class:"btn sm ghost",style:{color:"#c62828"},text:"Заблокировать",onclick:()=>act("adminUser",{id:u.id,status:"blocked"})}) :
           h("button",{class:"btn sm ghost",text:"Разблокировать",onclick:()=>act("adminUser",{id:u.id,status:"active"})}),
+        h("button",{class:"btn sm ghost",style:{color:"#c62828"},text:"🗑 Удалить и запретить номер",onclick:async()=>{   // v128
+          const yes = await sheet((box, close) => box.append(h("h2",{text:"Удалить "+u.name+"?"}),
+            h("p",{text:"Аккаунт, все товары и фото будут удалены. Номер "+phoneFmt(u.phone)+" попадёт в чёрный список: с него нельзя войти и зарегистрироваться заново. Вернуть товары нельзя."}),
+            h("div",{style:{display:"grid",gap:"10px"}},
+              h("button",{class:"btn block",style:{background:"#c62828"},text:"🗑 Удалить и запретить",onclick:()=>close(true)}),
+              h("button",{class:"btn block ghost",text:"Отмена",onclick:()=>close(false)}))));
+          if (yes) act("adminDeleteUser",{id:u.id},"Аккаунт удалён, номер запрещён");
+        }}),
         h("button",{class:"btn sm ghost",text:"Новый PIN",onclick:async()=>{
           const pin = await sheet((box, close) => {
             const i = h("input",{class:"inp pin",inputmode:"numeric",maxlength:"4",placeholder:"••••"});
@@ -6912,6 +6924,18 @@ async function viewAdmin(){
       }
     };
     show();
+  }
+  // v128: чёрный список номеров (заблокированные и удалённые админом)
+  function bansBox(){
+    const box = h("div",{class:"box",style:{marginBottom:"10px"}}, h("h3",{text:"⛔ Запрещённые номера"}), h("div",{class:"hint",text:"Загрузка…"}));
+    call("adminBans").then(b => {
+      if (!b.ok){ box.lastChild.textContent = b.error === "server" ? "Нужно обновить сервер (файл Patch.gs)." : errText(b); return; }
+      box.lastChild.replaceWith(b.phones.length ? h("div",null, ...b.phones.map(x => h("div",{style:{display:"flex",alignItems:"center",gap:"8px",padding:"6px 0",borderTop:"1px solid var(--line)"}},
+        h("div",{style:{flex:1,minWidth:0}}, h("b",{text:phoneFmt(x.phone)}), h("div",{class:"hint",text:(x.why || "")+(x.at ? " · "+new Date(x.at).toLocaleDateString("ru-RU") : "")})),
+        h("button",{class:"btn sm ghost",text:"Разрешить",onclick:()=>act("adminBans",{unban:x.phone},"Номер разрешён")}))))
+        : h("div",{class:"hint",text:"Пусто. Сюда попадают номера, которые вы заблокировали или удалили."}));
+    });
+    return box;
   }
   function prodRow(p){
     const u = ubyId[p.user] || {};
@@ -7033,7 +7057,7 @@ async function viewAdmin(){
     let rows = [];
     if (tab === "review") rows = toCheck.filter(p => match(p.title+p.id+(ubyId[p.user]||{}).name)).map(prodRow);
     if (tab === "pending") rows = pending.filter(u => match(u.name+u.phone+u.id)).map(userRow);
-    if (tab === "users") rows = users.filter(u => match(u.name+u.phone+u.id+u.city)).map(userRow);
+    if (tab === "users") rows = [bansBox()].concat(users.filter(u => match(u.name+u.phone+u.id+u.city)).map(userRow));
     if (tab === "prods") rows = prods.filter(p => match(p.title+p.id+(ubyId[p.user]||{}).name)).map(prodRow);
     if (tab === "vip") rows = prods.filter(p => isVip(p) && match(p.title+p.id+(ubyId[p.user]||{}).name)).map(prodRow);
     if (tab === "reports") rows = reports.filter(x => match(x.text+x.product+x.reason)).map(repRow);
