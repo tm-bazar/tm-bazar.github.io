@@ -442,6 +442,17 @@ img.ava{object-fit:cover;background:#fff;border:1px solid var(--line)}
 .qchips::-webkit-scrollbar{display:none}
 .qchip{flex:none;display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:14px;background:var(--soft);border:1px solid var(--line);font-size:15px;font-weight:500;color:var(--fg);max-width:220px}
 .qchip span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bs-strip{display:flex;gap:6px;overflow-x:auto;padding:4px 10px 2px;scrollbar-width:none;scroll-behavior:smooth}
+.bs-strip::-webkit-scrollbar{display:none}
+.bs-strip[hidden]{display:none}
+.bs{flex:none;width:66px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:2px 0;background:none;border:0;color:var(--fg);font-size:11px;line-height:1.15;text-align:center;cursor:pointer}
+.bs .mk-logo{width:54px;height:54px;border-radius:16px;padding:6px;transition:box-shadow .15s,border-color .15s}
+.bs .mk-logo.mono b{font-size:16px}
+.bs span{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.bs small{color:var(--mut);font-size:10px}
+.bs.zero{opacity:.7}
+.bs.on .mk-logo{border-color:var(--red);box-shadow:0 0 0 2px var(--red)}
+.bs.on span{font-weight:700}
 .qchip i{display:grid;place-items:center;opacity:.7}
 .qchip.on{background:var(--fg);border-color:var(--fg);color:#fff}
 .opt-list{display:flex;flex-direction:column;max-height:60vh;overflow:auto}
@@ -1669,6 +1680,22 @@ const CAR_MODELS = {
   "Jeep":["Grand Cherokee","Wrangler","Cherokee","Compass"]
 };
 const PHONE_BRANDS = ["Apple","Samsung","Xiaomi","Redmi","POCO","Huawei","Honor","Realme","OPPO","Vivo","Tecno","Infinix","itel","Nokia","Google","OnePlus","Motorola","ZTE","Umidigi","Oukitel","Blackview","Sony","Nothing"];
+// v133: марки для остальной электроники — у покупателя сверху полоса с эмблемами
+const WATCH_BRANDS = ["Apple","Samsung","Xiaomi","Huawei","Honor","Amazfit","Garmin","Realme","OPPO","Google","OnePlus","Haylou","Mibro","Zeblaze"];
+const ELEC_BRANDS = {
+  mobiles: PHONE_BRANDS, tablets: PHONE_BRANDS, smartwatches: [...new Set(WATCH_BRANDS.concat(PHONE_BRANDS))],
+  computers: ["Apple","Lenovo","HP","Dell","Asus","Acer","MSI","Huawei","Honor","Samsung","Xiaomi","Microsoft","Gigabyte","Razer","Toshiba"],
+  tv: ["Samsung","LG","Sony","Xiaomi","TCL","Hisense","Artel","Philips","Haier","Panasonic","Toshiba","Shivaki","Skyworth","Sharp","Hofmann"],
+  consoles: ["Sony","Microsoft","Nintendo","Valve","Xiaomi"],
+  speakers: ["JBL","Sony","Marshall","Apple","Xiaomi","Samsung","Harman Kardon","Bose","Anker","Edifier","Sven","LG"],
+  printers: ["HP","Canon","Epson","Brother","Xerox","Pantum","Kyocera","Ricoh","Samsung"],
+  cameras: ["Canon","Nikon","Sony","Fujifilm","Panasonic","GoPro","DJI","Olympus","Leica","Xiaomi"],
+  security: ["Hikvision","Dahua","Ezviz","Imou","TP-Link","Xiaomi","Uniview","Tiandy"],
+  network: ["TP-Link","Huawei","Xiaomi","Asus","Keenetic","MikroTik","Tenda","D-Link","Ubiquiti","ZTE","Cisco"],
+  ups: ["APC","Eaton","Powercom","Ippon","CyberPower","Legrand","Tuncmatik"]
+};
+const PHONE_SUB = s => s === "mobiles" || s === "tablets" || s === "smartwatches";
+const ELEC_ALL_BRANDS = [...new Set(Object.values(ELEC_BRANDS).flat())];
 const PHONE_MODELS = {
   "Apple":["iPhone 16 Pro Max","iPhone 16 Pro","iPhone 16","iPhone 15 Pro Max","iPhone 15 Pro","iPhone 15","iPhone 14 Pro Max","iPhone 14 Pro","iPhone 14","iPhone 13 Pro Max","iPhone 13","iPhone 12","iPhone 11","iPhone XR","iPhone SE","iPad","iPad Air","iPad Pro","Apple Watch"],
   "Samsung":["Galaxy S25 Ultra","Galaxy S24 Ultra","Galaxy S24","Galaxy S23","Galaxy Z Fold","Galaxy Z Flip","Galaxy A56","Galaxy A55","Galaxy A35","Galaxy A25","Galaxy A15","Galaxy A05","Galaxy M","Galaxy Tab"],
@@ -1739,8 +1766,9 @@ const FIELDS = {
     {k:"period", type:"sel", filter:"more", opts:["hourly","daily","monthly"]}
   ],
   electronics: [
-    {k:"brand", type:"sel", raw:true, req:true, filter:"main", opts:PHONE_BRANDS.concat(["other"]), when:(s) => s === "mobiles" || s === "tablets" || s === "smartwatches"},
-    {k:"brandt", type:"text", max:30, when:(s) => !(s === "mobiles" || s === "tablets" || s === "smartwatches")},
+    {k:"brand", type:"sel", raw:true, req:true, filter:"main", opts:(s) => (ELEC_BRANDS[s] || PHONE_BRANDS).concat(["other"]), when:(s) => PHONE_SUB(s)},
+    {k:"brand", type:"sel", raw:true, filter:"main", opts:(s) => (ELEC_BRANDS[s] || []).concat(["other"]), when:(s) => !PHONE_SUB(s) && !!ELEC_BRANDS[s]},
+    {k:"brandt", type:"text", max:30, when:(s) => !ELEC_BRANDS[s]},
     {k:"model", type:"text", max:40, filter:"more", list:(s, a) => PHONE_MODELS[a.brand] || [], when:(s) => s === "mobiles" || s === "tablets" || s === "smartwatches"},
     {k:"color", type:"sel", filter:"more", opts:COLORS, when:(s) => s === "mobiles" || s === "tablets" || s === "smartwatches" || s === "computers"},
     {k:"memory", type:"sel", raw:true, filter:"more", unit:"GB", opts:["8","16","32","64","128","256","512","1024"], when:(s) => s === "mobiles" || s === "tablets"},
@@ -2689,7 +2717,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "132";   // номер версии — виден внизу профиля
+const APP_VER = "133";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -2957,6 +2985,12 @@ function migrateProduct(p){
   if ((p.cat === "personal" && (p.sub === "womenshoes" || p.sub === "menshoes")) || (p.cat === "kids" && p.sub === "kidsshoes")) p.cat = "shoes";
   else if ((p.cat === "electronics" || p.cat === "shoes") && OLD_SUB[p.sub]) p.sub = OLD_SUB[p.sub];
   else if (p.cat === "realty" && p.sub === "cottage") p.sub = "house";
+  // v133: у ТВ, ноутбуков и т.п. марка теперь выбирается из списка — старый текст «Бренд» узнаём
+  if (p.cat === "electronics" && ELEC_BRANDS[p.sub] && p.attrs && !p.attrs.brand && p.attrs.brandt){
+    const nb = x => String(x).toLowerCase().replace(/[^a-z0-9а-яё]/g, "");
+    const want = nb(p.attrs.brandt), hit = ELEC_BRANDS[p.sub].find(b => nb(b) === want);
+    if (hit) p.attrs.brand = hit;
+  }
   if (p.cat === "home" && ["decor","cleaning","garden","food"].includes(p.sub)) p.sub = "other"; // v98: эти разделы убраны
   if (p.cat === "personal" && ["gold","silver","watches","bijou","accessories"].includes(p.sub)) p.sub = "jewels"; // v102: украшения
   if (p.cat === "personal" && p.sub === "perfume") p.sub = "cosmetics";
@@ -4708,10 +4742,12 @@ function viewBrowse(catId, listMode){
   const cTitle = h("div",{class:"bh-title"});
   const realtyDeals = compact && catId === "realty";
   const dealBox = realtyDeals ? h("div",{class:"dl-strip"}) : null;
+  // v133: электроника — полоса с эмблемами марок сверху (листается вбок)
+  const brandBox = compact && catId === "electronics" ? h("div",{class:"bs-strip"}) : null;
   const head = compact ? h("div",{class:"browse-head cmp"+(realtyDeals?" rl":"")}, h("div",{class:"wrap"},
       h("div",{class:"top-row bh-row"},
         h("button",{class:"icon-btn","aria-label":t("back"),html:IC.back,onclick:()=>{ st.f = {}; go("/c/"+catId); }}), cTitle, topFilt),
-      dealBox, qBox)) :
+      dealBox, brandBox, qBox)) :
     h("div",{class:"browse-head"},
     h("div",{class:"wrap"},
       h("div",{class:"top-row bh-row"}, catId ? h("button",{class:"icon-btn","aria-label":t("back"),html:IC.back,onclick:()=>go("/cats")}) : null,
@@ -4875,7 +4911,7 @@ function viewBrowse(catId, listMode){
     if (catId === "auto" && st.f.brand && st.f.brand !== "other" && modelsOf(st.sub, st.f.brand).length)
       chips.push(qchip(t("f_model"), modelLabel(st.f.model), () => go(modelsHref("auto", st.sub, st.f.brand))));
     // основные фильтры раздела (размер, комнаты, тип сделки, марка телефона и т.п.)
-    fieldsFor(catId, st.sub, Object.assign({}, st.f)).filter(f => f.filter === "main" && f.k !== "model" && !(vehicle && f.k === "brand") && !(realtyDeals && f.k === "deal")).forEach(f => {
+    fieldsFor(catId, st.sub, Object.assign({}, st.f)).filter(f => f.filter === "main" && f.k !== "model" && !(vehicle && f.k === "brand") && !(realtyDeals && f.k === "deal") && !(brandBox && f.k === "brand" && ELEC_BRANDS[st.sub])).forEach(f => {
       const cur = st.f[f.k];
       chips.push(qchip(fieldLabel(f), cur ? optLabel(f, cur) + (f.unit && f.type === "sel" ? " " + f.unit : "") : "", () => sheet((box, close) => {
         const counts = {};
@@ -4904,6 +4940,28 @@ function viewBrowse(catId, listMode){
         return [a, b, reset => { st.r.ymin = reset ? "" : a.querySelector("select").value; st.r.ymax = reset ? "" : b.querySelector("select").value; }];
       })));
     qBox.replaceChildren(...chips);
+  };
+  const drawBrands = () => {
+    if (!brandBox) return;
+    const opts = ELEC_BRANDS[st.sub];
+    if (!opts){ brandBox.replaceChildren(); brandBox.hidden = true; return; }
+    brandBox.hidden = false;
+    const counts = {};
+    applyF(base(), "brand").forEach(p => { const b = (p.attrs || {}).brand; if (b) counts[b] = (counts[b] || 0) + 1; });
+    // сначала марки, у которых есть объявления (больше — левее), потом остальные по списку
+    const list = [...new Set(opts.concat(Object.keys(counts).filter(b => b !== "other")))]
+      .sort((x, y) => (counts[y] || 0) - (counts[x] || 0) || opts.indexOf(x) - opts.indexOf(y));
+    if (counts.other) list.push("other");
+    const cur = st.f.brand || "";
+    const total = Object.values(counts).reduce((a, n) => a + n, 0);
+    const tile = (b, logo, name, n) => h("button",{type:"button",class:"bs"+(cur===b?" on":"")+(b && !n ? " zero" : ""),onclick:()=>{
+        if (b && cur !== b) st.f.brand = b; else delete st.f.brand;
+        delete st.f.model; draw(); window.scrollTo({top: 0}); }},
+      logo, h("span",{text:name}), h("small",{text:String(n || 0)}));
+    const allLogo = h("span",{class:"mk-logo mono"}, h("b",{html:'<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>'}));
+    brandBox.replaceChildren(tile("", allLogo, t("anyMake"), total), ...list.map(b => tile(b, makeLogo(b), brandName(b), counts[b])));
+    const on = brandBox.querySelector(".bs.on");
+    if (on) requestAnimationFrame(() => { brandBox.scrollLeft = on.offsetLeft - brandBox.clientWidth / 2 + on.clientWidth / 2; });
   };
   // v112: недвижимость — маленькие фото «Все / Продажа / Аренда…» сверху, сразу под ними объявления
   const drawDeals = () => {
@@ -4940,7 +4998,7 @@ function viewBrowse(catId, listMode){
     window.addEventListener("scroll", onScroll, {passive: true});
   }
   if (compact && !MODELS) loadModels().then(() => drawQuick());
-  const draw = () => { if (compact){ drawDeals(); drawQuick(); } else drawSubs(); drawList(); };
+  const draw = () => { if (compact){ drawDeals(); drawBrands(); drawQuick(); } else drawSubs(); drawList(); };
   draw(); loadCatalog().then(draw);
   // показать выбранную категорию в ленте
   const on = catScroll.querySelector(".cs.on");
@@ -6990,11 +7048,12 @@ async function viewAdmin(){
       (SUBS[c.id] || []).forEach(k => items.push(["sub:"+c.id+":"+k, "   └ "+catName(c.id)+" → "+subName(k), c.id]));
     });
     [...new Set([].concat(CAR_BRANDS, TRUCK_BRANDS, BUS_BRANDS, SPECIAL_BRANDS))].forEach(b => items.push(["brand:"+b, "🚗 "+b, "auto"]));
+    ELEC_ALL_BRANDS.filter(b => !items.some(x => x[0] === "brand:"+b)).forEach(b => items.push(["brand:"+b, "📱 "+b, "electronics"]));
     const bulkIn = h("input",{type:"file",accept:"image/*",multiple:true,hidden:true});
     const norm = x => String(x).toLowerCase().replace(/\.[a-z0-9]+$/,"").replace(/[^a-zа-яё0-9]/g,"");
     bulkIn.onchange = async () => {
       const files = [...bulkIn.files]; bulkIn.value = ""; if (!files.length) return;
-      const brands = [...new Set([].concat(CAR_BRANDS, TRUCK_BRANDS, BUS_BRANDS, SPECIAL_BRANDS, PHONE_BRANDS))];
+      const brands = [...new Set([].concat(CAR_BRANDS, TRUCK_BRANDS, BUS_BRANDS, SPECIAL_BRANDS, ELEC_ALL_BRANDS))];
       const map = Object.fromEntries(brands.map(b => [norm(b), b])); map[norm("Lada")] = "ВАЗ (LADA)"; map[norm("VAZ")] = "ВАЗ (LADA)"; Object.assign(map, {gaz:"ГАЗ", uaz:"УАЗ", zaz:"ЗАЗ", zil:"ЗИЛ", zis:"ЗиС", moskvich:"Москвич", izh:"ИЖ", luaz:"ЛуАЗ", tagaz:"ТагАЗ",
         bogdan:"Богдан", sollers:"Соллерс", evolute:"Эволют", doninvest:"Донинвест", greatwall:"Great Wall Motor", ssangyong:"SsangYong",
         kgmobility:"KG Mobility", lynkco:"Lynk & Co", mercedes:"Mercedes-Benz", citroën:"Citroen", rollsroyce:"Rolls-Royce", alfaromeo:"Alfa Romeo"});
