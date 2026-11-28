@@ -608,6 +608,11 @@ body.has-fab #app{padding-bottom:calc(var(--tab) + var(--safe) + 80px)}
 .phone-ro{display:flex;align-items:center;gap:10px;height:48px;border:1.5px dashed var(--line);border-radius:12px;padding:0 14px;background:var(--bg)}
 .phone-ro b{font-size:17px;letter-spacing:.3px}
 .price.nego{font-size:16px;color:var(--fg);font-weight:700}
+.price.nego.nego-r{color:var(--red)}
+.nego-ck{margin:12px 0 0;align-items:flex-start}
+.nego-ck span{display:flex;flex-direction:column;gap:2px}
+.nego-ck small{color:var(--mut);font-size:12.5px;font-weight:400}
+.pr-box.nego-on .price-in{opacity:.45}
 
 /* готовые фото категорий: целиком, на белом */
 b.ci.ph.fit{background:#fff;box-shadow:inset 0 0 0 1px var(--line)}
@@ -1629,7 +1634,7 @@ const SUBS = {
   home:        ["furniture","kitchenware","textile","carpets","lighting","other"],
   auto:        ["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"],
   shoes:       ["womenshoes","menshoes","kidsshoes"],
-  personal:    ["womenclothes","menclothes","national","fabrics","jewels","cosmetics","bags","backpacks"],
+  personal:    ["womenclothes","menclothes","national","fabrics","jewels","buygold","cosmetics","bags","backpacks"],   // v134: «Куплю золото» — после украшений
   appliances:  ["bigapp","kitchenapp","climate","smallapp","otherapp"],
   jobs:        ["vacancy","resume"],
   rent:        ["rentevent","rentclothes","rentkids","rentequip","rentcars","renttools","other"],
@@ -1638,7 +1643,6 @@ const SUBS = {
   sport:       ["fitness","football","bicycles","hunting","music","tourism","sportother"],
   business:    ["readybiz","bizequip","production","shopequip","kitchenequip","agroequip","generators","bizother"],
   services:    ["repair","plumbingsvc","electricsvc","autosvc","beautysvc","cleaningsvc","events","photovideo","itsvc","education","sportsvc","nanny","tailorsvc","transport","travelsvc","svcother"],
-  buy:         ["buyjunk","buygold"],   // v130
   med:         ["medequip","rehab","optics","other"],   // раздел убран из списка (CATS), оставлено для старых объявлений
   animals:     ["livestock","birds","catsdogs","fish","otheranimals","petgoods"],
   free:        ["lostthing","foundthing","lostpets"]   // v130: «Бюро находок»
@@ -1739,9 +1743,9 @@ const FIELDS = {
     {k:"season", type:"sel", filter:"main", showAll:true, opts:["summer","demi","winter","allseason"], when:(s) => s === "womenclothes" || s === "menclothes" || s === "national"},
     {k:"size", type:"multi", raw:true, filter:"main", opts:["XS","S","M","L","XL","XXL","3XL","4XL+"],
       when:(s) => s === "womenclothes" || s === "menclothes", unitKey:"sizeHint"},
-    {k:"brandt", type:"text", max:30, when:(s) => s !== "jewels"},
-    {k:"color", type:"sel", filter:"more", opts:["black","white","silver","gray","gold","blue","red","green","purple","pink","other"], when:(s) => s !== "jewels" && s !== "cosmetics"},
-    {k:"probe", type:"sel", raw:true, filter:"more", opts:["375","500","585","750","875","925","999"], when:(s) => s === "jewels"},
+    {k:"brandt", type:"text", max:30, when:(s) => s !== "jewels" && s !== "buygold"},
+    {k:"color", type:"sel", filter:"more", opts:["black","white","silver","gray","gold","blue","red","green","purple","pink","other"], when:(s) => s !== "jewels" && s !== "cosmetics" && s !== "buygold"},
+    {k:"probe", type:"sel", raw:true, filter:"more", opts:["375","500","585","750","875","925","999"], when:(s) => s === "jewels" || s === "buygold"},
     {k:"weight", type:"num", unit:"g", step:"0.01", when:(s) => s === "jewels"}
   ],
   kids: [
@@ -1988,7 +1992,8 @@ const ATTRT = {
   o_period_hourly:["Почасово","Sagatlaýyn","Hourly"],
   o_cmaterial_wool:["Шерсть","Ýüň","Wool"], o_cmaterial_silk:["Шёлк","Ýüpek","Silk"], o_cmaterial_synthetic:["Синтетика","Sintetika","Synthetic"], o_cmaterial_cotton:["Хлопок","Pagta","Cotton"],
   per_hourly:["/ час","/ sagat","/ hour"], per_daily:["/ сутки","/ gün","/ day"], per_monthly:["/ мес","/ aý","/ month"],
-  negotiable:["Договорная","Ylalaşyk","Negotiable"], freePrice:["Без цены","Bahasyz","No price"], priceOpt:["Цена (можно не указывать — будет «Договорная»)","Baha (ýazmasaňyz «Ylalaşyk» bolar)","Price (leave empty for “Negotiable”)"], f_blang:["Язык","Dili","Language"],
+  negotiable:["Договорная","Ylalaşyk","Negotiable"], negoCk:["Договорная цена — без цены","Ylalaşyk baha — bahasyz","Negotiable — no price"],
+  negoHint:["Покупатель увидит красную надпись «Договорная»","Alyjy gyzyl «Ylalaşyk» ýazgysyny görer","Buyers will see «Negotiable» in red"], freePrice:["Без цены","Bahasyz","No price"], priceOpt:["Цена (можно не указывать — будет «Договорная»)","Baha (ýazmasaňyz «Ylalaşyk» bolar)","Price (leave empty for “Negotiable”)"], f_blang:["Язык","Dili","Language"],
   // мастер добавления
   w_step:["Шаг {i} из {n}","{n}-dan {i}-nji ädim","Step {i} of {n}"], w_continue:["Продолжить →","Dowam et →","Continue →"], w_skip:["Пропустить →","Geç →","Skip →"],
   w1:["Фото и название","Surat we ady","Photos & title"], w2:["Категория","Kategoriýa","Category"], w3:["Где находится","Nirede","Location"],
@@ -2531,7 +2536,7 @@ const Mock = (() => {
       const u = userByToken(d.token); if (!u) return {ok:false,error:"auth"};
       if (u.seller === "blocked") return {ok:false,error:"blocked"};
       const o = d.product, price = +o.price;
-      if (!o.title || !o.cat || (!(price > 0) && !PRICE_OPTIONAL[o.cat] && !PRICE_FREE[o.cat])) return {ok:false,error:"fields"};
+      if (!o.title || !o.cat || (!(price > 0) && !PRICE_OPTIONAL[o.cat] && !PRICE_FREE[o.cat] && !(o.attrs && o.attrs.nego === "1"))) return {ok:false,error:"fields"};
       let p = o.id ? db.products.find(x => x.id === o.id) : null;
       if (p && p.user !== u.id) return {ok:false,error:"auth"};
       if (!p){ p = {id:"P"+pad(next("P")), user:u.id, at:now(), photos:"[]", vs:"", vm:"", status:"active"}; db.products.push(p); }
@@ -2717,7 +2722,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "133";   // номер версии — виден внизу профиля
+const APP_VER = "135";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -2796,7 +2801,7 @@ const prodBadWords = p => badWords((p.title || "") + " \n " + (p.desc || ""));
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
 const CDN_MN = "https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js";
 
-const CATS = ["auto","realty","electronics","shoes","home","personal","appliances","jobs","rent","kids","build","sport","business","services","buy","animals","free"]   // v130: «Медтовары» убран
+const CATS = ["auto","realty","electronics","shoes","home","personal","appliances","jobs","rent","kids","build","sport","business","services","animals","free"]   // v130: «Медтовары» убран; v134: «Куплю» убран
   .map(id => ({id, e: {shoes:"👟",electronics:"📱",realty:"🏠",home:"🛋️",auto:"🚗",personal:"👜",appliances:"🧺",jobs:"💼",rent:"🔑",kids:"🧸",build:"🔨",sport:"⚽",business:"🏭",services:"🛠️",buy:"🛒",med:"🩺",animals:"🐑",free:"🔍"}[id]}));
 // Ашхабад + 5 велаятов
 const CITIES = ["Aşgabat","Ahal","Mary","Daşoguz","Türkmenabat","Türkmenbaşy"];
@@ -2846,7 +2851,7 @@ function priceP(p, suf, cls){
     n ? h("div",{class:"pr-unit",text:t("wsUnit",{p: fmt(Math.round(finalPrice(p) / n * 100) / 100), n})}) : null);
 }
 function priceEl(n, cls, suf, cat){
-  if (!(+n > 0)) return h("div",{class:"price"+(cls?" "+cls:"")+" nego"}, cat && PRICE_FREE[cat] ? t("freePrice") : t("negotiable"));
+  if (!(+n > 0)) return h("div",{class:"price"+(cls?" "+cls:"")+" nego"+(cat && PRICE_FREE[cat] ? "" : " nego-r")}, cat && PRICE_FREE[cat] ? t("freePrice") : t("negotiable"));
   return h("div",{class:"price"+(cls?" "+cls:"")}, fmt(n), h("small",{text:"TMT"}), suf ? h("small",{class:"suf",text:" "+suf}) : null);
 }
 function phoneFmt(p){ p=String(p||""); return "+993 "+p.slice(0,2)+" "+p.slice(2,4)+" "+p.slice(4,6)+" "+p.slice(6); }
@@ -2977,7 +2982,8 @@ const OLD_CAT = {
   books:       s => ["sport","books"],
   moto:        s => ["auto","moto"],
   autoparts:   s => ["auto", s === "tires" ? "tires" : s === "caracc" ? "caracc" : "parts"],
-  other:       s => ["home","other"]
+  other:       s => ["home","other"],
+  buy:         s => ["personal", s === "buygold" ? "buygold" : ""]   // v134: раздел «Куплю» убран
 };
 function migrateProduct(p){
   if (!p) return p;
@@ -3478,7 +3484,7 @@ const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","specia
   .concat(["rentevent","rentclothes","rentkids","rentequip","rentcars","renttools"].map(k => ["rent:"+k, 1]))
   .concat(["girlclothes","boyclothes","strollers","kidstransport","toys","school","babyfood","kidsother"].map(k => ["kids:"+k, 1]))
   .concat(["materials","builddecor","doors","tools","plumbing","electrics","paint","buildother"].map(k => ["build:"+k, 1]))
-  .concat([["rent:other", 1], ["buy:buygold", 1]])
+  .concat([["rent:other", 1], ["personal:buygold", 1]])
   .concat(["livestock","birds","catsdogs","fish","otheranimals","petgoods"].map(k => ["animals:"+k, 1]))
   .concat(["lostthing","foundthing","lostpets"].map(k => ["free:"+k, k === "lostpets" ? 1 : 2]))
   .concat(["fitness","football","bicycles","hunting","music","tourism","sportother"].map(k => ["sport:"+k, 1]))
@@ -3487,6 +3493,7 @@ const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","specia
   .concat(["womenclothes","menclothes","national","fabrics","jewels","cosmetics","bags","backpacks"].map(k => ["personal:"+k, ["womenclothes","national","fabrics"].includes(k) ? 3 : 2])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
+  if (key === "sub:personal:buygold" && S.tiles && S.tiles["sub:buy:buygold"]) return S.tiles["sub:buy:buygold"]; // v134: фото из старого «Куплю»
   if (key === "cat:all") return "icons/logo.webp"; // «Все товары» — всегда логотип
   if (key.startsWith("cat:") && CAT_PHOTO[key.slice(4)]) return "cats/" + key.slice(4) + ".jpg" + (CAT_PHOTO[key.slice(4)] > 1 ? "?v=" + CAT_PHOTO[key.slice(4)] : "");
   if (key.startsWith("sub:") && SUB_PHOTO[key.slice(4)]) return "subs/" + key.slice(4).replace(":", "-") + ".jpg" + (SUB_PHOTO[key.slice(4)] > 1 ? "?v=" + SUB_PHOTO[key.slice(4)] : "");
@@ -3723,7 +3730,7 @@ function cartAdd(p, size){
 }
 // корзина — только для товаров (не для квартир, работы, услуг, аренды, машин)
 const NO_CART = {realty:1, jobs:1, services:1, buy:1, rent:1, business:1};
-function cartable(p){ return !!p && !NO_CART[p.cat] && !VEHICLE_SUBS[p.sub]; }
+function cartable(p){ return !!p && !NO_CART[p.cat] && !VEHICLE_SUBS[p.sub] && p.sub !== "buygold"; }
 async function cartAddFlow(p){
   const x = await cartPick(p); if (!x) return false;
   cartAdd(x.p, x.size); return true;
@@ -6175,6 +6182,16 @@ async function viewSell(editId){
   const descIn = h("textarea",{class:"inp",maxlength:"2000",placeholder:t("descPh")}); descIn.value = prod.desc || "";
   descIn.oninput = () => prod.desc = descIn.value;
   const priceIn = h("input",{type:"number",inputmode:"decimal",min:"0",step:"0.01",placeholder:"0",value:+prod.price > 0 ? prod.price : "","aria-label":t("price")});
+  // v135: галочка «Договорная» — можно без цены в любом разделе
+  const negoOn = h("input",{type:"checkbox"}); negoOn.checked = (prod.attrs || {}).nego === "1";
+  const negoSync = () => {
+    priceIn.disabled = negoOn.checked;
+    if (negoOn.checked){ priceIn.value = ""; prod.price = ""; discOn.checked = false; optOn.checked = false; }
+    const bx = priceIn.closest(".pr-box"); if (bx) bx.classList.toggle("nego-on", negoOn.checked);
+    const dsb = discOn.closest(".ds-box"); if (dsb) dsb.hidden = negoOn.checked;
+    dsUpd();
+  };
+  negoOn.addEventListener("change", () => { negoSync(); if (!negoOn.checked) priceIn.focus(); });
   // v114: скидка и опт
   const discOn = h("input",{type:"checkbox"}), discIn = h("input",{class:"inp",type:"number",inputmode:"numeric",min:"1",max:"90",step:"1",placeholder:"10"});
   const optOn = h("input",{type:"checkbox"}), optIn = h("input",{class:"inp",type:"number",inputmode:"numeric",min:"2",max:"10000",step:"1",placeholder:"6"});
@@ -6456,7 +6473,7 @@ async function viewSell(editId){
       h("label",{class:"field",style:{marginBottom:0}}, h("span",{text:t("descOpt")}), descIn))];
   }
   function step5(){
-    setTimeout(dsUpd, 0);
+    setTimeout(negoSync, 0);
     nextBtn.textContent = editId ? t("save") : t("publish");
     nextBtn.onclick = publish;
     const free = PRICE_FREE[prod.cat], optional = PRICE_OPTIONAL[prod.cat];
@@ -6467,8 +6484,9 @@ async function viewSell(editId){
         h("div",null, h("b",{text:prod.title}), h("small",{text:[catName(prod.cat), prod.sub ? subName(prod.sub) : "", prod.attrs.brand ? brandName(prod.attrs.brand) : ""].filter(Boolean).join(" › ")}),
           h("small",{text:"📍 "+[prod.city, prod.attrs.mall ? "🏬 "+prod.attrs.mall : "", prod.place].filter(Boolean).join(" · ")}))),
       free ? h("div",{class:"box"}, h("div",{class:"price nego",text:"🔍 "+t("freePrice")})) :
-        h("div",{class:"box"}, h("label",{class:"field",style:{marginBottom:0}}, h("span",null, optional ? t("priceOpt") : t("price"), optional ? null : reqStar()),
-          h("div",{class:"price-in"}, priceIn, h("b",{text:"TMT"})))),
+        h("div",{class:"box pr-box"}, h("label",{class:"field",style:{marginBottom:0}}, h("span",null, optional ? t("priceOpt") : t("price"), optional ? null : reqStar()),
+          h("div",{class:"price-in"}, priceIn, h("b",{text:"TMT"}))),
+          h("label",{class:"check nego-ck"}, negoOn, h("span",null, h("b",{text:t("negoCk")}), h("small",{text:t("negoHint")})))),
       free ? null : h("div",{class:"box ds-box"},
         h("label",{class:"check ds-ck"}, discOn, h("span",{text:t("dsLabel")})),
         h("label",{class:"field ds-f"}, h("span",{text:t("dsPct")}), h("div",{class:"price-in"}, discIn, h("b",{text:"%"}))),
@@ -6495,10 +6513,11 @@ async function viewSell(editId){
     if (!prod.title.trim()) { goStep(1); return fail(t("e_noTitle")); }
     if (!catDone()) { goStep(2); return fail(t("e_noCat")); }
     if (!prod.city) { goStep(3); return fail(t("w_pickVel")); }
-    const price = PRICE_FREE[prod.cat] ? 0 : parseFloat(String(priceIn.value).replace(",", ".")) || 0;
-    if (!(price > 0) && !PRICE_OPTIONAL[prod.cat] && !PRICE_FREE[prod.cat]) return fail(t("e_noPrice"));
+    const nego = !PRICE_FREE[prod.cat] && negoOn.checked;
+    const price = PRICE_FREE[prod.cat] || nego ? 0 : parseFloat(String(priceIn.value).replace(",", ".")) || 0;
+    if (!(price > 0) && !nego && !PRICE_OPTIONAL[prod.cat] && !PRICE_FREE[prod.cat]) return fail(t("e_noPrice"));
     if (videoIn.value.trim() && !videoUrl(videoIn.value)) { goStep(1); return fail(t("e_video")); }
-    const dPct = discOn.checked ? Math.round(+discIn.value || 0) : 0;
+    const dPct = discOn.checked && !nego ? Math.round(+discIn.value || 0) : 0;
     const oQty = optOn.checked && cartable({cat: prod.cat, sub: prod.sub}) ? Math.round(+optIn.value || 0) : 0;
     if (discOn.checked && !(dPct >= 1 && dPct <= 90)) return fail(t("e_disc"));
     if (!rulesOk){ const bx = $("pr-box"); if (bx) bx.scrollIntoView({behavior:"smooth", block:"center"}); return fail(t("e_rules")); }
@@ -6531,7 +6550,7 @@ async function viewSell(editId){
         attrs: Object.fromEntries(flds.map(f => [f.k, prod.attrs[f.k]]).filter(([k, v]) => v != null && v !== "" && !(Array.isArray(v) && !v.length))
           .map(([k, v]) => [k, typeof v === "string" ? v.trim() : v])
           .concat(prod.attrs.mall ? [["mall", String(prod.attrs.mall).trim().slice(0, 60)]] : [])
-          .concat(dPct ? [["disc", String(dPct)]] : []).concat(oQty ? [["opt", String(oQty)]] : [])
+          .concat(nego ? [["nego", "1"]] : []).concat(dPct ? [["disc", String(dPct)]] : []).concat(oQty ? [["opt", String(oQty)]] : [])
           .concat(needRev ? [["mod", "1"], ["modWhy", why.join(",")]] : []).concat(riskHits.length ? [["modPh", riskHits.join(", ")]] : [])),
         photoOrder: editId ? shots.filter(x => x.existing).map(x => x.id) : [],
         photoLabels: Object.fromEntries(shots.filter(x => x.existing).map(x => [x.id, (x.label||"").trim()]))};
