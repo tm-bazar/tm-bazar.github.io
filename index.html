@@ -1629,7 +1629,7 @@ const SUBS = {
   home:        ["furniture","kitchenware","textile","carpets","lighting","other"],
   auto:        ["cars","trucks","buses","imported","special","moto","water","parts","tires","caracc","oils"],
   shoes:       ["womenshoes","menshoes","kidsshoes"],
-  personal:    ["womenclothes","menclothes","national","fabrics","jewels","cosmetics","bags","backpacks"],
+  personal:    ["womenclothes","menclothes","national","fabrics","jewels","buygold","cosmetics","bags","backpacks"],   // v134: «Куплю золото» — после украшений
   appliances:  ["bigapp","kitchenapp","climate","smallapp","otherapp"],
   jobs:        ["vacancy","resume"],
   rent:        ["rentevent","rentclothes","rentkids","rentequip","rentcars","renttools","other"],
@@ -1638,7 +1638,6 @@ const SUBS = {
   sport:       ["fitness","football","bicycles","hunting","music","tourism","sportother"],
   business:    ["readybiz","bizequip","production","shopequip","kitchenequip","agroequip","generators","bizother"],
   services:    ["repair","plumbingsvc","electricsvc","autosvc","beautysvc","cleaningsvc","events","photovideo","itsvc","education","sportsvc","nanny","tailorsvc","transport","travelsvc","svcother"],
-  buy:         ["buyjunk","buygold"],   // v130
   med:         ["medequip","rehab","optics","other"],   // раздел убран из списка (CATS), оставлено для старых объявлений
   animals:     ["livestock","birds","catsdogs","fish","otheranimals","petgoods"],
   free:        ["lostthing","foundthing","lostpets"]   // v130: «Бюро находок»
@@ -1739,9 +1738,9 @@ const FIELDS = {
     {k:"season", type:"sel", filter:"main", showAll:true, opts:["summer","demi","winter","allseason"], when:(s) => s === "womenclothes" || s === "menclothes" || s === "national"},
     {k:"size", type:"multi", raw:true, filter:"main", opts:["XS","S","M","L","XL","XXL","3XL","4XL+"],
       when:(s) => s === "womenclothes" || s === "menclothes", unitKey:"sizeHint"},
-    {k:"brandt", type:"text", max:30, when:(s) => s !== "jewels"},
-    {k:"color", type:"sel", filter:"more", opts:["black","white","silver","gray","gold","blue","red","green","purple","pink","other"], when:(s) => s !== "jewels" && s !== "cosmetics"},
-    {k:"probe", type:"sel", raw:true, filter:"more", opts:["375","500","585","750","875","925","999"], when:(s) => s === "jewels"},
+    {k:"brandt", type:"text", max:30, when:(s) => s !== "jewels" && s !== "buygold"},
+    {k:"color", type:"sel", filter:"more", opts:["black","white","silver","gray","gold","blue","red","green","purple","pink","other"], when:(s) => s !== "jewels" && s !== "cosmetics" && s !== "buygold"},
+    {k:"probe", type:"sel", raw:true, filter:"more", opts:["375","500","585","750","875","925","999"], when:(s) => s === "jewels" || s === "buygold"},
     {k:"weight", type:"num", unit:"g", step:"0.01", when:(s) => s === "jewels"}
   ],
   kids: [
@@ -2717,7 +2716,7 @@ const Mock = (() => {
 // Пока пусто — сайт работает в ДЕМО-режиме с примерами товаров.
 const API_URL = "https://script.google.com/macros/s/AKfycbzE_x0tb5oQer_5hM41pVzWz0jUbtDN3jem04JUckEBTNhcsVAWOy0zlwo_c2vzWGQP/exec";
 const APP_NAME = "TM Bazar";
-const APP_VER = "133";   // номер версии — виден внизу профиля
+const APP_VER = "134";   // номер версии — виден внизу профиля
 
 /* ===== v117: ФИЛЬТР ЗАПРЕЩЁННЫХ СЛОВ =====
    Если в названии или описании есть слово из списка — объявление не публикуется сразу,
@@ -2796,7 +2795,7 @@ const prodBadWords = p => badWords((p.title || "") + " \n " + (p.desc || ""));
 const CDN_TF = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
 const CDN_MN = "https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js";
 
-const CATS = ["auto","realty","electronics","shoes","home","personal","appliances","jobs","rent","kids","build","sport","business","services","buy","animals","free"]   // v130: «Медтовары» убран
+const CATS = ["auto","realty","electronics","shoes","home","personal","appliances","jobs","rent","kids","build","sport","business","services","animals","free"]   // v130: «Медтовары» убран; v134: «Куплю» убран
   .map(id => ({id, e: {shoes:"👟",electronics:"📱",realty:"🏠",home:"🛋️",auto:"🚗",personal:"👜",appliances:"🧺",jobs:"💼",rent:"🔑",kids:"🧸",build:"🔨",sport:"⚽",business:"🏭",services:"🛠️",buy:"🛒",med:"🩺",animals:"🐑",free:"🔍"}[id]}));
 // Ашхабад + 5 велаятов
 const CITIES = ["Aşgabat","Ahal","Mary","Daşoguz","Türkmenabat","Türkmenbaşy"];
@@ -2977,7 +2976,8 @@ const OLD_CAT = {
   books:       s => ["sport","books"],
   moto:        s => ["auto","moto"],
   autoparts:   s => ["auto", s === "tires" ? "tires" : s === "caracc" ? "caracc" : "parts"],
-  other:       s => ["home","other"]
+  other:       s => ["home","other"],
+  buy:         s => ["personal", s === "buygold" ? "buygold" : ""]   // v134: раздел «Куплю» убран
 };
 function migrateProduct(p){
   if (!p) return p;
@@ -3478,7 +3478,7 @@ const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","specia
   .concat(["rentevent","rentclothes","rentkids","rentequip","rentcars","renttools"].map(k => ["rent:"+k, 1]))
   .concat(["girlclothes","boyclothes","strollers","kidstransport","toys","school","babyfood","kidsother"].map(k => ["kids:"+k, 1]))
   .concat(["materials","builddecor","doors","tools","plumbing","electrics","paint","buildother"].map(k => ["build:"+k, 1]))
-  .concat([["rent:other", 1], ["buy:buygold", 1]])
+  .concat([["rent:other", 1], ["personal:buygold", 1]])
   .concat(["livestock","birds","catsdogs","fish","otheranimals","petgoods"].map(k => ["animals:"+k, 1]))
   .concat(["lostthing","foundthing","lostpets"].map(k => ["free:"+k, k === "lostpets" ? 1 : 2]))
   .concat(["fitness","football","bicycles","hunting","music","tourism","sportother"].map(k => ["sport:"+k, 1]))
@@ -3487,6 +3487,7 @@ const SUB_PHOTO = Object.fromEntries(["cars","trucks","buses","imported","specia
   .concat(["womenclothes","menclothes","national","fabrics","jewels","cosmetics","bags","backpacks"].map(k => ["personal:"+k, ["womenclothes","national","fabrics"].includes(k) ? 3 : 2])));
 function tilePhoto(key){
   if (S.tiles && S.tiles[key]) return S.tiles[key];
+  if (key === "sub:personal:buygold" && S.tiles && S.tiles["sub:buy:buygold"]) return S.tiles["sub:buy:buygold"]; // v134: фото из старого «Куплю»
   if (key === "cat:all") return "icons/logo.webp"; // «Все товары» — всегда логотип
   if (key.startsWith("cat:") && CAT_PHOTO[key.slice(4)]) return "cats/" + key.slice(4) + ".jpg" + (CAT_PHOTO[key.slice(4)] > 1 ? "?v=" + CAT_PHOTO[key.slice(4)] : "");
   if (key.startsWith("sub:") && SUB_PHOTO[key.slice(4)]) return "subs/" + key.slice(4).replace(":", "-") + ".jpg" + (SUB_PHOTO[key.slice(4)] > 1 ? "?v=" + SUB_PHOTO[key.slice(4)] : "");
@@ -3723,7 +3724,7 @@ function cartAdd(p, size){
 }
 // корзина — только для товаров (не для квартир, работы, услуг, аренды, машин)
 const NO_CART = {realty:1, jobs:1, services:1, buy:1, rent:1, business:1};
-function cartable(p){ return !!p && !NO_CART[p.cat] && !VEHICLE_SUBS[p.sub]; }
+function cartable(p){ return !!p && !NO_CART[p.cat] && !VEHICLE_SUBS[p.sub] && p.sub !== "buygold"; }
 async function cartAddFlow(p){
   const x = await cartPick(p); if (!x) return false;
   cartAdd(x.p, x.size); return true;
